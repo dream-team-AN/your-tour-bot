@@ -16,24 +16,24 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 
 ### Available commands ✔
 
-▶   /start
-		 Greetings, request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour,            otherwise the bot will recommend contacting the travel agency office and stop its work.
-▶  	/help
-		 Output of all commands with their description.
-▶		/stop
-		 Stop the bot.
-▶		/meeting
-     The bot will display the time, the meeting place, which will be marked on the google map.
-▶		/excursions
-		 The bot will display a list of excursions, when you click on the name, it will display the text accompanying the excursion.
-▶		/time
-		 The bot will ask you to enter the city for which you want to know the time and then display the information.
-▶		/weather
-     The bot will ask you to enter the city for which you want to know the weather (for today and tomorrow) and then display the information.
+▶   /start <br>
+		 Greetings, request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour,            otherwise the bot will recommend contacting the travel agency office and stop its work. <br>
+▶  	/help <br>
+		 Output of all commands with their description.<br>
+▶		/stop <br>
+		 Stop the bot.<br>
+▶		/meeting <br>
+     The bot will display the time, the meeting place, which will be marked on the google map.<br>
+▶		/excursions <br>
+		 The bot will display a list of excursions, when you click on the name, it will display the text accompanying the excursion.<br>
+▶		/time <br>
+		 The bot will ask you to enter the city for which you want to know the time and then display the information.<br>
+▶		/weather <br>
+     The bot will ask you to enter the city for which you want to know the weather (for today and tomorrow) and then display the information.<br>
 
-▶		/admin
-     Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:
-    🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.
-    🔹 Set the meeting time: the bot asks for the time, day of the tour, name and date of its start.
-    🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.
+▶		/admin <br>
+     Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:<br>
+    🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.<br>
+    🔹 Set the meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
+    🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
 
