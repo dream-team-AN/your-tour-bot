@@ -34,7 +34,7 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 ▶		/admin <br>
      Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:<br>
     🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.<br>
-    🔹 Set the meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
+    🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
     🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
 
  
