@@ -15,7 +15,7 @@ During the tour, many varied and informative excursions await you, but what to d
 Our bot will always be with you, so less worry and more vivid impressions 😉
 
 ### Available commands ✔
-
+<pre>   
 ▶   /start <br>
 		 Greetings, request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour,            otherwise the bot will recommend contacting the travel agency office and stop its work. <br>
 ▶  	/help <br>
@@ -37,3 +37,4 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
     🔹 Set the meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
     🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
 
+</pre> 
