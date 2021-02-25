@@ -1,6 +1,6 @@
 ## Your-tour telegram bot 🚍🌍
 
-### What is Your-tour bot❓
+### What is Your-tour bot ❓
 
 We will create a little helper for our clients - a telegram bot.
 
@@ -37,7 +37,7 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
     🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
     🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
 
-### How it works❓
+### How it works ❓
 
 The bot will have access to the company's customer database, but will not be able to make changes to it. Thus, he will be able to recognize users, whether they have tours and what they are. With each new request to the database, the bot will have its latest version (with all updates).
 
