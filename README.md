@@ -8,9 +8,9 @@ Why is Telegram? Most of the people who choose the bus tour are young people. Th
  
 When you buy a bus tour the most often doubts arise due to the fact that it is not known in which hotel you will stay for the night or how friendly the guide will come across. We've fixed that. Now you are the one who decides everything! After registering for the tour, about a week before the start, the bot will send you a quiz: in which hotel you would like to stay (the quiz is anonymous, of course), and which guide you would like to see. This way you can read hotel reviews, see photos and make a decision. The same situation is with the guide.
            
-After the start of the tour, the assistant will always be with you, tell you the schedule of the day, at what place and at what time the general meeting, remind you of it with an alert, and give you weather data. Whatever you are late, the telegram bot will send you a notification 1 hour, 30 minutes and 15 minutes before the scheduled meeting time. With him you will always be in the know and save yourself from unnecessary worries.
+After the start of the tour, the assistant will always be with you, tell you the schedule of the day, at what place and at what time the general meeting, remind you of it with an alert, and give you weather data. Whatever you are late, the telegram bot will send you notifications 1 hour, 30 minutes and 15 minutes before the scheduled meeting time. With him you will always be in the know and save yourself from unnecessary worries.
             
-During the tour, many varied and informative excursions await you, but what to do if you cannot hear the guide at all? No problem. The bot is happy to help you and will instantly provide textual support. You can go away to take a lovely photo without worrying about missing important information.
+During the tour, many varied and informative excursions await you, but what if you don't know which one to choose? The bot is happy to help you. It will provide you with a very detailed description of the excursion. 
             
 Our bot will always be with you, so less worry and more vivid impressions 😉
 
@@ -37,4 +37,9 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
     🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
     🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
 
- 
+### How it works❓
+
+The bot will have access to the company's customer database, but will not be able to make changes to it. Thus, he will be able to recognize users, whether they have tours and what they are. With each new request to the database, the bot will have its latest version (with all updates).
+
+Tours will be pulled from the site. Source: https://foxiepass.com/ru.
+2 weeks before the start of the tour, the bot will re-pull data from the site, in case changes have been made to the site. The user will be shown excursions in the cities that are on the tour, and by the date of his arrival in the city
