@@ -25,7 +25,7 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 ▶		/meeting <br>
      The bot will display the time, the meeting place, which will be marked on the google map.<br>
 ▶		/excursions <br>
-		 The bot will display a list of excursions, when you click on the name, it will display the text accompanying the excursion.<br>
+		 The bot will display a list of excursions, when you click on the name, it will display the description of the excursion.<br>
 ▶		/time <br>
 		 The bot will ask you to enter the city for which you want to know the time and then display the information.<br>
 ▶		/weather <br>
@@ -42,4 +42,5 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 The bot will have access to the company's customer database, but will not be able to make changes to it. Thus, he will be able to recognize users, whether they have tours and what they are. With each new request to the database, the bot will have its latest version (with all updates).
 
 Tours will be pulled from the site. Source: https://foxiepass.com/ru.
+
 2 weeks before the start of the tour, the bot will re-pull data from the site, in case changes have been made to the site. The user will be shown excursions in the cities that are on the tour, and by the date of his arrival in the city
