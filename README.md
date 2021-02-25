@@ -25,7 +25,7 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 ▶		/meeting <br>
      The bot will display the time, the meeting place, which will be marked on the google map.<br>
 ▶		/excursions <br>
-		 The bot will display a list of excursions, when you click on the name, it will display the text accompanying the excursion.<br>
+		 The bot will display a list of excursions, when you click on the name, it will display the description of the excursion.<br>
 ▶		/time <br>
 		 The bot will ask you to enter the city for which you want to know the time and then display the information.<br>
 ▶		/weather <br>
