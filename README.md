@@ -50,16 +50,16 @@ Our bot has an administrator mode for travel agency employees. To enter this mod
 Since the bot will be launched on a free Heroku plan (18 hours of operation + 6 hours of server sleep per day), when used on long polling, problems may arise with constant requests to telegrams for updates, which is of course unacceptable for the comfortable work of the assistant bot. Therefore, it becomes necessary to receive updates in a smarter way - a webhook. Another plus is that all applications hosted on Heroku are hosted on a sub-domain and automatically receive the SLL certificate required to configure the webhook. Fastify will be used as a web server.
 
 ### Technologies 💻
-
-⏹ Google API:
-    🔹 Maps Static Google API. Google Maps API is to show a meeting place.
-    🔹 Google Directions API. This API will be used to help the user get to the meeting point.
-    🔹 Google Timezone API. The time zone API will tell the tourist what is the exact time in the city in which he is located.
-⏹ GISMETEO API (for weather)
-⏹ Node Schedule
-⏹ MongoDB
-⏹ Fastify
-⏹ Fancy
-⏹ Cheerio (for parsing)
+<br>
+⏹ Google API:<br>
+    🔹 Maps Static Google API. Google Maps API is to show a meeting place.<br>
+    🔹 Google Directions API. This API will be used to help the user get to the meeting point.<br>
+    🔹 Google Timezone API. The time zone API will tell the tourist what is the exact time in the city in which he is located.<br>
+⏹ GISMETEO API (for weather)<br>
+⏹ Node Schedule<br>
+⏹ MongoDB<br>
+⏹ Fastify<br>
+⏹ Fancy<br>
+⏹ Cheerio (for parsing)<br>
 
 
