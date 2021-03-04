@@ -59,7 +59,6 @@ Since the bot will be launched on a free Heroku plan (18 hours of operation + 6 
 ⏹ Node Schedule<br>
 ⏹ MongoDB<br>
 ⏹ Fastify<br>
-⏹ Fancy<br>
-⏹ 
+⏹ JsDOM
 
 
