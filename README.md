@@ -47,7 +47,7 @@ A tourist can see the current time in the city in which he is located (it will b
 
 Our bot has an administrator mode for travel agency employees. To enter this mode, you must enter the same password for all. When trying to send a message, the bot first checks the compliance of the person's name with the tour and the date entered by the admin. When a match is found, the bot takes the chat ID from the file with the data of the bot users. And after that it sends a message. Also, the administrator can set the time and place of the meeting, which are saved in the info file. The admin will set the meeting place by choosing from several available options.
 
-Since the bot will be launched on a free Heroku plan (18 hours of operation + 6 hours of server sleep per day), when used on long polling, problems may arise with constant requests to telegrams for updates, which is of course unacceptable for the comfortable work of the assistant bot. Therefore, it becomes necessary to receive updates in a smarter way - a webhook. Another plus is that all applications hosted on Heroku are hosted on a sub-domain and automatically receive the SLL certificate required to configure the webhook. Fastify will be used as a web server.
+Since the bot will be launched on a free plan, when used on long polling, problems may arise with constant requests to telegrams for updates, which is of course unacceptable for the comfortable work of the assistant bot. Therefore, it becomes necessary to receive updates in a smarter way - a webhook. Another plus is that all applications hosted on Heroku are hosted on a sub-domain and automatically receive the SLL certificate required to configure the webhook. Fastify will be used as a web server.
 
 ### Technologies 💻
 <br>
