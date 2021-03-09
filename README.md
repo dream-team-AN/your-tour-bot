@@ -59,6 +59,6 @@ Since the bot will be launched on a free plan, when used on long polling, proble
 ⏹ Node Schedule<br>
 ⏹ MongoDB<br>
 ⏹ Fastify<br>
-⏹ JsDOM  
+⏹ JsDOM    
 
 
