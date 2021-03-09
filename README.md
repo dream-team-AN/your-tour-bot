@@ -1,6 +1,6 @@
 ## Your-tour telegram bot 🚍🌍
 
-### What is Your-tour bot❓
+### What is Your-tour bot ❓
 
 We will create a little helper for our clients - a telegram bot.
 
@@ -20,10 +20,8 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 		 Greetings, request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour,            otherwise the bot will recommend contacting the travel agency office and stop its work. <br>
 ▶  	/help <br>
 		 Output of all commands with their description.<br>
-▶		/stop <br>
-		 Stop the bot.<br>
 ▶		/meeting <br>
-     The bot will display the time, the meeting place, which will be marked on the google map.<br>
+     The bot will display the time, the meeting place, which will be marked on the google map and how to get to it.<br>
 ▶		/excursions <br>
 		 The bot will display a list of excursions, when you click on the name, it will display the description of the excursion.<br>
 ▶		/time <br>
@@ -37,10 +35,30 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
     🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
     🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
 
-### How it works❓
+### How it works ❓
 
-The bot will have access to the company's customer database, but will not be able to make changes to it. Thus, he will be able to recognize users, whether they have tours and what they are. With each new request to the database, the bot will have its latest version (with all updates).
+When registering a user, the bot checks the presence of his full name in the travel agency database. If a match is found, the work will continue.
 
-Tours will be pulled from the site. Source: https://foxiepass.com/ru.
+The user can view the time and place of the meeting (will be displayed using static maps from Google), which will be stored in a separate info file. Also, the user can see the route to the destination (created using the Directions Google API service). The tourist will receive notifications about the approaching time of meeting with the guide, which are generated using the Node Schedule technology (a flexible task scheduler like Cron).
 
-2 weeks before the start of the tour, the bot will re-pull data from the site, in case changes have been made to the site. The user will be shown excursions in the cities that are on the tour, and by the date of his arrival in the city
+A person can get detailed information about excursions(the program of excursions, what you will learn about during the excursion, organizational details: how the excursion goes, what is important to know before booking, meeting point, price), which is parsed from the site https://experience.tripster.ru/. First, the user is given the opportunity to select the city in which he wants to see the excursions (only the cities that are on the tour are displayed; and only those excursions that can be booked on the day the tourist is in the selected city are displayed).
+
+A tourist can see the current time in the city in which he is located (it will be calculated based on the data received from Google api timezone). As well as the weather for today and tomorrow (information is taken from the Gismeteo website using its api).
+
+Our bot has an administrator mode for travel agency employees. To enter this mode, you must enter the same password for all. When trying to send a message, the bot first checks the compliance of the person's name with the tour and the date entered by the admin. When a match is found, the bot takes the chat ID from the file with the data of the bot users. And after that it sends a message. Also, the administrator can set the time and place of the meeting, which are saved in the info file. The admin will set the meeting place by choosing from several available options.
+
+Since the bot will be launched on a free plan, when used on long polling, problems may arise with constant requests to telegrams for updates, which is of course unacceptable for the comfortable work of the assistant bot. Therefore, it becomes necessary to receive updates in a smarter way - a webhook. Another plus is that all applications hosted on Heroku are hosted on a sub-domain and automatically receive the SLL certificate required to configure the webhook. Fastify will be used as a web server.
+
+### Technologies 💻
+<br>
+⏹ Google API:<br>
+    🔹 Maps Static Google API. Google Maps API is to show a meeting place.<br>
+    🔹 Google Directions API. This API will be used to help the user get to the meeting point.<br>
+    🔹 Google Timezone API. The time zone API will tell the tourist what is the exact time in the city in which he is located.<br>
+⏹ GISMETEO API (for weather)<br>
+⏹ Node Schedule<br>
+⏹ MongoDB<br>
+⏹ Fastify<br>
+⏹ JsDOM
+
+
