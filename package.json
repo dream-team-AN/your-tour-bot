@@ -1,7 +1,7 @@
 {
-  "name": "API",
+  "name": "your_tour_bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Our bot will always be with you, so less worry and more vivid impressions !",
   "main": "app.js",
   "directories": {
     "test": "test"
@@ -13,9 +13,17 @@
     "lint": "eslint . --ext",
     "lint:fix": "eslint . --fix"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Your-tour-bot/code.git"
+  },
   "keywords": [],
-  "author": "",
+  "author": "Kunyk Nelia, Litus Alina",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Your-tour-bot/code/issues"
+  },
+  "homepage": "https://github.com/Your-tour-bot/code#readme",
   "dependencies": {
     "D": "^1.0.0",
     "eslint-config-airbnb": "^18.2.1",
@@ -36,7 +44,8 @@
   "files": [],
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run test"
     }
   },
   "lint-staged": {
