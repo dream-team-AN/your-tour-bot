@@ -4,15 +4,17 @@
   },
   "extends": [
     "airbnb/base",
-    "plugin:node/recommended"
+    "plugin:node/recommended",
+    "plugin:sonarjs/recommended"
+  ],
+  "plugins": [
+    "sonarjs"
   ],
   "rules": {
     "global-require": "off",
     "no-unused-vars": "warn",
-    "strict": "off",
     "no-console": "warn",
     "no-plusplus": "off",
-    "eol-last": "off",
     "no-tabs": "off",
     "prefer destructuring": "off",
     "no-alert": "warn",
