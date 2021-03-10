@@ -10,8 +10,8 @@
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
     "dev": "fastify start -w -l info -P app.js",
-    "lint": "eslint . --ext .js --color",
-    "lint:fix": "eslint . --fix --ext .js --color"
+    "lint": "eslint . --ext",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
@@ -37,7 +37,7 @@
       "pre-commit": "lint-staged"
     }
   },
-  "lin-staged": {
+  "lint-staged": {
     "*.js": [
       "npm run lint:fix",
       "git add"
