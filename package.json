@@ -37,7 +37,7 @@
       "pre-commit": "lint-staged"
     }
   },
-  "lin-staged": {
+  "lint-staged": {
     "*.js": [
       "npm run lint:fix",
       "git add"

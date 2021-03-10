@@ -17,6 +17,7 @@ module.exports = async function (fastify, opts) {
   });
 
   console.log('it work!');
+  console.log('it realy work!');
 
   // This loads all plugins defined in routes
   // define your routes in one of these
