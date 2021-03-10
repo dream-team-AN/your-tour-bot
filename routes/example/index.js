@@ -1,7 +1,5 @@
-'use strict'
+'use strict';
 
 module.exports = async function (fastify, opts) {
-  fastify.get('/', async function (request, reply) {
-    return 'this is an example'
-  })
-}
+  fastify.get('/', async (request, reply) => 'this is an example');
+};

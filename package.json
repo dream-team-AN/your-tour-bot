@@ -9,19 +9,38 @@
   "scripts": {
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js"
+    "dev": "fastify start -w -l info -P app.js",
+    "lint": "eslint . --ext .js --color",
+    "lint:fix": "eslint . --fix --ext .js --color"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "D": "^1.0.0",
+    "eslint-config-airbnb": "^18.2.1",
     "fastify": "^3.0.0",
-    "fastify-plugin": "^3.0.0",
     "fastify-autoload": "^3.3.1",
-    "fastify-sensible": "^3.1.0",
-    "fastify-cli": "^2.8.0"
+    "fastify-cli": "^2.8.0",
+    "fastify-plugin": "^3.0.0",
+    "fastify-sensible": "^3.1.0"
   },
   "devDependencies": {
+    "eslint": "^7.21.0",
+    "eslint-config-node": "^4.1.0",
+    "eslint-plugin-node": "^11.1.0",
     "tap": "^14.11.0"
+  },
+  "files": [],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lin-staged": {
+    "*.js": [
+      "npm run lint:fix",
+      "git add"
+    ]
   }
 }

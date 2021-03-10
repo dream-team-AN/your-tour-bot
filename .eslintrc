@@ -1,0 +1,24 @@
+{
+  "env": {
+    "es2021": true
+  },
+  "extends": [
+    "airbnb/base",
+    "plugin:node/recommended"
+  ],
+  "rules": {
+    "global-require": "off",
+    "no-unused-vars": "warn",
+    "strict": "off",
+    "no-console": "warn",
+    "no-plusplus": "off",
+    "eol-last": "off",
+    "no-tabs": "off",
+    "prefer destructuring": "off",
+    "no-alert": "warn",
+    "comma-dangle": [
+      "error",
+      "never"
+    ]
+  }
+}
