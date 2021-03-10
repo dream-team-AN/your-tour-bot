@@ -24,4 +24,6 @@ module.exports = async function (fastify, opts) {
   });
 
   console.log('it works!');
+  console.log('it works!');
+  console.log('it works!');
 };
