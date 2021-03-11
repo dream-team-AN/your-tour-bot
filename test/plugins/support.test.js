@@ -1,3 +1,5 @@
+'use strict';
+
 const { test } = require('tap');
 const Fastify = require('fastify');
 const Support = require('../../plugins/support');

@@ -13,6 +13,10 @@
   "rules": {
     "global-require": "off",
     "no-unused-vars": "warn",
+    "strict": [
+      "error",
+      "global"
+    ],
     "no-console": "warn",
     "no-plusplus": "off",
     "no-tabs": "off",

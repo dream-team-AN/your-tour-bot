@@ -1,3 +1,5 @@
+'use strict';
+
 const fp = require('fastify-plugin');
 
 // the use of fastify-plugin is required to be able

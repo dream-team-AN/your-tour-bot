@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (fastify, opts, next) {
   fastify.route({
     method: 'GET',
