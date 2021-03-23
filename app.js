@@ -3,7 +3,7 @@
 const path = require('path');
 const AutoLoad = require('fastify-autoload');
 
-module.exports = async function (fastify, opts) {
+module.exports = async (fastify, opts) => {
   // Place here your custom code!
 
   // Do not touch the following lines
@@ -22,6 +22,4 @@ module.exports = async function (fastify, opts) {
     dir: path.join(__dirname, 'routes'),
     options: { opts }
   });
-
-  console.log('it works!');
 };

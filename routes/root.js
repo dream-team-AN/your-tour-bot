@@ -1,10 +1,10 @@
 'use strict';
 
-module.exports = function (fastify, opts, next) {
+module.exports = (fastify, next) => {
   fastify.route({
     method: 'GET',
     url: '/',
-    handler: async (request, reply) => ({ root: true })
+    handler: async () => ({ root: true })
   });
 
   next();
