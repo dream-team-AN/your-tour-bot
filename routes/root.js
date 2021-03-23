@@ -4,8 +4,7 @@ module.exports = (fastify, next) => {
   fastify.route({
     method: 'GET',
     url: '/',
-    handler: async () => ({ root: true })
+    handler: async (request, reply) => ({ root: true })
   });
-
   next();
 };
