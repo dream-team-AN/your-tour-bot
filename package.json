@@ -1,7 +1,7 @@
 {
-  "name": "API",
+  "name": "your_tour_bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Our bot will always be with you, so less worry and more vivid impressions !",
   "main": "app.js",
   "directories": {
     "test": "test"
@@ -9,19 +9,48 @@
   "scripts": {
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js"
+    "dev": "fastify start -w -l info -P app.js",
+    "lint": "eslint . --ignore-path .gitignore",
+    "lint:fix": "eslint . --fix --ignore-path .gitignore"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Your-tour-bot/code.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Kunyk Nelia, Litus Alina",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Your-tour-bot/code/issues"
+  },
+  "homepage": "https://github.com/Your-tour-bot/code#readme",
   "dependencies": {
     "fastify": "^3.0.0",
-    "fastify-plugin": "^3.0.0",
     "fastify-autoload": "^3.3.1",
-    "fastify-sensible": "^3.1.0",
-    "fastify-cli": "^2.8.0"
+    "fastify-cli": "^2.8.0",
+    "fastify-plugin": "^3.0.0",
+    "fastify-sensible": "^3.1.0"
   },
   "devDependencies": {
+    "eslint": "^7.21.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-node": "^4.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-sonarjs": "^0.6.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.5.4",
     "tap": "^14.11.0"
+  },
+  "files": [],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run test"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:fix"
+    ]
   }
 }
