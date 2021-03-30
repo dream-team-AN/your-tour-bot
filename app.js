@@ -23,3 +23,4 @@ module.exports = async (fastify, opts) => {
     options: { opts }
   });
 };
+// some code will be here soon...
