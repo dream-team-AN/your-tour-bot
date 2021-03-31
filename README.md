@@ -49,6 +49,9 @@ Our bot has an administrator mode for travel agency employees. To enter this mod
 
 Since the bot will be launched on a free plan, when used on long polling, problems may arise with constant requests to telegrams for updates, which is of course unacceptable for the comfortable work of the assistant bot. Therefore, it becomes necessary to receive updates in a smarter way - a webhook. Another plus is that all applications hosted on Heroku are hosted on a sub-domain and automatically receive the SLL certificate required to configure the webhook. Fastify will be used as a web server.
 
+![image](https://user-images.githubusercontent.com/56652716/113208823-ee808e80-927a-11eb-9126-36353b6f2338.png)
+
+
 ### Technologies 💻
 
 <br>
