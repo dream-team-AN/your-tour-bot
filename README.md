@@ -17,7 +17,15 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 ### Available commands ✔
 
 ▶ /start <br>
-Greetings, request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour, otherwise the bot will recommend contacting the travel agency office and stop its work. <br>
+Greetings, request to choose are you tourist or admin.<br>
+Then in 1nd case:<br>
+Request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour, otherwise the bot will recommend contacting the travel agency office and stop its work.<br>
+Or in 2nd case: <br>
+Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:<br>
+🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.<br>
+🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
+🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
+press button "I am admin"<br>
 ▶ /help <br>
 Output of all commands with their description.<br>
 ▶ /meeting <br>
@@ -28,12 +36,6 @@ The bot will display a list of excursions, when you click on the name, it will d
 The bot will ask you to enter the city for which you want to know the time and then display the information.<br>
 ▶ /weather <br>
 The bot will ask you to enter the city for which you want to know the weather (for today and tomorrow) and then display the information.<br>
-
-▶ /admin <br>
-Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:<br>
-🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.<br>
-🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
-🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
 
 ### How it works ❓
 
