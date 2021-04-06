@@ -18,9 +18,9 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 
 ▶ /start <br>
 Greetings, request to choose are you tourist or admin.<br>
-# Then in 1nd case:
+#### Then in 1nd case:
 Request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour, otherwise the bot will recommend contacting the travel agency office and stop its work.<br>
-# Or in 2nd case:
+#### Or in 2nd case:
 Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:<br>
 🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.<br>
 🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
