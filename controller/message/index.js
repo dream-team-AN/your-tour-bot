@@ -1,11 +1,11 @@
 'use strict';
 
-const show = async (req, reply) => {
+const send = async (req, reply) => {
   console.log(req.body.message.text);
-  console.log('excursions');
+  console.log('message');
   return 'WAITING COMMAND';
 };
 
 module.exports = {
-  show
+  send
 };

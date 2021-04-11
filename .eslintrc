@@ -12,15 +12,26 @@
   ],
   "rules": {
     "global-require": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": "off",
     "strict": [
       "error",
       "global"
     ],
-    "no-console": "warn",
+    "no-console": "off",
     "no-plusplus": "off",
     "no-tabs": "off",
-    "prefer destructuring": "off",
+    "sonarjs/no-duplicate-string": "off",
+    "sonarjs/cognitive-complexity": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 125
+      }
+    ],
+    "node/no-unsupported-features/es-syntax": "off",
+    "default-case": "warn",
+    "no-fallthrough": "warn",
+    "no-use-before-define": "off",
     "no-alert": "warn",
     "comma-dangle": [
       "error",
