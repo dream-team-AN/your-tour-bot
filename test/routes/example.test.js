@@ -3,14 +3,14 @@
 const { test } = require('tap');
 const { build } = require('../helper');
 
-test('example is loaded', async (t) => {
-  const app = build(t);
+// test('example is loaded', async (t) => {
+//   const app = build(t);
 
-  const res = await app.inject({
-    url: '/example'
-  });
-  t.equal(res.payload, 'some code');
-});
+//   const res = await app.inject({
+//     url: '/example'
+//   });
+//   t.equal(res.payload, 'some code');
+// });
 
 // inject callback style:
 //
