@@ -21,7 +21,6 @@
     "no-plusplus": "off",
     "no-tabs": "off",
     "sonarjs/no-duplicate-string": "off",
-    "sonarjs/cognitive-complexity": "off",
     "max-len": [
       "error",
       {

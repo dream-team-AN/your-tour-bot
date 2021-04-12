@@ -129,8 +129,7 @@ const textSwitcher = (sentMessage, chatId) => {
 
 const commandSwitcher = (sentMessage, chatId) => {
   const commands = ['/start', '/help', '/excursions', '/time', '/weather', '/meeting'];
-  const administration = ['Set meeting place', 'Set meeting time', 'Send message'];
-  const status = {};
+  let status = {};
   if (user[chatId].command === 'none') {
     status.state = sentMessage === '/start' ? 'WAITING CHOICE' : 'WAITING COMMAND';
     status.command = sentMessage === '/start' ? '/start' : 'none';
@@ -142,17 +141,7 @@ const commandSwitcher = (sentMessage, chatId) => {
       }
     });
   } else if (user[chatId].command === 'admin') {
-    if (administration.includes(user[chatId].command) || administration.includes(sentMessage)) {
-      administration.forEach((command) => {
-        if (sentMessage === command) {
-          status.command = command;
-          status.state = 'WAITING TOUR NAME';
-        }
-      });
-    } else {
-      status.command = 'admin';
-      status.state = 'WAITING COMMAND AGAIN';
-    }
+    status = adminCommandSwitcher(sentMessage, chatId);
   } else {
     status.command = 'error';
     status.state = 'WAITING COMMAND';
@@ -160,6 +149,22 @@ const commandSwitcher = (sentMessage, chatId) => {
   return status;
 };
 
+const adminCommandSwitcher = (sentMessage, chatId) => {
+  const status = {};
+  const administration = ['Set meeting place', 'Set meeting time', 'Send message'];
+  if (administration.includes(user[chatId].command) || administration.includes(sentMessage)) {
+    administration.forEach((command) => {
+      if (sentMessage === command) {
+        status.command = command;
+        status.state = 'WAITING TOUR NAME';
+      }
+    });
+  } else {
+    status.command = 'admin';
+    status.state = 'WAITING COMMAND AGAIN';
+  }
+  return status;
+};
 const adminSwitcher = (chatId, condition, action) => {
   const status = { command: action };
   switch (user[chatId].state) {

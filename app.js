@@ -1,11 +1,14 @@
 'use strict';
 
+// require('module-alias/register');
 const path = require('path');
 const AutoLoad = require('fastify-autoload');
 const mongoose = require('mongoose');
+const secret = require('./secret.js');
 
 module.exports = async (fastify) => {
-  mongoose.connect('mongodb+srv://bot:qwertyuiop@cluster0.0dpg3.mongodb.net/your-tour-bot?retryWrites=true&w=majority', {
+  const cluster = 'cluster0.0dpg3.mongodb.net/your-tour-bot?retryWrites=true&w=majority';
+  mongoose.connect(`mongodb+srv://bot:${secret.bdPassword}@${cluster}`, {
     useNewUrlParser: true,
     useFindAndModify: false,
     useUnifiedTopology: true

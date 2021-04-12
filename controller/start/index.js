@@ -1,6 +1,8 @@
 'use strict';
 
 const Tourist = require('../../models/tourist');
+const secret = require('../../secret.js');
+const regular = require('../../regular');
 
 const checkTourist = async (req, res) => {
   const sentMessage = req.body.message.text;
@@ -18,7 +20,7 @@ const checkTourist = async (req, res) => {
 };
 
 const fullNameValidation = (name) => {
-  if (name.match(/^([А-Я]{1}[а-яёії]{1,15}|[A-Z]{1}[a-z]{1,15}) ([А-Я]{1}[а-яёії]{1,15}|[A-Z]{1}[a-z]{1,15})$/gm)) {
+  if (name.match(regular.validFullName)) {
     return true;
   }
   return false;
@@ -28,7 +30,7 @@ const checkPassword = async (req, res) => {
   const sentMessage = req.body.message.text;
   console.log(req.body.message.text);
   console.log('start');
-  return sentMessage === '12345' ? 'WAITING COMMAND' : 'WAITING PASSWORD AGAIN';
+  return sentMessage === secret.adminPassword ? 'WAITING COMMAND' : 'WAITING PASSWORD AGAIN';
 };
 
 module.exports = {

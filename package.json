@@ -30,6 +30,7 @@
     "fastify-http-client": "^1.0.0",
     "fastify-plugin": "^3.0.0",
     "fastify-sensible": "^3.1.0",
+    "module-alias": "^2.2.2",
     "mongoose": "^5.12.3",
     "tap": "^14.11.0"
   },
@@ -52,5 +53,14 @@
     "*.js": [
       "npm run lint:fix"
     ]
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@excursions": "./controller/excursions.js",
+    "@meeting": "./controller/meeting",
+    "@message": "./controller/message",
+    "@start": "./controller/start",
+    "@time": "./controller/time",
+    "@weather": "./controller/weather"
   }
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 const Tour = require('../../models/tour');
+const regular = require('../../regular');
 
 const checkTourName = async (command, sentMessage, tour) => {
   const trip = { ...tour };
@@ -32,11 +33,11 @@ const checkTourDate = async (command, sentMessage, tour) => {
 };
 
 const dateParser = (date) => {
-  const dateStr = `${date.split(/[-/.]/)[2]}-${(date.split(/[-/.]/)[1])}-${date.split(/[-/.]/)[0]}T00:00:00.000Z`;
+  const dateStr = `${date}T00:00:00.000Z`;
   return new Date(dateStr);
 };
 const tourDateValidation = (date) => {
-  if (date.match(/^([0-9]{2}[-|/|.][0-9]{2}[-|/|.][0-9]{4})$/gm)) {
+  if (date.match(regular.validDate)) {
     return true;
   }
   return false;
@@ -60,7 +61,7 @@ const checkDay = async (command, sentMessage, tour) => {
 };
 
 const tourDayValidation = (day) => {
-  if (day.match(/^[0-9]$/gm)) {
+  if (day.match(regular.validDay)) {
     return true;
   }
   return false;
