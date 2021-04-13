@@ -33,9 +33,9 @@ The bot will display the time, the meeting place, which will be marked on the go
 ▶ /excursions <br>
 The bot will display a list of excursions, when you click on the name, it will display the description of the excursion.<br>
 ▶ /time <br>
-The bot will ask you to enter the city for which you want to know the time and then display the information.<br>
+The bot will display the time for the city where you are.<br>
 ▶ /weather <br>
-The bot will ask you to enter the city for which you want to know the weather (for today and tomorrow) and then display the information.<br>
+The bot will display the weather (for today and tomorrow) for the city where you are.<br>
 
 ### How it works ❓
 
