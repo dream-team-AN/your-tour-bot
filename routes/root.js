@@ -29,8 +29,8 @@ module.exports = async (fastify) => {
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
       console.log('yeeeeeeeeeeeees');
-      let result = 'absence';
-      [user[chatId].state, result = 'absence'] = await commandHandler(req, res);
+      const result = 'absence';
+      user[chatId].state = await commandHandler(req, res);
       await ask(result, chatId, fastify).then((response) => {
         res.status(200).send(response);
       }).catch((error) => {
@@ -250,130 +250,62 @@ const commandHandler = async (req, res) => {
 const asking = async (status, chatId, fastify) => {
   switch (status.command) {
     case 'none': {
-      await noneMessage(chatId, fastify);
+      await ask('You were not found in our database. Please buy a tour from our travel agency.', chatId, fastify);
       break;
     }
     case 'error': {
-      await errorMessage(chatId, fastify);
+      await ask('Please, enter a correct command.', chatId, fastify);
       break;
     }
     case '/start': {
-      if (status.state === 'WAITING CHOICE') await startMessage(chatId, fastify);
-      else if (status.state === 'WAITING CHOICE AGAIN') startAgainMessage(chatId, fastify);
+      if (status.state === 'WAITING CHOICE') {
+        await ask('Please, select the button on the keyboard at the bottom of your'
+        + ' screen, corresponding to your status', chatId, fastify);
+      } else if (status.state === 'WAITING CHOICE AGAIN') {
+        await ask('Please, enter a correct command', chatId, fastify);
+      }
       break;
     }
     case 'tourist': {
-      if (status.state === 'WAITING NAME') await touristMessage(chatId, fastify);
-      else if (status.state === 'WAITING NAME AGAIN') await touristAgainMessage(chatId, fastify);
+      if (status.state === 'WAITING NAME') await ask('Please, enter a correct command', chatId, fastify);
+      else if (status.state === 'WAITING NAME AGAIN') await ask('Please, enr a correct command', chatId, fastify);
       break;
     }
     case 'admin': {
-      if (status.state === 'WAITING PASSWORD') await adminMessage(chatId, fastify);
-      else if (status.state === 'WAITING PASSWORD AGAIN') adminAgainMessage(chatId, fastify);
+      if (status.state === 'WAITING PASSWORD') await ask('Please, enter a correct command', chatId, fastify);
+      else if (status.state === 'WAITING PASSWORD AGAIN') await ask('Please, en a correct command', chatId, fastify);
       break;
     }
     case 'Send message': {
-      await adminAsking(status, chatId, fastify);
+      await ask('Please, enter a correct command', chatId, fastify);
       break;
     }
     case 'Set meeting time': {
-      await adminAsking(status, chatId, fastify);
+      await ask('Please, enter a correct command', chatId, fastify);
       break;
     }
     case 'Set meeting place': {
-      await adminAsking(status, chatId, fastify);
+      await ask('Please, enter a correct command', chatId, fastify);
       break;
     }
     default: {
-      await errorMessage(chatId, fastify);
+      await ask('Please, enter a correct command', chatId, fastify);
     }
   }
   console.log(`console.log asking${status.command}       ${status.state}`);
 };
 
 const adminAsking = async (status, chatId, fastify) => {
-  if (status.state === 'WAITING TOUR NAME') await tourNameMessage(chatId, fastify);
-  else if (status.state === 'WAITING TOUR DATE') await tourDateMessage(chatId, fastify);
-  else if (status.state === 'WAITING TOUR DAY') await tourDayMessage(chatId, fastify);
-  else if (status.state === 'WAITING TIME') await meetingTimeMessage(chatId, fastify);
-  else if (status.state === 'WAITING TOUR DATE AGAIN') await tourDateAgainMessage(chatId, fastify);
-  else if (status.state === 'WAITING TOUR DAY AGAIN') await tourDayAgainMessage(chatId, fastify);
-  else if (status.state === 'WAITING TIME AGAIN') await meetingTimeAgainMessage(chatId, fastify);
-  else if (status.state === 'WAITING PLACE') await meetingPlaceMessage(chatId, fastify);
-  else if (status.state === 'WAITING PLACE AGAIN') await meetingPlaceAgainMessage(chatId, fastify);
-  else if (status.state === 'WAITING MESSAGE') await messageMessage(chatId, fastify);
-};
-
-const noneMessage = async (chatId, fastify) => {
-  await ask('none', chatId, fastify);
-};
-
-const errorMessage = async (chatId, fastify) => {
-  await ask('error', chatId, fastify);
-};
-
-const startMessage = async (chatId, fastify) => {
-  await ask('start', chatId, fastify);
-};
-
-const startAgainMessage = async (chatId, fastify) => {
-  await ask('start again', chatId, fastify);
-};
-
-const touristMessage = async (chatId, fastify) => {
-  await ask('tourist', chatId, fastify);
-};
-
-const touristAgainMessage = async (chatId, fastify) => {
-  await ask('tourist again', chatId, fastify);
-};
-
-const adminMessage = async (chatId, fastify) => {
-  await ask('tourist', chatId, fastify);
-};
-
-const adminAgainMessage = async (chatId, fastify) => {
-  await ask('tourist again', chatId, fastify);
-};
-
-const tourNameMessage = async (chatId, fastify) => {
-  await ask('tour name', chatId, fastify);
-};
-
-const tourDateMessage = async (chatId, fastify) => {
-  await ask('tour date', chatId, fastify);
-};
-
-const messageMessage = async (chatId, fastify) => {
-  await ask('message', chatId, fastify);
-};
-
-const tourDateAgainMessage = async (chatId, fastify) => {
-  await ask('tour date again', chatId, fastify);
-};
-
-const tourDayMessage = async (chatId, fastify) => {
-  await ask('tour day', chatId, fastify);
-};
-
-const tourDayAgainMessage = async (chatId, fastify) => {
-  await ask('tour day again', chatId, fastify);
-};
-
-const meetingTimeMessage = async (chatId, fastify) => {
-  await ask('meeting time', chatId, fastify);
-};
-
-const meetingTimeAgainMessage = async (chatId, fastify) => {
-  await ask('meeting time again', chatId, fastify);
-};
-
-const meetingPlaceMessage = async (chatId, fastify) => {
-  await ask('meeting place', chatId, fastify);
-};
-
-const meetingPlaceAgainMessage = async (chatId, fastify) => {
-  await ask('meeting place again', chatId, fastify);
+  if (status.state === 'WAITING TOUR NAME') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING TOUR DATE') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING TOUR DAY') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING TIME') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING TOUR DATE AGAIN') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING TOUR DAY AGAIN') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING TIME AGAIN') await ask('Please, er a correct command', chatId, fastify);
+  else if (status.state === 'WAITING PLACE') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING PLACE AGAIN') await ask('Please, enter a correct command', chatId, fastify);
+  else if (status.state === 'WAITING MESSAGE') await ask('Please, enter a correct command', chatId, fastify);
 };
 
 const ask = async (Message, chatId, fastify) => {
@@ -385,6 +317,9 @@ const ask = async (Message, chatId, fastify) => {
     content: JSON.stringify({
       chat_id: chatId,
       text: Message
+      // reply_markup: {
+      //   keyboard: ['tourist', 'admin']
+      // }
     })
   });
 };
