@@ -14,9 +14,9 @@ const checkTourist = async (req, res) => {
       return docs;
     });
     console.log(len);
-    return len === 1 ? 'WAITING COMMAND' : 'WAITING REGISTRATION';
+    return len === 1 ? ['WAITING COMMAND'] : ['WAITING REGISTRATION'];
   }
-  return 'WAITING NAME AGAIN';
+  return ['WAITING NAME AGAIN'];
 };
 
 const fullNameValidation = (name) => {
@@ -30,7 +30,7 @@ const checkPassword = async (req, res) => {
   const sentMessage = req.body.message.text;
   console.log(req.body.message.text);
   console.log('start');
-  return sentMessage === secret.adminPassword ? 'WAITING COMMAND' : 'WAITING PASSWORD AGAIN';
+  return sentMessage === secret.adminPassword ? ['WAITING COMMAND'] : ['WAITING PASSWORD AGAIN'];
 };
 
 module.exports = {
