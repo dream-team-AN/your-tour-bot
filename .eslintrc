@@ -12,12 +12,13 @@
   ],
   "rules": {
     "global-require": "off",
-    "no-unused-vars": "off",
+    "no-unused-vars": "warn",
     "strict": [
       "error",
       "global"
     ],
-    "no-console": "off",
+    "import/no-unresolved": "off",
+    "no-console": "warn",
     "no-plusplus": "off",
     "no-tabs": "off",
     "sonarjs/no-duplicate-string": "off",
@@ -27,6 +28,7 @@
         "code": 125
       }
     ],
+    "node/no-missing-require": "off",
     "node/no-unsupported-features/es-syntax": "off",
     "default-case": "warn",
     "no-fallthrough": "warn",

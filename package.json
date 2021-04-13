@@ -56,7 +56,7 @@
   },
   "_moduleAliases": {
     "@root": ".",
-    "@excursions": "./controller/excursions.js",
+    "@excursions": "./controller/excursions",
     "@meeting": "./controller/meeting",
     "@message": "./controller/message",
     "@start": "./controller/start",

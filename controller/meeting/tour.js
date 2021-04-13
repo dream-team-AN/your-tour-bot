@@ -1,7 +1,7 @@
 'use strict';
 
-const Tour = require('../../models/tour');
-const regular = require('../../regular');
+const Tour = require('@root/models/tour');
+const regular = require('@root/regular');
 
 const checkTourName = async (command, sentMessage, tour) => {
   const trip = { ...tour };

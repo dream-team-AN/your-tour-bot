@@ -1,13 +1,15 @@
 'use strict';
 
-const StartController = require('../controller/start');
-const TimeController = require('../controller/time');
-const WeatherController = require('../controller/weather');
-const ExcursionController = require('../controller/excursions');
-const MeetingController = require('../controller/meeting/index');
-const MessageController = require('../controller/message');
-const TourController = require('../controller/meeting/tour');
+const StartController = require('@start/index');
+const TimeController = require('@time/index');
+const WeatherController = require('@weather/index');
+const ExcursionController = require('@excursions/index');
+const MeetingController = require('@meeting/index');
+const MessageController = require('@message/index');
+const TourController = require('@meeting/tour');
+const secret = require('@root/secret.js');
 
+const url = 'https://api.telegram.org/bot';
 const user = {};
 let tour = {};
 
@@ -27,8 +29,9 @@ module.exports = async (fastify) => {
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
       console.log('yeeeeeeeeeeeees');
-      user[chatId].state = await commandHandler(req, res);
-      await asking(req, res).then((response) => {
+      let result = 'absence';
+      [user[chatId].state, result = 'absence'] = await commandHandler(req, res);
+      await ask(result, chatId, fastify).then((response) => {
         res.status(200).send(response);
       }).catch((error) => {
         res.send(error);
@@ -41,7 +44,7 @@ module.exports = async (fastify) => {
         && user[chatId].state !== 'WAITING TOUR NAME') {
         user[chatId] = await tourChecker(req, res);
       }
-      await asking(req, res).then((response) => {
+      await asking(user[chatId], chatId, fastify).then((response) => {
         res.status(200).send(response);
       }).catch((error) => {
         res.send(error);
@@ -129,19 +132,15 @@ const textSwitcher = (sentMessage, chatId) => {
 
 const commandSwitcher = (sentMessage, chatId) => {
   const commands = ['/start', '/help', '/excursions', '/time', '/weather', '/meeting'];
+  const administration = ['Set meeting place', 'Set meeting time', 'Send message'];
   let status = {};
   if (user[chatId].command === 'none') {
     status.state = sentMessage === '/start' ? 'WAITING CHOICE' : 'WAITING COMMAND';
     status.command = sentMessage === '/start' ? '/start' : 'none';
   } else if (commands.includes(sentMessage)) {
-    commands.forEach((command) => {
-      if (sentMessage === command) {
-        status.command = command;
-        status.state = command === commands[0] ? 'WAITING CHOICE' : 'WAITING COMMAND';
-      }
-    });
-  } else if (user[chatId].command === 'admin') {
-    status = adminCommandSwitcher(sentMessage, chatId);
+    status = touristCommandSwitcher(sentMessage, commands);
+  } else if (user[chatId].command === 'admin' || administration.includes(user[chatId].command)) {
+    status = adminCommandSwitcher(sentMessage, administration);
   } else {
     status.command = 'error';
     status.state = 'WAITING COMMAND';
@@ -149,10 +148,20 @@ const commandSwitcher = (sentMessage, chatId) => {
   return status;
 };
 
-const adminCommandSwitcher = (sentMessage, chatId) => {
+const touristCommandSwitcher = (sentMessage, commands) => {
   const status = {};
-  const administration = ['Set meeting place', 'Set meeting time', 'Send message'];
-  if (administration.includes(user[chatId].command) || administration.includes(sentMessage)) {
+  commands.forEach((command) => {
+    if (sentMessage === command) {
+      status.command = command;
+      status.state = command === commands[0] ? 'WAITING CHOICE' : 'WAITING COMMAND';
+    }
+  });
+  return status;
+};
+
+const adminCommandSwitcher = (sentMessage, administration) => {
+  const status = {};
+  if (administration.includes(sentMessage)) {
     administration.forEach((command) => {
       if (sentMessage === command) {
         status.command = command;
@@ -238,7 +247,144 @@ const commandHandler = async (req, res) => {
   return stateHandler(req, res);
 };
 
-const asking = async (req, res) => {
-  const chatId = req.body.message.chat.id;
-  console.log(`console.log asking${user[chatId].command}       ${user[chatId].state}`);
+const asking = async (status, chatId, fastify) => {
+  switch (status.command) {
+    case 'none': {
+      await noneMessage(chatId, fastify);
+      break;
+    }
+    case 'error': {
+      await errorMessage(chatId, fastify);
+      break;
+    }
+    case '/start': {
+      if (status.state === 'WAITING CHOICE') await startMessage(chatId, fastify);
+      else if (status.state === 'WAITING CHOICE AGAIN') startAgainMessage(chatId, fastify);
+      break;
+    }
+    case 'tourist': {
+      if (status.state === 'WAITING NAME') await touristMessage(chatId, fastify);
+      else if (status.state === 'WAITING NAME AGAIN') await touristAgainMessage(chatId, fastify);
+      break;
+    }
+    case 'admin': {
+      if (status.state === 'WAITING PASSWORD') await adminMessage(chatId, fastify);
+      else if (status.state === 'WAITING PASSWORD AGAIN') adminAgainMessage(chatId, fastify);
+      break;
+    }
+    case 'Send message': {
+      await adminAsking(status, chatId, fastify);
+      break;
+    }
+    case 'Set meeting time': {
+      await adminAsking(status, chatId, fastify);
+      break;
+    }
+    case 'Set meeting place': {
+      await adminAsking(status, chatId, fastify);
+      break;
+    }
+    default: {
+      await errorMessage(chatId, fastify);
+    }
+  }
+  console.log(`console.log asking${status.command}       ${status.state}`);
+};
+
+const adminAsking = async (status, chatId, fastify) => {
+  if (status.state === 'WAITING TOUR NAME') await tourNameMessage(chatId, fastify);
+  else if (status.state === 'WAITING TOUR DATE') await tourDateMessage(chatId, fastify);
+  else if (status.state === 'WAITING TOUR DAY') await tourDayMessage(chatId, fastify);
+  else if (status.state === 'WAITING TIME') await meetingTimeMessage(chatId, fastify);
+  else if (status.state === 'WAITING TOUR DATE AGAIN') await tourDateAgainMessage(chatId, fastify);
+  else if (status.state === 'WAITING TOUR DAY AGAIN') await tourDayAgainMessage(chatId, fastify);
+  else if (status.state === 'WAITING TIME AGAIN') await meetingTimeAgainMessage(chatId, fastify);
+  else if (status.state === 'WAITING PLACE') await meetingPlaceMessage(chatId, fastify);
+  else if (status.state === 'WAITING PLACE AGAIN') await meetingPlaceAgainMessage(chatId, fastify);
+  else if (status.state === 'WAITING MESSAGE') await messageMessage(chatId, fastify);
+};
+
+const noneMessage = async (chatId, fastify) => {
+  await ask('none', chatId, fastify);
+};
+
+const errorMessage = async (chatId, fastify) => {
+  await ask('error', chatId, fastify);
+};
+
+const startMessage = async (chatId, fastify) => {
+  await ask('start', chatId, fastify);
+};
+
+const startAgainMessage = async (chatId, fastify) => {
+  await ask('start again', chatId, fastify);
+};
+
+const touristMessage = async (chatId, fastify) => {
+  await ask('tourist', chatId, fastify);
+};
+
+const touristAgainMessage = async (chatId, fastify) => {
+  await ask('tourist again', chatId, fastify);
+};
+
+const adminMessage = async (chatId, fastify) => {
+  await ask('tourist', chatId, fastify);
+};
+
+const adminAgainMessage = async (chatId, fastify) => {
+  await ask('tourist again', chatId, fastify);
+};
+
+const tourNameMessage = async (chatId, fastify) => {
+  await ask('tour name', chatId, fastify);
+};
+
+const tourDateMessage = async (chatId, fastify) => {
+  await ask('tour date', chatId, fastify);
+};
+
+const messageMessage = async (chatId, fastify) => {
+  await ask('message', chatId, fastify);
+};
+
+const tourDateAgainMessage = async (chatId, fastify) => {
+  await ask('tour date again', chatId, fastify);
+};
+
+const tourDayMessage = async (chatId, fastify) => {
+  await ask('tour day', chatId, fastify);
+};
+
+const tourDayAgainMessage = async (chatId, fastify) => {
+  await ask('tour day again', chatId, fastify);
+};
+
+const meetingTimeMessage = async (chatId, fastify) => {
+  await ask('meeting time', chatId, fastify);
+};
+
+const meetingTimeAgainMessage = async (chatId, fastify) => {
+  await ask('meeting time again', chatId, fastify);
+};
+
+const meetingPlaceMessage = async (chatId, fastify) => {
+  await ask('meeting place', chatId, fastify);
+};
+
+const meetingPlaceAgainMessage = async (chatId, fastify) => {
+  await ask('meeting place again', chatId, fastify);
+};
+
+const ask = async (Message, chatId, fastify) => {
+  await fastify.httpclient.request(`${url}${secret.TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    content: JSON.stringify({
+      chat_id: chatId,
+      text: Message
+    })
+  });
 };

@@ -1,10 +1,10 @@
 'use strict';
 
-// require('module-alias/register');
+require('module-alias/register');
 const path = require('path');
 const AutoLoad = require('fastify-autoload');
 const mongoose = require('mongoose');
-const secret = require('./secret.js');
+const secret = require('@root/secret');
 
 module.exports = async (fastify) => {
   const cluster = 'cluster0.0dpg3.mongodb.net/your-tour-bot?retryWrites=true&w=majority';
