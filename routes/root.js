@@ -31,11 +31,23 @@ module.exports = async (fastify) => {
       console.log('yeeeeeeeeeeeees');
       let result = 'absence';
       [user[chatId].state, result = 'absence'] = await commandHandler(req, res);
-      await ask(result, chatId, fastify).then((response) => {
-        res.status(200).send(response);
-      }).catch((error) => {
-        res.send(error);
-      });
+      console.log(`??????????${user[chatId].command}`);
+      if ((user[chatId].command === 'Set meeting place'
+        || user[chatId].command === 'Set meeting time'
+        || user[chatId].command === 'Send message')
+        || user[chatId].command === 'admin') {
+        await ask(result, chatId, fastify, 'admin').then((response) => {
+          res.status(200).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
+      } else {
+        await ask(result, chatId, fastify, 'none').then((response) => {
+          res.status(200).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
+      }
     } else {
       console.log('nooooooooooooooooooooooooo');
       if ((user[chatId].command === 'Set meeting place'
@@ -44,6 +56,7 @@ module.exports = async (fastify) => {
         && user[chatId].state !== 'WAITING TOUR NAME') {
         user[chatId] = await tourChecker(req, res);
       }
+      console.log(`!!!!!!!!!!${user[chatId].command}!!!!!!!!!!${user[chatId].state}`);
       await asking(user[chatId], chatId, fastify).then((response) => {
         res.status(200).send(response);
       }).catch((error) => {
@@ -250,76 +263,104 @@ const commandHandler = async (req, res) => {
 const asking = async (status, chatId, fastify) => {
   switch (status.command) {
     case 'none': {
-      await ask('You were not found in our database. Please buy a tour from our travel agency.', chatId, fastify);
+      await ask('You were not found in our database. Please buy a tour from our travel agency.', chatId, fastify, 'none');
       break;
     }
     case 'error': {
-      await ask('Please, enter a correct command.', chatId, fastify);
+      await ask('Please, enter a correct command.', chatId, fastify, 'none');
       break;
     }
     case '/start': {
       if (status.state === 'WAITING CHOICE') {
         await ask('Please, select the button on the keyboard at the bottom of your'
-        + ' screen, corresponding to your status', chatId, fastify);
+        + ' screen, corresponding to your status', chatId, fastify, 'simple');
       } else if (status.state === 'WAITING CHOICE AGAIN') {
-        await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
+        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
       }
       break;
     }
     case 'tourist': {
-      if (status.state === 'WAITING NAME') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
-      else if (status.state === 'WAITING NAME AGAIN') await ask(`asg${status.command}    ${status.state}`, chatId, fastify);
+      if (status.state === 'WAITING NAME') {
+        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+      } else if (status.state === 'WAITING NAME AGAIN') {
+        await ask(`asg${status.command}    ${status.state}`, chatId, fastify, 'none');
+      }
       break;
     }
     case 'admin': {
-      if (status.state === 'WAITING PASSWORD') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
-      else if (status.state === 'WAITING PASSWORD AGAIN') await ask(`ag${status.command}  ${status.state}`, chatId, fastify);
+      if (status.state === 'WAITING PASSWORD') {
+        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+      } else if (status.state === 'WAITING PASSWORD AGAIN') {
+        await ask(`ag${status.command}  ${status.state}`, chatId, fastify, 'none');
+      } else if (status.state === 'WAITING COMMAND') {
+        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'admin');
+      }
       break;
     }
     case 'Send message': {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
+      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
       break;
     }
     case 'Set meeting time': {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
+      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
       break;
     }
     case 'Set meeting place': {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
+      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
       break;
     }
     default: {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
+      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
     }
   }
   console.log(`console.log asking${status.command}       ${status.state}`);
 };
 
 const adminAsking = async (status, chatId, fastify) => {
-  if (status.state === 'WAITING TOUR NAME') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING TOUR DATE') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING TOUR DAY') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING TIME') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING TOUR DATE AGAIN') await ask(`asking${status.command} ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING TOUR DAY AGAIN') await ask(`asking${status.command}  ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING TIME AGAIN') await ask(`asking${status.command}  ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING PLACE') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING PLACE AGAIN') await ask(`asking${status.command}   ${status.state}`, chatId, fastify);
-  else if (status.state === 'WAITING MESSAGE') await ask(`asking${status.command}       ${status.state}`, chatId, fastify);
+  if (status.state === 'WAITING TOUR NAME') {
+    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING TOUR DATE') {
+    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING TOUR DAY') {
+    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING TIME') {
+    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING TOUR DATE AGAIN') {
+    await ask(`asking${status.command} ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING TOUR DAY AGAIN') {
+    await ask(`asking${status.command}  ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING TIME AGAIN') {
+    await ask(`asking${status.command}  ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING PLACE') {
+    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING PLACE AGAIN') {
+    await ask(`asking${status.command}   ${status.state}`, chatId, fastify, 'none');
+  } else if (status.state === 'WAITING MESSAGE') {
+    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+  }
 };
 
-const ask = async (Message, chatId, fastify) => {
+const ask = async (Message, chatId, fastify, keyboard) => {
+  const mess = {
+    chat_id: chatId,
+    text: Message
+  };
+  if (keyboard === 'admin') {
+    mess.reply_markup = {
+      keyboard: [['Set meeting place'], ['Set meeting time'], ['Send message']]
+    };
+  } else if (keyboard === 'simple') {
+    mess.reply_markup = {
+      keyboard: [['tourist', 'admin']]
+    };
+  } else {
+    mess.reply_markup = { remove_keyboard: true };
+  }
   await fastify.httpclient.request(`${url}${secret.TOKEN}/sendMessage`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    content: JSON.stringify({
-      chat_id: chatId,
-      text: Message
-      // reply_markup: {
-      //   keyboard: ['tourist', 'admin']
-      // }
-    })
+    content: JSON.stringify(mess)
   });
 };
