@@ -45,7 +45,7 @@ The user can view the time and place of the meeting (will be displayed using sta
 
 A person can get detailed information about excursions(the program of excursions, what you will learn about during the excursion, organizational details: how the excursion goes, what is important to know before booking, meeting point, price), which is parsed from the site https://experience.tripster.ru/. First, the user is given the opportunity to select the city in which he wants to see the excursions (only the cities that are on the tour are displayed; and only those excursions that can be booked on the day the tourist is in the selected city are displayed).
 
-A tourist can see the current time in the city in which he is located (it will be calculated based on the data received from Google api timezone). As well as the weather for today and tomorrow (information is taken from the Gismeteo website using its api).
+A tourist can see the current time in the city in which he is located (it will be calculated based on the data received from api timezone). As well as the weather for today and tomorrow (information is taken from the Gismeteo website using its api).
 
 Our bot has an administrator mode for travel agency employees. To enter this mode, you must enter the same password for all. When trying to send a message, the bot first checks the compliance of the person's name with the tour and the date entered by the admin. When a match is found, the bot takes the chat ID from the file with the data of the bot users. And after that it sends a message. Also, the administrator can set the time and place of the meeting, which are saved in the info file. The admin will set the meeting place by choosing from several available options.
 
