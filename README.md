@@ -54,10 +54,10 @@ Since the bot will be launched on a free plan, when used on long polling, proble
 ### Technologies 💻
 
 <br>
-⏹ Google API:<br>
+<br>
     🔹 Maps Static Google API. Google Maps API is to show a meeting place.<br>
     🔹 Google Directions API. This API will be used to help the user get to the meeting point.<br>
-    🔹 Google Timezone API. The time zone API will tell the tourist what is the exact time in the city in which he is located.<br>
+⏹ Timezonedb API. The time zone API will tell the tourist what is the exact time in the city in which he is located.<br>
 ⏹ GISMETEO API (for weather)<br>
 ⏹ Node Schedule<br>
 ⏹ MongoDB<br>

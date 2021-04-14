@@ -29,6 +29,8 @@
       }
     ],
     "node/no-missing-require": "off",
+    "no-restricted-syntax": "off",
+    "guard-for-in": "off",
     "node/no-unsupported-features/es-syntax": "off",
     "default-case": "warn",
     "no-fallthrough": "warn",
