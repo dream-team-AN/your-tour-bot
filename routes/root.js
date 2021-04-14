@@ -16,38 +16,30 @@ let tour = {};
 module.exports = async (fastify) => {
   fastify.register(require('fastify-http-client'));
   fastify.get('/', async () => ({ root: true }));
+
   fastify.post('/', async (req, res) => {
     const chatId = req.body.message.chat.id;
     const sentMessage = req.body.message.text;
+    console.log(req.body);
     if (!user[chatId]) {
       user[chatId] = {};
       user[chatId].command = 'none';
       user[chatId].state = 'WAITING COMMAND';
     }
+
     user[chatId] = getUserStatus(sentMessage, chatId);
+
     if (user[chatId].state === 'WAITING COMMAND'
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
       console.log('yeeeeeeeeeeeees');
-      let result = 'absence';
-      [user[chatId].state, result = 'absence'] = await commandHandler(req, res);
-      console.log(`??????????${user[chatId].command}`);
-      if ((user[chatId].command === 'Set meeting place'
-        || user[chatId].command === 'Set meeting time'
-        || user[chatId].command === 'Send message')
-        || user[chatId].command === 'admin') {
-        await ask(result, chatId, fastify, 'admin').then((response) => {
+      user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
+        await ask(Message, chatId, fastify, keyboard).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
-      } else {
-        await ask(result, chatId, fastify, 'none').then((response) => {
-          res.status(200).send(response);
-        }).catch((error) => {
-          res.send(error);
-        });
-      }
+      });
     } else {
       console.log('nooooooooooooooooooooooooo');
       if ((user[chatId].command === 'Set meeting place'
@@ -116,6 +108,16 @@ const textSwitcher = (sentMessage, chatId) => {
       }
       break;
     }
+    case '/time': {
+      status.command = '/time';
+      status.state = 'WAITING COMMAND';
+      break;
+    }
+    case '/weather': {
+      status.command = '/weather';
+      status.state = 'WAITING COMMAND';
+      break;
+    }
     case 'admin': {
       if (user[chatId].state !== 'WAITING COMMAND AGAIN') {
         status.command = 'admin';
@@ -166,7 +168,9 @@ const touristCommandSwitcher = (sentMessage, commands) => {
   commands.forEach((command) => {
     if (sentMessage === command) {
       status.command = command;
-      status.state = command === commands[0] ? 'WAITING CHOICE' : 'WAITING COMMAND';
+      if (command === commands[0]) status.state = 'WAITING CHOICE';
+      else if (command === commands[3] || command === commands[4]) status.state = 'WAITING GEO';
+      else status.state = 'WAITING COMMAND';
     }
   });
   return status;
@@ -243,7 +247,7 @@ const tourChecker = async (req, res) => {
   return status;
 };
 
-const commandHandler = async (req, res) => {
+const commandHandler = async (req, callback) => {
   const chatId = req.body.message.chat.id;
   const commandFunctions = {
     tourist: StartController.checkTourist,
@@ -252,20 +256,16 @@ const commandHandler = async (req, res) => {
     '/excursions': ExcursionController.show,
     '/meeting': MeetingController.show,
     admin: StartController.checkPassword,
-    'Send message': MessageController.send,
+    'Send message': MessageController.sendMessage,
     'Set meeting time': MeetingController.setTime,
     'Set meeting place': MeetingController.setPlace
   };
   const stateHandler = commandFunctions[user[chatId].command];
-  return stateHandler(req, res);
+  return stateHandler(req, callback);
 };
 
 const asking = async (status, chatId, fastify) => {
   switch (status.command) {
-    case 'none': {
-      await ask('You were not found in our database. Please buy a tour from our travel agency.', chatId, fastify, 'none');
-      break;
-    }
     case 'error': {
       await ask('Please, enter a correct command.', chatId, fastify, 'none');
       break;
@@ -287,6 +287,14 @@ const asking = async (status, chatId, fastify) => {
       }
       break;
     }
+    case '/time': {
+      await ask('Do you agree to send us your location?', chatId, fastify, 'geo');
+      break;
+    }
+    case '/weather': {
+      await ask('Do you agree to send us your location', chatId, fastify, 'geo');
+      break;
+    }
     case 'admin': {
       if (status.state === 'WAITING PASSWORD') {
         await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
@@ -298,15 +306,15 @@ const asking = async (status, chatId, fastify) => {
       break;
     }
     case 'Send message': {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+      await adminAsking(status, chatId, fastify);
       break;
     }
     case 'Set meeting time': {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+      await adminAsking(status, chatId, fastify);
       break;
     }
     case 'Set meeting place': {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+      await adminAsking(status, chatId, fastify);
       break;
     }
     default: {
@@ -351,7 +359,20 @@ const ask = async (Message, chatId, fastify, keyboard) => {
     };
   } else if (keyboard === 'simple') {
     mess.reply_markup = {
-      keyboard: [['tourist', 'admin']]
+      keyboard: [['tourist'], ['admin']]
+    };
+  } else if (keyboard === 'geo') {
+    mess.reply_markup = {
+      keyboard: [
+        [{
+          text: 'Send location',
+          request_location: true
+        }],
+        [{
+          text: 'Cancel operation'
+        }
+        ]
+      ]
     };
   } else {
     mess.reply_markup = { remove_keyboard: true };

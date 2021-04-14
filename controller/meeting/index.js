@@ -1,25 +1,31 @@
 'use strict';
 
-const show = async (req, reply) => {
+const show = async (req, send) => {
+  const chatId = req.body.message.chat.id;
+  const sentMessage = req.body.message.text;
   console.log('-------------------------');
-  console.log(req.body.message.text);
-  console.log(req.body.message.chat.id);
-  return ['WAITING COMMAND'];
+  console.log(sentMessage);
+  console.log(chatId);
+  return 'WAITING COMMAND';
 };
 
-const setTime = async (req, reply) => {
-  console.log(req.body.message.text);
-  console.log(req.body.message.chat.id);
+const setTime = async (req, send) => {
+  const chatId = req.body.message.chat.id;
+  const sentMessage = req.body.message.text;
+  console.log(sentMessage);
+  console.log(chatId);
   console.log('-------------------------');
-  return ['WAITING COMMAND'];
+  return 'WAITING COMMAND';
 };
 
-const setPlace = async (req, reply) => {
+const setPlace = async (req, send) => {
+  const chatId = req.body.message.chat.id;
+  const sentMessage = req.body.message.text;
   console.log('-------------------------');
-  console.log(req.body.message.text);
-  console.log(req.body.message.chat.id);
+  console.log(sentMessage);
+  console.log(chatId);
   console.log('-------------------------');
-  return ['WAITING COMMAND'];
+  return 'WAITING COMMAND';
 };
 
 module.exports = {

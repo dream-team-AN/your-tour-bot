@@ -4,7 +4,8 @@ const Tourist = require('@root/models/tourist');
 const secret = require('@root/secret.js');
 const regular = require('@root/regular');
 
-const checkTourist = async (req, res) => {
+const checkTourist = async (req, send) => {
+  const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
   if (fullNameValidation(sentMessage)) {
     let len;
@@ -14,9 +15,16 @@ const checkTourist = async (req, res) => {
       return docs;
     });
     console.log(len);
-    return len === 1 ? ['WAITING COMMAND'] : ['WAITING REGISTRATION'];
+    if (len === 1) {
+      send('You are in our tourist base. Nice to see you.', 'none');
+      return 'WAITING COMMAND';
+    }
+
+    send('You were not found in our database. Please buy a tour from our travel agency.', 'none');
+    return 'WAITING REGISTRATION';
   }
-  return ['WAITING NAME AGAIN'];
+  send('Please, enter full name in right farmat: Surname Name.', 'none');
+  return 'WAITING NAME AGAIN';
 };
 
 const fullNameValidation = (name) => {
@@ -26,11 +34,12 @@ const fullNameValidation = (name) => {
   return false;
 };
 
-const checkPassword = async (req, res) => {
+const checkPassword = async (req, send) => {
+  const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
-  console.log(req.body.message.text);
+  console.log(sentMessage);
   console.log('start');
-  return sentMessage === secret.adminPassword ? ['WAITING COMMAND'] : ['WAITING PASSWORD AGAIN'];
+  return sentMessage === secret.adminPassword ? 'WAITING COMMAND' : 'WAITING PASSWORD AGAIN';
 };
 
 module.exports = {

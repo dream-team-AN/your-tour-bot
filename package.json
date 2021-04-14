@@ -32,7 +32,6 @@
     "fastify-sensible": "^3.1.0",
     "module-alias": "^2.2.2",
     "mongoose": "^5.12.3",
-    "node-google-timezone": "^0.1.1",
     "request": "^2.88.2",
     "tap": "^14.11.0"
   },
