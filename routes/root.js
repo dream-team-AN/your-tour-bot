@@ -275,15 +275,15 @@ const asking = async (status, chatId, fastify) => {
         await ask('Please, select the button on the keyboard at the bottom of your'
         + ' screen, corresponding to your status', chatId, fastify, 'simple');
       } else if (status.state === 'WAITING CHOICE AGAIN') {
-        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+        await ask('Please select one of the options on the keyboard ', chatId, fastify, 'none');
       }
       break;
     }
     case 'tourist': {
       if (status.state === 'WAITING NAME') {
-        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+        await ask('Please enter your surname and name in English', chatId, fastify, 'none');
       } else if (status.state === 'WAITING NAME AGAIN') {
-        await ask(`asg${status.command}    ${status.state}`, chatId, fastify, 'none');
+        await ask('Please enter again your surname and name in English', chatId, fastify, 'none');
       }
       break;
     }
@@ -297,11 +297,11 @@ const asking = async (status, chatId, fastify) => {
     }
     case 'admin': {
       if (status.state === 'WAITING PASSWORD') {
-        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+        await ask('To access admin mode, please enter a password', chatId, fastify, 'none');
       } else if (status.state === 'WAITING PASSWORD AGAIN') {
-        await ask(`ag${status.command}  ${status.state}`, chatId, fastify, 'none');
+        await ask('The password is incorrect. Please enter it again', chatId, fastify, 'none');
       } else if (status.state === 'WAITING COMMAND') {
-        await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'admin');
+        await ask('Please, select a command from the list', chatId, fastify, 'admin');
       }
       break;
     }
@@ -318,7 +318,7 @@ const asking = async (status, chatId, fastify) => {
       break;
     }
     default: {
-      await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+      await ask('Please follow the instructions', chatId, fastify, 'none');
     }
   }
   console.log(`console.log asking${status.command}       ${status.state}`);
@@ -326,25 +326,25 @@ const asking = async (status, chatId, fastify) => {
 
 const adminAsking = async (status, chatId, fastify) => {
   if (status.state === 'WAITING TOUR NAME') {
-    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+    await ask('Please enter tour name in English', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE') {
-    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+    await ask('Please enter tour date', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DAY') {
-    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+    await ask('Please enter tour day', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME') {
-    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+    await ask('Please enter a time for the meeting', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE AGAIN') {
-    await ask(`asking${status.command} ${status.state}`, chatId, fastify, 'none');
+    await ask('The tour date is wrong. Please enter tour date again', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DAY AGAIN') {
-    await ask(`asking${status.command}  ${status.state}`, chatId, fastify, 'none');
+    await ask('The tour day is wrong. Please enter tour day again', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME AGAIN') {
-    await ask(`asking${status.command}  ${status.state}`, chatId, fastify, 'none');
-  } else if (status.state === 'WAITING PLACE') {
-    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+    await ask('The time is wrong. Please enter time again', chatId, fastify, 'none');
+  } else if (status.state === 'WAITING PLACE') { // ??
+    await ask('Please select a meeting place from the list with available places', chatId, fastify, 'none');
   } else if (status.state === 'WAITING PLACE AGAIN') {
-    await ask(`asking${status.command}   ${status.state}`, chatId, fastify, 'none');
+    await ask('Place is incorrect. Please try again', chatId, fastify, 'none');
   } else if (status.state === 'WAITING MESSAGE') {
-    await ask(`asking${status.command}       ${status.state}`, chatId, fastify, 'none');
+    await ask('Please enter a message', chatId, fastify, 'none');
   }
 };
 
