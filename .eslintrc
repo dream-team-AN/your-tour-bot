@@ -12,13 +12,20 @@
   ],
   "rules": {
     "global-require": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": "off",
     "strict": [
       "error",
       "global"
     ],
     "import/no-unresolved": "off",
-    "no-console": "warn",
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "error"
+        ]
+      }
+    ],
     "no-plusplus": "off",
     "no-tabs": "off",
     "sonarjs/no-duplicate-string": "off",

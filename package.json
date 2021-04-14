@@ -10,7 +10,8 @@
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
     "lint": "eslint . --ignore-path .gitignore",
-    "lint:fix": "eslint . --fix --ignore-path .gitignore"
+    "lint:fix": "eslint . --fix --ignore-path .gitignore",
+    "deploy": "git add . && git commit -m 'fix' && git push heroku develop"
   },
   "repository": {
     "type": "git",

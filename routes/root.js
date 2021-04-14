@@ -20,7 +20,6 @@ module.exports = async (fastify) => {
   fastify.post('/', async (req, res) => {
     const chatId = req.body.message.chat.id;
     const sentMessage = req.body.message.text;
-    console.log(req.body);
     if (!user[chatId]) {
       user[chatId] = {};
       user[chatId].command = 'none';
@@ -32,23 +31,20 @@ module.exports = async (fastify) => {
     if (user[chatId].state === 'WAITING COMMAND'
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
-      console.log('yeeeeeeeeeeeees');
       user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
-        await ask(Message, chatId, fastify, keyboard).then((response) => {
-          res.status(200).send(response);
-        }).catch((error) => {
-          res.send(error);
-        });
+        await ask(Message, chatId, fastify, keyboard);
+      }).then((response) => {
+        res.status(200).send(response);
+      }).catch((error) => {
+        res.send(error);
       });
     } else {
-      console.log('nooooooooooooooooooooooooo');
       if ((user[chatId].command === 'Set meeting place'
         || user[chatId].command === 'Set meeting time'
         || user[chatId].command === 'Send message')
         && user[chatId].state !== 'WAITING TOUR NAME') {
         user[chatId] = await tourChecker(req, res);
       }
-      console.log(`!!!!!!!!!!${user[chatId].command}!!!!!!!!!!${user[chatId].state}`);
       await asking(user[chatId], chatId, fastify).then((response) => {
         res.status(200).send(response);
       }).catch((error) => {
@@ -60,10 +56,6 @@ module.exports = async (fastify) => {
 
 const getUserStatus = (sentMessage, chatId) => {
   let status = {};
-  console.log('Previous info');
-  console.log(sentMessage);
-  console.log(`${user[chatId].state}/////////////`);
-  console.log(`${user[chatId].command}/////////////`);
 
   if (user[chatId].state === 'WAITING COMMAND' || user[chatId].state === 'WAITING COMMAND AGAIN') {
     status = commandSwitcher(sentMessage, chatId);
@@ -243,7 +235,6 @@ const tourChecker = async (req, res) => {
   };
   const stateHandler = commandAdminFunctions[user[chatId].state];
   [status.state, status.command, tour] = await stateHandler(user[chatId].command, sentMessage, tour);
-  console.log(tour);
   return status;
 };
 
@@ -275,7 +266,7 @@ const asking = async (status, chatId, fastify) => {
         await ask('Please, select the button on the keyboard at the bottom of your'
         + ' screen, corresponding to your status', chatId, fastify, 'simple');
       } else if (status.state === 'WAITING CHOICE AGAIN') {
-        await ask('Please select one of the options on the keyboard ', chatId, fastify, 'none');
+        await ask('Please select one of the options on the keyboard ', chatId, fastify, 'simple');
       }
       break;
     }
@@ -292,7 +283,7 @@ const asking = async (status, chatId, fastify) => {
       break;
     }
     case '/weather': {
-      await ask('Do you agree to send us your location', chatId, fastify, 'geo');
+      await ask('Do you agree to send us your location?', chatId, fastify, 'geo');
       break;
     }
     case 'admin': {
@@ -321,7 +312,6 @@ const asking = async (status, chatId, fastify) => {
       await ask('Please follow the instructions', chatId, fastify, 'none');
     }
   }
-  console.log(`console.log asking${status.command}       ${status.state}`);
 };
 
 const adminAsking = async (status, chatId, fastify) => {

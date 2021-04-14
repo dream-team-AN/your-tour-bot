@@ -15,8 +15,6 @@ const show = async (req, send) => {
 
     await request(link, (error, response, body) => {
       console.error('error:', error);
-      console.log(JSON.parse(body).forecast.forecastday[0]);
-      console.log(JSON.parse(body).forecast.forecastday[1]);
       const region = JSON.parse(body).location.name;
       const state = JSON.parse(body).forecast.forecastday[0].day.condition.text;
       send(`Current weather in ${region} is ${state}`, 'none');
