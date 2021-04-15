@@ -25,31 +25,34 @@ module.exports = async (fastify) => {
       user[chatId].command = 'none';
       user[chatId].state = 'WAITING COMMAND';
     }
+    try {
+      user[chatId] = getUserStatus(sentMessage, chatId);
 
-    user[chatId] = getUserStatus(sentMessage, chatId);
-
-    if (user[chatId].state === 'WAITING COMMAND'
+      if (user[chatId].state === 'WAITING COMMAND'
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
-      user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
-        await ask(Message, chatId, fastify, keyboard);
-      }).then((response) => {
-        res.status(200).send(response);
-      }).catch((error) => {
-        res.send(error);
-      });
-    } else {
-      if ((user[chatId].command === 'Set meeting place'
+        user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
+          await ask(Message, chatId, fastify, keyboard);
+        }).then((response) => {
+          res.status(200).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
+      } else {
+        if ((user[chatId].command === 'Set meeting place'
         || user[chatId].command === 'Set meeting time'
         || user[chatId].command === 'Send message')
         && user[chatId].state !== 'WAITING TOUR NAME') {
-        user[chatId] = await tourChecker(req, res);
+          user[chatId] = await tourChecker(req, res);
+        }
+        await asking(user[chatId], chatId, fastify).then((response) => {
+          res.status(200).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
       }
-      await asking(user[chatId], chatId, fastify).then((response) => {
-        res.status(200).send(response);
-      }).catch((error) => {
-        res.send(error);
-      });
+    } catch (err) {
+      console.error(err);
     }
   });
 };
