@@ -6,7 +6,7 @@ const AutoLoad = require('fastify-autoload');
 const mongoose = require('mongoose');
 const secret = require('@root/secret');
 
-module.exports = async (fastify) => {
+module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-vars
   const cluster = 'cluster0.0dpg3.mongodb.net/your-tour-bot?retryWrites=true&w=majority';
   mongoose.connect(`mongodb+srv://bot:${secret.bdPassword}@${cluster}`, {
     useNewUrlParser: true,

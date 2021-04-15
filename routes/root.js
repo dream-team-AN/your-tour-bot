@@ -13,7 +13,7 @@ const url = 'https://api.telegram.org/bot';
 const user = {};
 let tour = {};
 
-module.exports = async (fastify) => {
+module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-vars
   fastify.register(require('fastify-http-client'));
   fastify.get('/', async () => ({ root: true }));
 
@@ -53,7 +53,7 @@ module.exports = async (fastify) => {
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: err.message });
+      res.status(500).send(err);
     }
   });
 };
