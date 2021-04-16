@@ -20,11 +20,13 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
   fastify.post('/', async (req, res) => {
     const chatId = req.body.message.chat.id;
     const sentMessage = req.body.message.text;
+    console.log(req.body);
     if (!user[chatId]) {
       user[chatId] = {};
       user[chatId].command = 'none';
       user[chatId].state = 'WAITING COMMAND';
     }
+
     try {
       user[chatId] = getUserStatus(sentMessage, chatId);
 
@@ -32,11 +34,11 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
         user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
-          await ask(Message, chatId, fastify, keyboard);
-        }).then((response) => {
-          res.status(200).send(response);
-        }).catch((error) => {
-          res.send(error);
+          await ask(Message, chatId, fastify, keyboard).then((response) => {
+            res.status(200).send(response);
+          }).catch((error) => {
+            res.send(error);
+          });
         });
       } else {
         if ((user[chatId].command === 'Set meeting place'
@@ -60,8 +62,13 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
 
 const getUserStatus = (sentMessage, chatId) => {
   let status = {};
+  console.log('Previous info');
+  console.log(sentMessage);
+  console.log(`${user[chatId].state}/////////////`);
+  console.log(`${user[chatId].command}/////////////`);
 
-  if (user[chatId].state === 'WAITING COMMAND' || user[chatId].state === 'WAITING COMMAND AGAIN') {
+  if (user[chatId].state === 'WAITING COMMAND'
+  || user[chatId].state === 'WAITING COMMAND AGAIN') {
     status = commandSwitcher(sentMessage, chatId);
   } else {
     status = textSwitcher(sentMessage, chatId);
@@ -92,10 +99,12 @@ const textSwitcher = (sentMessage, chatId) => {
       break;
     }
     case 'tourist': {
-      if (user[chatId].state === 'WAITING NAME' || user[chatId].state === 'WAITING NAME AGAIN') {
+      if (user[chatId].state === 'WAITING NAME'
+      || user[chatId].state === 'WAITING NAME AGAIN') {
         status.command = 'tourist';
         status.state = 'WAITING COMMAND';
-      } else if (user[chatId].state === 'WAITING REGISTRATION' && sentMessage === '/start') {
+      } else if (user[chatId].state === 'WAITING REGISTRATION'
+      && sentMessage === '/start') {
         status.command = sentMessage;
         status.state = 'WAITING CHOICE';
       } else {
@@ -150,7 +159,8 @@ const commandSwitcher = (sentMessage, chatId) => {
     status.command = sentMessage === '/start' ? '/start' : 'none';
   } else if (commands.includes(sentMessage)) {
     status = touristCommandSwitcher(sentMessage, commands);
-  } else if (user[chatId].command === 'admin' || administration.includes(user[chatId].command)) {
+  } else if (user[chatId].command === 'admin'
+  || administration.includes(user[chatId].command)) {
     status = adminCommandSwitcher(sentMessage, administration);
   } else {
     status.command = 'error';
@@ -164,9 +174,13 @@ const touristCommandSwitcher = (sentMessage, commands) => {
   commands.forEach((command) => {
     if (sentMessage === command) {
       status.command = command;
-      if (command === commands[0]) status.state = 'WAITING CHOICE';
-      else if (command === commands[3] || command === commands[4]) status.state = 'WAITING GEO';
-      else status.state = 'WAITING COMMAND';
+      if (command === commands[0]) {
+        status.state = 'WAITING CHOICE';
+      } else if (command === commands[3] || command === commands[4]) {
+        status.state = 'WAITING GEO';
+      } else {
+        status.state = 'WAITING COMMAND';
+      }
     }
   });
   return status;
@@ -239,6 +253,7 @@ const tourChecker = async (req, res) => {
   };
   const stateHandler = commandAdminFunctions[user[chatId].state];
   [status.state, status.command, tour] = await stateHandler(user[chatId].command, sentMessage, tour);
+  console.log(tour);
   return status;
 };
 
@@ -270,7 +285,7 @@ const asking = async (status, chatId, fastify) => {
         await ask('Please, select the button on the keyboard at the bottom of your'
         + ' screen, corresponding to your status', chatId, fastify, 'simple');
       } else if (status.state === 'WAITING CHOICE AGAIN') {
-        await ask('Please select one of the options on the keyboard ', chatId, fastify, 'simple');
+        await ask('Please select one of the options on the keyboard ', chatId, fastify, 'none');
       }
       break;
     }
@@ -287,7 +302,7 @@ const asking = async (status, chatId, fastify) => {
       break;
     }
     case '/weather': {
-      await ask('Do you agree to send us your location?', chatId, fastify, 'geo');
+      await ask('Do you agree to send us your location', chatId, fastify, 'geo');
       break;
     }
     case 'admin': {
@@ -316,6 +331,7 @@ const asking = async (status, chatId, fastify) => {
       await ask('Please follow the instructions', chatId, fastify, 'none');
     }
   }
+  console.log(`console.log asking${status.command}       ${status.state}`);
 };
 
 const adminAsking = async (status, chatId, fastify) => {

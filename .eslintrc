@@ -22,7 +22,8 @@
       "error",
       {
         "allow": [
-          "error"
+          "error",
+          "log"
         ]
       }
     ],
