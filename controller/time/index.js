@@ -17,7 +17,7 @@ const show = async (req, send) => {
       console.error('error:', error);
       const region = JSON.parse(body).location.name;
       const time = JSON.parse(body).location.localtime.split(' ')[1];
-      send(`Current time in ${region} is ${time}`, 'none');
+      send(`🕑 Current time in ${region} is ${time}`, 'none');
     });
   } else {
     send('Operation canceled. To receive time please allow sending location.', 'none');
