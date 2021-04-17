@@ -10,8 +10,20 @@ const TourController = require('@meeting/tour');
 const secret = require('@root/secret.js');
 
 const url = 'https://api.telegram.org/bot';
-const user = {};
 let tour = {};
+const user = {};
+// users: {
+//   1: {
+//     name:
+//     state:
+//     command:
+//   }
+//   2: {
+//     name:
+//     state:
+//     command:
+//   }
+//  }
 
 module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-vars
   fastify.register(require('fastify-http-client'));
@@ -25,27 +37,42 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       user[chatId] = {};
       user[chatId].command = 'none';
       user[chatId].state = 'WAITING COMMAND';
+      user[chatId].name = 'unknown';
     }
-
+    console.log('????????');
+    console.log(user);
+    console.log('????????');
     try {
-      user[chatId] = getUserStatus(sentMessage, chatId);
+      [user[chatId].state, user[chatId].command] = getUserStatus(sentMessage, chatId);
 
       if (user[chatId].state === 'WAITING COMMAND'
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
-        user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
-          await ask(Message, chatId, fastify, keyboard).then((response) => {
-            res.status(200).send(response);
-          }).catch((error) => {
-            res.send(error);
+        if (isAdminCommand(user[chatId].command)) {
+          user[chatId].state = await adminCommandHandler(req, tour, user, async (Message, keyboard, chat) => {
+            await ask(Message, chat, fastify, keyboard).then((response) => {
+              res.status(200).send(response);
+            }).catch((error) => {
+              res.send(error);
+            });
           });
-        });
+        } else {
+          user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
+            await ask(Message, chatId, fastify, keyboard).then((response) => {
+              res.status(200).send(response);
+            }).catch((error) => {
+              res.send(error);
+            });
+          });
+          if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
+            user[chatId].name = sentMessage;
+          }
+          console.log(user[chatId]);
+        }
       } else {
-        if ((user[chatId].command === 'Set meeting place'
-        || user[chatId].command === 'Set meeting time'
-        || user[chatId].command === 'Send message')
+        if (isAdminCommand(user[chatId].command)
         && user[chatId].state !== 'WAITING TOUR NAME') {
-          user[chatId] = await tourChecker(req, res);
+          [user[chatId].state, user[chatId].command, tour] = await tourChecker(req, res);
         }
         await asking(user[chatId], chatId, fastify).then((response) => {
           res.status(200).send(response);
@@ -58,6 +85,15 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       res.status(500).send(err);
     }
   });
+};
+
+const isAdminCommand = (command) => {
+  if (command === 'Set meeting place'
+  || command === 'Set meeting time'
+  || command === 'Send message') {
+    return true;
+  }
+  return false;
 };
 
 const getUserStatus = (sentMessage, chatId) => {
@@ -73,7 +109,7 @@ const getUserStatus = (sentMessage, chatId) => {
   } else {
     status = textSwitcher(sentMessage, chatId);
   }
-  return status;
+  return [status.state, status.command];
 };
 
 const textSwitcher = (sentMessage, chatId) => {
@@ -254,7 +290,7 @@ const tourChecker = async (req, res) => {
   const stateHandler = commandAdminFunctions[user[chatId].state];
   [status.state, status.command, tour] = await stateHandler(user[chatId].command, sentMessage, tour);
   console.log(tour);
-  return status;
+  return [status.state, status.command, tour];
 };
 
 const commandHandler = async (req, callback) => {
@@ -265,13 +301,21 @@ const commandHandler = async (req, callback) => {
     '/weather': WeatherController.show,
     '/excursions': ExcursionController.show,
     '/meeting': MeetingController.show,
-    admin: StartController.checkPassword,
+    admin: StartController.checkPassword
+  };
+  const stateHandler = commandFunctions[user[chatId].command];
+  return stateHandler(req, callback);
+};
+
+const adminCommandHandler = async (req, currentTour, users, callback) => {
+  const chatId = req.body.message.chat.id;
+  const commandFunctions = {
     'Send message': MessageController.sendMessage,
     'Set meeting time': MeetingController.setTime,
     'Set meeting place': MeetingController.setPlace
   };
   const stateHandler = commandFunctions[user[chatId].command];
-  return stateHandler(req, callback);
+  return stateHandler(req, currentTour, users, callback);
 };
 
 const asking = async (status, chatId, fastify) => {
@@ -338,7 +382,7 @@ const adminAsking = async (status, chatId, fastify) => {
   if (status.state === 'WAITING TOUR NAME') {
     await ask('Please enter tour name in English', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE') {
-    await ask('Please enter tour date', chatId, fastify, 'none');
+    await ask('Please enter tour date in American variation', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DAY') {
     await ask('Please enter tour day', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME') {
@@ -349,7 +393,7 @@ const adminAsking = async (status, chatId, fastify) => {
     await ask('The tour day is wrong. Please enter tour day again', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME AGAIN') {
     await ask('The time is wrong. Please enter time again', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING PLACE') { // ??
+  } else if (status.state === 'WAITING PLACE') {
     await ask('Please select a meeting place from the list with available places', chatId, fastify, 'none');
   } else if (status.state === 'WAITING PLACE AGAIN') {
     await ask('Place is incorrect. Please try again', chatId, fastify, 'none');
