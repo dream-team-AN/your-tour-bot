@@ -388,11 +388,11 @@ const adminAsking = async (status, chatId, fastify) => {
   } else if (status.state === 'WAITING TIME') {
     await ask('Please enter a time for the meeting', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE AGAIN') {
-    await ask('The tour date is wrong. Please enter tour date again', chatId, fastify, 'none');
+    await ask('The tour date is in wrong format. Please enter tour date again', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DAY AGAIN') {
     await ask('The tour day is wrong. Please enter tour day again', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME AGAIN') {
-    await ask('The time is wrong. Please enter time again', chatId, fastify, 'none');
+    await ask('The time is in wrong format. Please enter time again', chatId, fastify, 'none');
   } else if (status.state === 'WAITING PLACE') {
     await ask('Please select a meeting place from the list with available places', chatId, fastify, 'none');
   } else if (status.state === 'WAITING PLACE AGAIN') {

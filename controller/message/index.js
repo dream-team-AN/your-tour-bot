@@ -27,7 +27,7 @@ const sendMessage = async (req, tour, users, send) => {
       return docs;
     });
   });
-  send('Your massege is successfully delivered', 'admin', chatId);
+  send('Your messege is successfully delivered', 'admin', chatId);
   return 'WAITING COMMAND';
 };
 
