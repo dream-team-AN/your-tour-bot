@@ -41,7 +41,7 @@ const checkPassword = async (req, send) => {
   } else {
     send('Password is wrong. \n❌You are not admin❌', 'simple');
   }
-  return sentMessage === secret.adminPassword ? 'WAITING COMMAND' : 'WAITING PASSWORD AGAIN';
+  return sentMessage === secret.adminPassword ? 'WAITING COMMAND' : 'WAITING CHOICE AGAIN';
 };
 
 module.exports = {

@@ -48,27 +48,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       if (user[chatId].state === 'WAITING COMMAND'
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
-        if (isAdminCommand(user[chatId].command)) {
-          user[chatId].state = await adminCommandHandler(req, tour, user, async (Message, keyboard, chat) => {
-            await ask(Message, chat, fastify, keyboard).then((response) => {
-              res.status(200).send(response);
-            }).catch((error) => {
-              res.send(error);
-            });
-          });
-        } else {
-          user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
-            await ask(Message, chatId, fastify, keyboard).then((response) => {
-              res.status(200).send(response);
-            }).catch((error) => {
-              res.send(error);
-            });
-          });
-          if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
-            user[chatId].name = sentMessage;
-          }
-          console.log(user[chatId]);
-        }
+        await callingCommands(req, res, fastify);
       } else {
         if (isAdminCommand(user[chatId].command)
         && user[chatId].state !== 'WAITING TOUR NAME') {
@@ -85,6 +65,41 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       res.status(500).send(err);
     }
   });
+};
+const callingCommands = async (req, res, fastify) => {
+  const chatId = req.body.message.chat.id;
+  const sentMessage = req.body.message.text;
+  if (isAdminCommand(user[chatId].command)) {
+    user[chatId].state = await adminCommandHandler(req, tour, user,
+      async (chat, Message, keyboard) => {
+        await ask(Message, chat, fastify, keyboard).then((response) => {
+          res.status(200).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
+      }, async (chat, fromChatId, messageId) => {
+        await poll(chat, fromChatId, messageId, fastify).then((response) => {
+          res.status(200).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
+      });
+  } else {
+    user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
+      await ask(Message, chatId, fastify, keyboard).then((response) => {
+        res.status(200).send(response);
+      }).catch((error) => {
+        res.send(error);
+      });
+    });
+    if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
+      user[chatId].name = sentMessage;
+    } else if (user[chatId].state === 'WAITING CHOICE AGAIN') {
+      console.log('startstartstartstartstartstart');
+      user[chatId].command = '/start';
+    }
+    console.log(user[chatId]);
+  }
 };
 
 const isAdminCommand = (command) => {
@@ -307,7 +322,7 @@ const commandHandler = async (req, callback) => {
   return stateHandler(req, callback);
 };
 
-const adminCommandHandler = async (req, currentTour, users, callback) => {
+const adminCommandHandler = async (req, currentTour, users, callback1, callback2) => {
   const chatId = req.body.message.chat.id;
   const commandFunctions = {
     'Send message': MessageController.sendMessage,
@@ -315,7 +330,7 @@ const adminCommandHandler = async (req, currentTour, users, callback) => {
     'Set meeting place': MeetingController.setPlace
   };
   const stateHandler = commandFunctions[user[chatId].command];
-  return stateHandler(req, currentTour, users, callback);
+  return stateHandler(req, currentTour, users, callback1, callback2);
 };
 
 const asking = async (status, chatId, fastify) => {
@@ -432,6 +447,21 @@ const ask = async (Message, chatId, fastify, keyboard) => {
     mess.reply_markup = { remove_keyboard: true };
   }
   await fastify.httpclient.request(`${url}${secret.TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    content: JSON.stringify(mess)
+  });
+};
+
+const poll = async (chatId, fromChatId, messageId, fastify) => {
+  const mess = {
+    chat_id: chatId,
+    from_chat_id: fromChatId,
+    message_id: messageId
+  };
+  await fastify.httpclient.request(`${url}${secret.TOKEN}/forwardMessage`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

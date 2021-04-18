@@ -1,9 +1,9 @@
 'use strict';
 
-const sendMessage = async (req, tour, users, send) => {
+const sendMessage = async (req, tour, users, send, forward) => {
   const Tour = require('@root/models/tour');
   const Tourist = require('@root/models/tourist');
-  const sentMessage = req.body.message.text;
+  const messId = req.body.message.message_id;
   const chatId = req.body.message.chat.id;
 
   console.log(users);
@@ -21,13 +21,13 @@ const sendMessage = async (req, tour, users, send) => {
 
       Object.entries(users).forEach(([chat, properties]) => {
         if (docs.full_name === properties.name) {
-          send(sentMessage, 'none', chat);
+          forward(chat, chatId, messId);
         }
       });
       return docs;
     });
   });
-  send('Your messege is successfully delivered', 'admin', chatId);
+  send(chatId, 'Your messege is successfully delivered', 'admin');
   return 'WAITING COMMAND';
 };
 
