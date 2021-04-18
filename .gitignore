@@ -58,4 +58,6 @@ profile*
 *flamegraph*
 
 #files
-.secret.js
+secret.js
+vercel.json
+.vercel

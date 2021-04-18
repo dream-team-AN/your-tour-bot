@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "tap test/**/*.test.js",
-    "build": "fastify start -p 80 -l info app.js",
+    "build": "fastify start -l info app.js",
     "lint": "eslint . --ignore-path .gitignore",
     "lint:fix": "eslint . --fix --ignore-path .gitignore"
   },
