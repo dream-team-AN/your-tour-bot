@@ -19,16 +19,16 @@
     ],
     "import/no-unresolved": "off",
     "no-console": [
-      "error",
+      "warn",
       {
         "allow": [
-          "error",
-          "log"
+          "error"
         ]
       }
     ],
     "no-plusplus": "off",
     "no-tabs": "off",
+    "no-underscore-dangle": "off",
     "sonarjs/no-duplicate-string": "off",
     "max-len": [
       "error",

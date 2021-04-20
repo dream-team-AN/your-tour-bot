@@ -20,13 +20,13 @@ const show = async (req, send) => {
       console.log(JSON.parse(body).forecast.forecastday[0]);
       const day1 = output(JSON.parse(body).forecast.forecastday[0]);
       const day2 = output(JSON.parse(body).forecast.forecastday[1]);
-      const today = `📅 Today: ${JSON.parse(body).forecast.forecastday[0].date}\n`;
-      const tomorrow = `📆 Tomorrow: ${JSON.parse(body).forecast.forecastday[1].date}\n`;
+      const today = `📅 Сегодня: ${JSON.parse(body).forecast.forecastday[0].date}\n`;
+      const tomorrow = `📆 Завтра: ${JSON.parse(body).forecast.forecastday[1].date}\n`;
 
       send(`${today}${day1}\n${tomorrow}${day2}`, 'none');
     });
   } else {
-    send('Operation canceled. To receive weather please allow sending location.', 'none');
+    send('Операция отменена. Что бы узнать погоду, пожалуйста, разрешите отправку геолокации.', 'none');
   }
   return 'WAITING COMMAND';
 };
@@ -34,13 +34,13 @@ const show = async (req, send) => {
 const output = (d) => `${d.day.condition.text}\n
 🌡 max: ${d.day.maxtemp_c} °C\r
 🌡 min: ${d.day.mintemp_c} °C\r
-💨 wind: ${d.day.maxwind_kph} km per hour\r
-☔️ total precipitation: ${d.day.totalprecip_mm} mm\r
-💦 humidity: ${d.day.avghumidity}  %\r
-🌧 chance of rain: ${d.day.daily_will_it_rain} %\r
-🌨 chance of snow: ${d.day.daily_chance_of_snow} %\r
-🌅 sunrise: ${d.astro.sunrise}\r
-🌄 sunset: ${d.astro.sunset}\n`;
+💨 ветер: ${d.day.maxwind_kph} км/час\r
+☔️ осадки: ${d.day.totalprecip_mm} мм\r
+💦 влажность: ${d.day.avghumidity}  %\r
+🌧 вероятность доджя: ${d.day.daily_will_it_rain} %\r
+🌨 вероятность снега: ${d.day.daily_chance_of_snow} %\r
+🌅 рассвет: ${d.astro.sunrise}\r
+🌄 закат: ${d.astro.sunset}\n`;
 module.exports = {
   show
 };

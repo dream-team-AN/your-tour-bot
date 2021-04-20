@@ -78,7 +78,7 @@ const callingCommands = async (req, res, fastify) => {
           res.send(error);
         });
       }, async (chat, fromChatId, messageId) => {
-        await poll(chat, fromChatId, messageId, fastify).then((response) => {
+        await forward(chat, fromChatId, messageId, fastify).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
@@ -91,7 +91,7 @@ const callingCommands = async (req, res, fastify) => {
       }).catch((error) => {
         res.send(error);
       });
-    });
+    }, user);
     if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
       user[chatId].name = sentMessage;
     } else if (user[chatId].state === 'WAITING CHOICE AGAIN') {
@@ -308,7 +308,7 @@ const tourChecker = async (req, res) => {
   return [status.state, status.command, tour];
 };
 
-const commandHandler = async (req, callback) => {
+const commandHandler = async (req, users, callback) => {
   const chatId = req.body.message.chat.id;
   const commandFunctions = {
     tourist: StartController.checkTourist,
@@ -319,7 +319,7 @@ const commandHandler = async (req, callback) => {
     admin: StartController.checkPassword
   };
   const stateHandler = commandFunctions[user[chatId].command];
-  return stateHandler(req, callback);
+  return stateHandler(req, users, callback);
 };
 
 const adminCommandHandler = async (req, currentTour, users, callback1, callback2) => {
@@ -336,41 +336,41 @@ const adminCommandHandler = async (req, currentTour, users, callback1, callback2
 const asking = async (status, chatId, fastify) => {
   switch (status.command) {
     case 'error': {
-      await ask('Please, enter a correct command.', chatId, fastify, 'none');
+      await ask('Пожалуйста, введите правильную комманду.', chatId, fastify, 'none');
       break;
     }
     case '/start': {
       if (status.state === 'WAITING CHOICE') {
-        await ask('Please, select the button on the keyboard at the bottom of your'
-        + ' screen, corresponding to your status', chatId, fastify, 'simple');
+        await ask('Пожалуйста, выберите кнопку на клавиатуре, которая находится внизу вашего экрана, '
+        + 'что бы подтвердить свой статус.', chatId, fastify, 'simple');
       } else if (status.state === 'WAITING CHOICE AGAIN') {
-        await ask('Please select one of the options on the keyboard ', chatId, fastify, 'none');
+        await ask('Пожалуйста, выберите один из вариантов на клавиатуре.', chatId, fastify, 'none');
       }
       break;
     }
     case 'tourist': {
       if (status.state === 'WAITING NAME') {
-        await ask('Please enter your surname and name in English', chatId, fastify, 'none');
+        await ask('Пожалуйста, введите свои фамилию и имя.', chatId, fastify, 'none');
       } else if (status.state === 'WAITING NAME AGAIN') {
-        await ask('Please enter again your surname and name in English', chatId, fastify, 'none');
+        await ask('Пожалуйста, введите свои фамилию и имя ещё раз.', chatId, fastify, 'none');
       }
       break;
     }
     case '/time': {
-      await ask('Do you agree to send us your location?', chatId, fastify, 'geo');
+      await ask('Вы согласны поделиться своей локацией?', chatId, fastify, 'geo');
       break;
     }
     case '/weather': {
-      await ask('Do you agree to send us your location', chatId, fastify, 'geo');
+      await ask('Вы согласны поделиться своей локацией?', chatId, fastify, 'geo');
       break;
     }
     case 'admin': {
       if (status.state === 'WAITING PASSWORD') {
-        await ask('To access admin mode, please enter a password', chatId, fastify, 'none');
+        await ask('Что бы войти в режим администратора введите пароль.', chatId, fastify, 'none');
       } else if (status.state === 'WAITING PASSWORD AGAIN') {
-        await ask('The password is incorrect. Please enter it again', chatId, fastify, 'none');
+        await ask('Пароль неправильный. Пожалуйста, введите его ещё раз.', chatId, fastify, 'none');
       } else if (status.state === 'WAITING COMMAND') {
-        await ask('Please, select a command from the list', chatId, fastify, 'admin');
+        await ask('Пожалуйста, выберите команду из списка.', chatId, fastify, 'admin');
       }
       break;
     }
@@ -387,7 +387,7 @@ const asking = async (status, chatId, fastify) => {
       break;
     }
     default: {
-      await ask('Please follow the instructions', chatId, fastify, 'none');
+      await ask('Пожалуйста, следуйте инструкциям.', chatId, fastify, 'none');
     }
   }
   console.log(`console.log asking${status.command}       ${status.state}`);
@@ -395,25 +395,25 @@ const asking = async (status, chatId, fastify) => {
 
 const adminAsking = async (status, chatId, fastify) => {
   if (status.state === 'WAITING TOUR NAME') {
-    await ask('Please enter tour name in English', chatId, fastify, 'none');
+    await ask('Пожалуйста, введите название тура.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE') {
-    await ask('Please enter tour date in American variation', chatId, fastify, 'none');
+    await ask('Пожалуйста, введите дату в формате год-месяц-день.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DAY') {
-    await ask('Please enter tour day', chatId, fastify, 'none');
+    await ask('Пожалуйста, введите день тура.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME') {
-    await ask('Please enter a time for the meeting', chatId, fastify, 'none');
+    await ask('Пожалуйста, введите время встречи.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE AGAIN') {
-    await ask('The tour date is in wrong format. Please enter tour date again', chatId, fastify, 'none');
+    await ask('Дата тура введена в некорректном фомате. Пожалуйста, введите дату тура снова.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DAY AGAIN') {
-    await ask('The tour day is wrong. Please enter tour day again', chatId, fastify, 'none');
+    await ask('День тура введён в некорректном фомате. Пожалуйста, введите день тура снова.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME AGAIN') {
-    await ask('The time is in wrong format. Please enter time again', chatId, fastify, 'none');
+    await ask('Время введено в некорректном формате. Пожалуйста, введите время снова.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING PLACE') {
-    await ask('Please select a meeting place from the list with available places', chatId, fastify, 'none');
+    await ask('Пожалуйста, выберите место встречи из списка доступных мест.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING PLACE AGAIN') {
-    await ask('Place is incorrect. Please try again', chatId, fastify, 'none');
+    await ask('Место встречи некорректное. Пожалуйста, попробуйте снова.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING MESSAGE') {
-    await ask('Please enter a message', chatId, fastify, 'none');
+    await ask('Пожалуйста, введите сообщение.', chatId, fastify, 'none');
   }
 };
 
@@ -455,7 +455,7 @@ const ask = async (Message, chatId, fastify, keyboard) => {
   });
 };
 
-const poll = async (chatId, fromChatId, messageId, fastify) => {
+const forward = async (chatId, fromChatId, messageId, fastify) => {
   const mess = {
     chat_id: chatId,
     from_chat_id: fromChatId,

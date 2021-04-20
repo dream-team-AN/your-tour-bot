@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "tap test/**/*.test.js",
-    "build": "fastify start -l info app.js",
+    "build": "fastify start -p 80 -l info app.js",
     "lint": "eslint . --ignore-path .gitignore",
     "lint:fix": "eslint . --fix --ignore-path .gitignore"
   },
@@ -31,6 +31,7 @@
     "fastify-http-client": "^1.0.0",
     "fastify-plugin": "^3.0.0",
     "fastify-sensible": "^3.1.0",
+    "jsdom": "^16.5.3",
     "module-alias": "^2.2.2",
     "mongoose": "^5.12.3",
     "request": "^2.88.2",

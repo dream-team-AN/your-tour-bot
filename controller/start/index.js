@@ -15,14 +15,14 @@ const checkTourist = async (req, send) => {
       return docs;
     });
     if (len === 1) {
-      send('You are in our tourist base. Welcome to YourTourBot', 'none');
+      send('Вы есть в нашей базе данных. Добро пожаловать в YourTourBot', 'none');
       return 'WAITING COMMAND';
     }
 
-    send('You were not found in our database. Please buy a tour from our travel agency', 'none');
+    send('Вы не были найдены в нашей базе данных. Пожалуйста, сначала купите тур в туристическом агентстве.', 'none');
     return 'WAITING REGISTRATION';
   }
-  send('Please, enter full name in right format: Surname Name', 'none');
+  send('Пожалуйста, введите свое имя в корректном формате: Фамилия Имя', 'none');
   return 'WAITING NAME AGAIN';
 };
 
@@ -37,9 +37,9 @@ const checkPassword = async (req, send) => {
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
   if (sentMessage === secret.adminPassword) {
-    send('Please enter a command', 'admin');
+    send('Пожалуйста, введите команду', 'admin');
   } else {
-    send('Password is wrong. \n❌You are not admin❌', 'simple');
+    send('Пароль неправильный. \n❌Вы не админ❌', 'simple');
   }
   return sentMessage === secret.adminPassword ? 'WAITING COMMAND' : 'WAITING CHOICE AGAIN';
 };

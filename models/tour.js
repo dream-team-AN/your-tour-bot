@@ -12,6 +12,10 @@ const tourSchema = new Schema({
   duration: Number,
   tourists_quantity: Number,
   tourists: [ObjectId],
-  cities: [String]
+  cities: [
+    {
+      city_id: ObjectId,
+      day: [Number]
+    }]
 });
 module.exports = model('tour', tourSchema, 'tour');
