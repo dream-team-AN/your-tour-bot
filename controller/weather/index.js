@@ -32,15 +32,15 @@ const show = async (req, send) => {
 };
 
 const output = (d) => `${d.day.condition.text}\n
-🌡 max: ${d.day.maxtemp_c} °C\r
-🌡 min: ${d.day.mintemp_c} °C\r
-💨 ветер: ${d.day.maxwind_kph} км/час\r
-☔️ осадки: ${d.day.totalprecip_mm} мм\r
-💦 влажность: ${d.day.avghumidity}  %\r
-🌧 вероятность доджя: ${d.day.daily_will_it_rain} %\r
-🌨 вероятность снега: ${d.day.daily_chance_of_snow} %\r
-🌅 рассвет: ${d.astro.sunrise}\r
-🌄 закат: ${d.astro.sunset}\n`;
+🌡 Max: ${d.day.maxtemp_c} °C\r
+🌡 Min: ${d.day.mintemp_c} °C\r
+💨 Ветер: ${d.day.maxwind_kph} км/час\r
+☔️ Осадки: ${d.day.totalprecip_mm} мм\r
+💦 Влажность: ${d.day.avghumidity}  %\r
+🌧 Вероятность доджя: ${d.day.daily_will_it_rain} %\r
+🌨 Вероятность снега: ${d.day.daily_chance_of_snow} %\r
+🌅 Рассвет: ${d.astro.sunrise}\r
+🌄 Закат: ${d.astro.sunset}\n`;
 module.exports = {
   show
 };

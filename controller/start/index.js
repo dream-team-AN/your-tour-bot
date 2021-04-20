@@ -15,7 +15,7 @@ const checkTourist = async (req, send) => {
       return docs;
     });
     if (len === 1) {
-      send('Вы есть в нашей базе данных. Добро пожаловать в YourTourBot', 'none');
+      send('Вы есть в нашей базе данных. Добро пожаловать в YourTourBot.', 'none');
       return 'WAITING COMMAND';
     }
 

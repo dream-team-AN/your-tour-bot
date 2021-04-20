@@ -86,9 +86,10 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
         date,
         place,
         price,
-        description
+        description,
+        link: linkExcursion
       };
-      send(excurs, 'none');
+      send(output(excurs), 'none');
     }
   }).catch((error) => {
     console.error(error);
@@ -106,5 +107,15 @@ const formatDate = (date) => {
 
   return `${dd}.${mm}.${yy}`;
 };
+
+const output = (ex) => `
+✨ ${ex.title} ✨\n
+
+🏙 Город:  ${ex.city} \r
+💶 Цена:  ${ex.price} \r
+📅 Дата:  ${ex.date} \r
+📍 Место:  ${ex.place.replace(/\\n/g, '/n').replace(/\\t/, '/t')} \r
+🔗 Ссылка:  ${ex.link} \n\n
+🖌 Описание:  ${ex.description.replace(/\\n/g, '/n').replace(/\\t/, '/t')}`;
 
 module.exports = { parseDestinations };
