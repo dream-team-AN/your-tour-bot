@@ -3,7 +3,6 @@
 const show = async (req, send) => {
   const request = require('request');
   const secret = require('@root/secret');
-  const chatId = req.body.message.chat.id;
 
   const loc = req.body.message.location;
   const sentMessage = req.body.message.text;

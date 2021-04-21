@@ -31,18 +31,15 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
   fastify.get('/', async () => ({ root: true }));
 
   fastify.post('/', async (req, res) => {
+    if (!req.body.message) return;
     const chatId = req.body.message.chat.id;
     const sentMessage = req.body.message.text;
-    console.log(req.body);
     if (!user[chatId]) {
       user[chatId] = {};
       user[chatId].command = 'none';
       user[chatId].state = 'WAITING COMMAND';
       user[chatId].name = 'unknown';
     }
-    console.log('????????');
-    console.log(user);
-    console.log('????????');
     try {
       [user[chatId].state, user[chatId].command] = getUserStatus(sentMessage, chatId);
 
@@ -87,13 +84,21 @@ const callingCommands = async (req, res, fastify) => {
         });
       });
   } else {
-    user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
-      await ask(Message, chatId, fastify, keyboard).then((response) => {
-        res.status(204).send(response);
-      }).catch((error) => {
-        res.send(error);
+    user[chatId].state = await commandHandler(req,
+      async (Message, keyboard) => {
+        await ask(Message, chatId, fastify, keyboard).then((response) => {
+          res.status(204).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
+      }, user,
+      async (lat, lng) => {
+        await sendLocation(chatId, lat, lng, fastify).then((response) => {
+          res.status(204).send(response);
+        }).catch((error) => {
+          res.send(error);
+        });
       });
-    }, user);
     if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
       user[chatId].name = sentMessage;
     } else if (user[chatId].state === 'WAITING CHOICE AGAIN') {
@@ -174,6 +179,17 @@ const textSwitcher = (sentMessage, chatId) => {
     case '/weather': {
       status.command = '/weather';
       status.state = 'WAITING COMMAND';
+      break;
+    }
+    case '/meeting': {
+      if (user[chatId].state === 'WAITING GEO') {
+        status.command = '/meeting direction';
+        status.state = 'WAITING COMMAND';
+      } else {
+        status.command = '/meeting';
+        status.state = 'WAITING COMMAND';
+      }
+
       break;
     }
     case 'admin': {
@@ -310,7 +326,7 @@ const tourChecker = async (req, res) => {
   return [status.state, status.command, tour];
 };
 
-const commandHandler = async (req, users, callback) => {
+const commandHandler = async (req, callback1, callback2, users) => {
   const chatId = req.body.message.chat.id;
   const commandFunctions = {
     tourist: StartController.checkTourist,
@@ -318,11 +334,12 @@ const commandHandler = async (req, users, callback) => {
     '/weather': WeatherController.show,
     '/excursions': ExcursionController.show,
     '/meeting': MeetingController.show,
+    '/meeting direction': MeetingController.showDirection,
     '/help': HelpController.show,
     admin: StartController.checkPassword
   };
   const stateHandler = commandFunctions[user[chatId].command];
-  return stateHandler(req, users, callback);
+  return stateHandler(req, callback1, callback2, users);
 };
 
 const adminCommandHandler = async (req, currentTour, users, callback1, callback2) => {
@@ -465,6 +482,21 @@ const forward = async (chatId, fromChatId, messageId, fastify) => {
     message_id: messageId
   };
   await fastify.httpclient.request(`${url}${secret.TOKEN}/forwardMessage`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    content: JSON.stringify(mess)
+  });
+};
+
+const sendLocation = async (chatId, lat, lng, fastify) => {
+  const mess = {
+    chat_id: chatId,
+    latitude: lat,
+    longitude: lng
+  };
+  await fastify.httpclient.request(`${url}${secret.TOKEN}/sendLocation`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
