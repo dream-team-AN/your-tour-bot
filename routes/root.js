@@ -56,7 +56,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
           [user[chatId].state, user[chatId].command, tour] = await tourChecker(req, res);
         }
         await asking(user[chatId], chatId, fastify).then((response) => {
-          res.status(200).send(response);
+          res.status(204).send(response);
         }).catch((error) => {
           res.send(error);
         });
@@ -67,6 +67,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     }
   });
 };
+
 const callingCommands = async (req, res, fastify) => {
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
@@ -74,13 +75,13 @@ const callingCommands = async (req, res, fastify) => {
     user[chatId].state = await adminCommandHandler(req, tour, user,
       async (chat, Message, keyboard) => {
         await ask(Message, chat, fastify, keyboard).then((response) => {
-          res.status(200).send(response);
+          res.status(204).send(response);
         }).catch((error) => {
           res.send(error);
         });
       }, async (chat, fromChatId, messageId) => {
         await forward(chat, fromChatId, messageId, fastify).then((response) => {
-          res.status(200).send(response);
+          res.status(204).send(response);
         }).catch((error) => {
           res.send(error);
         });
@@ -88,7 +89,7 @@ const callingCommands = async (req, res, fastify) => {
   } else {
     user[chatId].state = await commandHandler(req, async (Message, keyboard) => {
       await ask(Message, chatId, fastify, keyboard).then((response) => {
-        res.status(200).send(response);
+        res.status(204).send(response);
       }).catch((error) => {
         res.send(error);
       });
