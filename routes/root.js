@@ -7,6 +7,7 @@ const ExcursionController = require('@excursions/index');
 const MeetingController = require('@meeting/index');
 const MessageController = require('@message/index');
 const TourController = require('@meeting/tour');
+const HelpController = require('@start/help');
 const secret = require('@root/secret.js');
 
 const url = 'https://api.telegram.org/bot';
@@ -316,6 +317,7 @@ const commandHandler = async (req, users, callback) => {
     '/weather': WeatherController.show,
     '/excursions': ExcursionController.show,
     '/meeting': MeetingController.show,
+    '/help': HelpController.show,
     admin: StartController.checkPassword
   };
   const stateHandler = commandFunctions[user[chatId].command];
