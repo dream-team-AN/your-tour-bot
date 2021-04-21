@@ -5,7 +5,6 @@ const secret = require('@root/secret.js');
 const regular = require('@root/regular');
 
 const checkTourist = async (req, send) => {
-  const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
   if (fullNameValidation(sentMessage)) {
     let len;
@@ -34,7 +33,6 @@ const fullNameValidation = (name) => {
 };
 
 const checkPassword = async (req, send) => {
-  const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
   if (sentMessage === secret.adminPassword) {
     send('Пожалуйста, введите команду', 'admin');

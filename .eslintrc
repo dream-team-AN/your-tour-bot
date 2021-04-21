@@ -12,14 +12,13 @@
   ],
   "rules": {
     "global-require": "off",
-    "no-unused-vars": "off",
     "strict": [
       "error",
       "global"
     ],
     "import/no-unresolved": "off",
     "no-console": [
-      "warn",
+      "error",
       {
         "allow": [
           "error"
@@ -40,6 +39,7 @@
     "no-restricted-syntax": "off",
     "guard-for-in": "off",
     "node/no-unsupported-features/es-syntax": "off",
+    "sonarjs/prefer-object-literal": "off",
     "default-case": "warn",
     "no-fallthrough": "warn",
     "no-use-before-define": "off",

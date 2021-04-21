@@ -1,7 +1,6 @@
 'use strict';
 
 const jsdom = require('jsdom');
-const fs = require('fs');
 
 const { JSDOM } = jsdom;
 
@@ -9,9 +8,13 @@ const { JSDOM } = jsdom;
 
 const parseDestinations = async (cities, beginningDate, send) => {
   const startDate = new Date(beginningDate);
-  // citiesArrOfObj.forEach((city)=>{
-
-  // })
+  const currentDate = new Date();
+  if (startDate.getUTCMonth() > (currentDate.getUTCMonth() + 1)) {
+    const mes = 'Просмотр экскурсий для даного тура пока не доступен. '
+    + 'Пожалуйста, обратитесь к сервису не ранее, чем за месяц до поездки';
+    send(mes, 'none');
+    return;
+  }
   JSDOM.fromURL('https://experience.tripster.ru/destinations/').then(async (dom) => {
     const doc = dom.window.document;
     Array.from(doc.getElementsByClassName('allcities__link')).forEach(async (elem) => {
@@ -46,12 +49,13 @@ const parseCities = async (linkCity, city, startDate, days, send) => {
 };
 
 const parceExcursions = async (linkExcursion, city, excursion, startDate, days, send) => {
+  const Format = require('@utils/format');
   const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Ноябрь', 'Декабрь'];
   const excursionDate = [];
   days.forEach((jour) => {
-    excursionDate.push(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + jour));
+    const exDate = new Date(startDate.valueOf());
+    excursionDate.push(new Date(exDate.setUTCDate(exDate.getUTCDate() + (jour - 1))));
   });
-  console.log(excursionDate);
 
   JSDOM.fromURL(linkExcursion).then((dom) => {
     const doc = dom.window.document;
@@ -60,14 +64,14 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
     const date = [];
     excursionDate.forEach((exDate) => {
       Array.from(doc.getElementsByClassName('calendar-month')).forEach((el) => {
-        const calendarTitle = `${months[exDate.getMonth()]} ${exDate.getFullYear()}`;
+        const calendarTitle = `${months[exDate.getUTCMonth()]} ${exDate.getUTCFullYear()}`;
         if (calendarTitle === el.querySelector('.title').textContent) {
           Array.from(el.getElementsByTagName('td')).forEach((elem) => {
             if (+elem.textContent.split(' ')[0].slice(0, -1) === exDate.getDate()
             && elem.textContent.split(' ')[1] !== undefined) {
               price = +elem.textContent.split(' ')[1];
               flag = true;
-              date.push(formatDate(new Date(exDate.getFullYear(), exDate.getMonth(), exDate.getDate())));
+              date.push(Format.formatDate(new Date(exDate.getFullUTCYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
             }
           });
         }
@@ -94,18 +98,6 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
   }).catch((error) => {
     console.error(error);
   });
-};
-
-const formatDate = (date) => {
-  let dd = date.getDate();
-  if (dd < 10) dd = `0${dd}`;
-
-  let mm = date.getMonth() + 1;
-  if (mm < 10) mm = `0${mm}`;
-
-  const yy = date.getFullYear();
-
-  return `${dd}.${mm}.${yy}`;
 };
 
 const output = (ex) => `

@@ -1,12 +1,11 @@
 'use strict';
 
-const sendMessage = async (req, tour, users, send, forward) => {
+const sendMessage = async (req, tour, send, users, forward) => {
   const Tour = require('@root/models/tour');
   const Tourist = require('@root/models/tourist');
   const messId = req.body.message.message_id;
   const chatId = req.body.message.chat.id;
 
-  console.log(users);
   const trip = await Tour.findOne({ tour_name: tour.name, beginning_date: tour.date }, (err, docs) => {
     if (err) return console.error(err);
     return docs;

@@ -27,7 +27,6 @@ const show = async (req, send, users) => {
   });
   const cities = [];
   await City.find({}, (err, docs) => {
-    // console.log(docs);
     if (err) return console.error(err);
     docs.forEach((city) => {
       currentTour.cities.forEach((town) => {

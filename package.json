@@ -65,6 +65,7 @@
     "@message": "./controller/message",
     "@start": "./controller/start",
     "@time": "./controller/time",
-    "@weather": "./controller/weather"
+    "@weather": "./controller/weather",
+    "@utils": "./controller/utils"
   }
 }

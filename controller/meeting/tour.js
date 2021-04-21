@@ -19,15 +19,16 @@ const checkTourDate = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   const tourDate = dateParser(sentMessage);
   if (tourDateValidation(sentMessage)) {
-    const tours = await Tour.find({ tour_name: trip.name, beginning_date: tourDate }, (err, docs) => {
+    const jorney = await Tour.findOne({ tour_name: trip.name, beginning_date: tourDate }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
     });
-    if (tours.length === 1) {
+    if (jorney.ending_date > Date.now()) {
       trip.date = tourDate;
+      trip.id = jorney._id;
     }
     const state = command === 'Send message' ? 'WAITING MESSAGE' : 'WAITING DAY';
-    return tours.length === 1 ? [state, command, trip] : ['WAITING COMMAND', 'admin', trip];
+    return trip.date ? [state, command, trip] : ['WAITING COMMAND', 'admin', trip];
   }
   return ['WAITING TOUR DATE AGAIN', command, trip];
 };
@@ -52,10 +53,14 @@ const checkDay = async (command, sentMessage, tour) => {
       return docs;
     });
     if ((+sentMessage) <= tours.duration) {
-      trip.day = sentMessage;
+      trip.day = Number(sentMessage);
       dayFlag = true;
     }
-    return dayFlag ? ['WAITING TOUR TIME', command, trip] : ['WAITING COMMAND', 'admin', trip];
+    if (dayFlag) {
+      if (command === 'Set meeting time') return ['WAITING TIME', command, trip];
+      if (command === 'Set meeting place') return ['WAITING PLACE', command, trip];
+    }
+    return ['WAITING COMMAND', 'admin', trip];
   }
   return ['WAITING DAY AGAIN', command, trip];
 };

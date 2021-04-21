@@ -8,6 +8,7 @@ const MeetingController = require('@meeting/index');
 const MessageController = require('@message/index');
 const TourController = require('@meeting/tour');
 const HelpController = require('@start/help');
+const Place = require('@meeting/place');
 const secret = require('@root/secret.js');
 
 const url = 'https://api.telegram.org/bot';
@@ -42,7 +43,6 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     }
     try {
       [user[chatId].state, user[chatId].command] = getUserStatus(sentMessage, chatId);
-
       if (user[chatId].state === 'WAITING COMMAND'
       && user[chatId].command !== 'none'
       && user[chatId].command !== 'error') {
@@ -50,10 +50,10 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       } else {
         if (isAdminCommand(user[chatId].command)
         && user[chatId].state !== 'WAITING TOUR NAME') {
-          [user[chatId].state, user[chatId].command, tour] = await tourChecker(req, res);
+          [user[chatId].state, user[chatId].command, tour] = await tourChecker(req);
         }
         await asking(user[chatId], chatId, fastify).then((response) => {
-          res.status(204).send(response);
+          res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
@@ -69,16 +69,17 @@ const callingCommands = async (req, res, fastify) => {
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
   if (isAdminCommand(user[chatId].command)) {
-    user[chatId].state = await adminCommandHandler(req, tour, user,
+    user[chatId].state = await adminCommandHandler(req, tour,
       async (chat, Message, keyboard) => {
         await ask(Message, chat, fastify, keyboard).then((response) => {
-          res.status(204).send(response);
+          res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
-      }, async (chat, fromChatId, messageId) => {
+      }, user,
+      async (chat, fromChatId, messageId) => {
         await forward(chat, fromChatId, messageId, fastify).then((response) => {
-          res.status(204).send(response);
+          res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
@@ -87,14 +88,14 @@ const callingCommands = async (req, res, fastify) => {
     user[chatId].state = await commandHandler(req,
       async (Message, keyboard) => {
         await ask(Message, chatId, fastify, keyboard).then((response) => {
-          res.status(204).send(response);
+          res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
       }, user,
       async (lat, lng) => {
         await sendLocation(chatId, lat, lng, fastify).then((response) => {
-          res.status(204).send(response);
+          res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
@@ -102,10 +103,8 @@ const callingCommands = async (req, res, fastify) => {
     if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
       user[chatId].name = sentMessage;
     } else if (user[chatId].state === 'WAITING CHOICE AGAIN') {
-      console.log('startstartstartstartstartstart');
       user[chatId].command = '/start';
     }
-    console.log(user[chatId]);
   }
 };
 
@@ -120,10 +119,6 @@ const isAdminCommand = (command) => {
 
 const getUserStatus = (sentMessage, chatId) => {
   let status = {};
-  console.log('Previous info');
-  console.log(sentMessage);
-  console.log(`${user[chatId].state}/////////////`);
-  console.log(`${user[chatId].command}/////////////`);
 
   if (user[chatId].state === 'WAITING COMMAND'
   || user[chatId].state === 'WAITING COMMAND AGAIN') {
@@ -219,6 +214,45 @@ const textSwitcher = (sentMessage, chatId) => {
   return status;
 };
 
+const adminSwitcher = (chatId, condition, action) => {
+  const status = { command: action };
+  switch (user[chatId].state) {
+    case 'WAITING TOUR NAME': {
+      status.state = 'WAITING TOUR DATE';
+      break;
+    }
+    case 'WAITING TOUR DATE': {
+      status.state = action === 'Send message' ? 'WAITING MESSAGE' : 'WAITING DAY';
+      break;
+    }
+    case 'WAITING DAY': {
+      status.state = condition;
+      break;
+    }
+    case condition: {
+      status.state = 'WAITING COMMAND';
+      break;
+    }
+    case 'WAITING TOUR DATE AGAIN': {
+      status.state = 'WAITING DAY';
+      break;
+    }
+    case 'WAITING DAY AGAIN': {
+      status.state = condition;
+      break;
+    }
+    case `${condition} AGAIN`: {
+      status.state = 'WAITING COMMAND';
+      break;
+    }
+    default: {
+      status.command = 'error';
+      status.state = 'WAITING COMMAND';
+    }
+  }
+  return status;
+};
+
 const commandSwitcher = (sentMessage, chatId) => {
   const commands = ['/start', '/help', '/excursions', '/time', '/weather', '/meeting'];
   const administration = ['Set meeting place', 'Set meeting time', 'Send message'];
@@ -270,46 +304,8 @@ const adminCommandSwitcher = (sentMessage, administration) => {
   }
   return status;
 };
-const adminSwitcher = (chatId, condition, action) => {
-  const status = { command: action };
-  switch (user[chatId].state) {
-    case 'WAITING TOUR NAME': {
-      status.state = 'WAITING TOUR DATE';
-      break;
-    }
-    case 'WAITING TOUR DATE': {
-      status.state = action === 'Send message' ? 'WAITING MESSAGE' : 'WAITING DAY';
-      break;
-    }
-    case 'WAITING DAY': {
-      status.state = condition;
-      break;
-    }
-    case condition: {
-      status.state = 'WAITING COMMAND';
-      break;
-    }
-    case 'WAITING TOUR DATE AGAIN': {
-      status.state = 'WAITING DAY';
-      break;
-    }
-    case 'WAITING DAY AGAIN': {
-      status.state = condition;
-      break;
-    }
-    case `${condition}AGAIN`: {
-      status.state = 'WAITING COMMAND';
-      break;
-    }
-    default: {
-      status.command = 'error';
-      status.state = 'WAITING COMMAND';
-    }
-  }
-  return status;
-};
 
-const tourChecker = async (req, res) => {
+const tourChecker = async (req) => {
   const status = {};
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
@@ -322,7 +318,6 @@ const tourChecker = async (req, res) => {
   };
   const stateHandler = commandAdminFunctions[user[chatId].state];
   [status.state, status.command, tour] = await stateHandler(user[chatId].command, sentMessage, tour);
-  console.log(tour);
   return [status.state, status.command, tour];
 };
 
@@ -356,7 +351,7 @@ const adminCommandHandler = async (req, currentTour, users, callback1, callback2
 const asking = async (status, chatId, fastify) => {
   switch (status.command) {
     case 'error': {
-      await ask('Пожалуйста, введите правильную комманду.', chatId, fastify, 'none');
+      await ask('Пожалуйста, введите правильную комманду или /start.', chatId, fastify, 'none');
       break;
     }
     case '/start': {
@@ -391,6 +386,8 @@ const asking = async (status, chatId, fastify) => {
         await ask('Пароль неправильный. Пожалуйста, введите его ещё раз.', chatId, fastify, 'none');
       } else if (status.state === 'WAITING COMMAND') {
         await ask('Пожалуйста, выберите команду из списка.', chatId, fastify, 'admin');
+      } else if (status.state === 'WAITING COMMAND AGAIN') {
+        await ask('Пожалуйста, выберите команду из списка или введите /start..', chatId, fastify, 'admin');
       }
       break;
     }
@@ -410,38 +407,36 @@ const asking = async (status, chatId, fastify) => {
       await ask('Пожалуйста, следуйте инструкциям.', chatId, fastify, 'none');
     }
   }
-  console.log(`console.log asking${status.command}       ${status.state}`);
 };
 
 const adminAsking = async (status, chatId, fastify) => {
   if (status.state === 'WAITING TOUR NAME') {
     await ask('Пожалуйста, введите название тура.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE') {
-    await ask('Пожалуйста, введите дату в формате год-месяц-день.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING TOUR DAY') {
+    await ask('Пожалуйста, введите дату начала тура в формате год-месяц-день.', chatId, fastify, 'none');
+  } else if (status.state === 'WAITING DAY') {
     await ask('Пожалуйста, введите день тура.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TIME') {
     await ask('Пожалуйста, введите время встречи.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE AGAIN') {
-    await ask('Дата тура введена в некорректном фомате. Пожалуйста, введите дату тура снова.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING TOUR DAY AGAIN') {
-    await ask('День тура введён в некорректном фомате. Пожалуйста, введите день тура снова.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING TIME AGAIN') {
-    await ask('Время введено в некорректном формате. Пожалуйста, введите время снова.', chatId, fastify, 'none');
+    await ask('Дата начала тура введена в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
+  } else if (status.state === 'WAITING DAY AGAIN') {
+    await ask('День тура введён в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING PLACE') {
-    await ask('Пожалуйста, выберите место встречи из списка доступных мест.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING PLACE AGAIN') {
-    await ask('Место встречи некорректное. Пожалуйста, попробуйте снова.', chatId, fastify, 'none');
+    Place.choose(tour, async (places) => {
+      await ask('Пожалуйста, выберите место встречи из списка доступных мест.', chatId, fastify, 'place', places);
+    });
   } else if (status.state === 'WAITING MESSAGE') {
     await ask('Пожалуйста, введите сообщение.', chatId, fastify, 'none');
   }
 };
 
-const ask = async (Message, chatId, fastify, keyboard) => {
+const ask = async (Message, chatId, fastify, keyboard, options) => {
   const mess = {
     chat_id: chatId,
     text: Message
   };
+
   if (keyboard === 'admin') {
     mess.reply_markup = {
       keyboard: [['Set meeting place'], ['Set meeting time'], ['Send message']]
@@ -462,6 +457,15 @@ const ask = async (Message, chatId, fastify, keyboard) => {
         }
         ]
       ]
+    };
+  } else if (keyboard === 'place') {
+    const buttons = [];
+    options.forEach((opt) => {
+      const button = [{ text: opt }];
+      buttons.push(button);
+    });
+    mess.reply_markup = {
+      keyboard: buttons
     };
   } else {
     mess.reply_markup = { remove_keyboard: true };
