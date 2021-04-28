@@ -2,7 +2,6 @@
 
 const show = async (req, send, users) => {
   const parser = require('@excursions/parse');
-
   const Tourist = require('@root/models/tourist');
   const Tour = require('@root/models/tour');
   const City = require('@root/models/city');

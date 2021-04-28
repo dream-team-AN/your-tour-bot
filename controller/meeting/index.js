@@ -5,7 +5,6 @@ const show = async (req, send, users, sendLocation) => {
   const Tourist = require('@root/models/tourist');
   const Tour = require('@root/models/tour');
   const request = require('request');
-  const secret = require('@root/secret');
   const fs = require('fs');
 
   const chatId = req.body.message.chat.id;
@@ -30,7 +29,7 @@ const show = async (req, send, users, sendLocation) => {
     const file = JSON.parse(fs.readFileSync('./controller/meeting/meeting_data.json', 'utf-8'));
     const place = file[currentTour._id].place_address;
     send(output(file[currentTour._id]), 'none');
-    const options = `q=${encodeURIComponent(place)}&key=${secret.geoAPIKey}`;
+    const options = `q=${encodeURIComponent(place)}&key=${process.env.GEO_API_KEY}`;
     const link = `https://api.opencagedata.com/geocode/v1/json?${options}`;
     await request(link, (error, response, body) => {
       console.error('error:', error);
@@ -137,21 +136,20 @@ const cityHandller = async (trip, tour, sentMessage) => {
   let flag = false;
   await City.find({}, (err, docs) => {
     if (err) return console.error(err);
+    const file = JSON.parse(fs.readFileSync('./controller/meeting/meeting_data.json', 'utf-8'));
     docs.forEach((city) => {
       trip.cities.forEach((town) => {
         if (String(city._id) === String(town.city_id) && town.day.includes(tour.day)) {
-          const file = JSON.parse(fs.readFileSync('./controller/meeting/meeting_data.json', 'utf-8'));
           if (!file[tour.id]) file[tour.id] = {};
           file[tour.id].place_name = sentMessage;
           city.meeting_places.forEach((place) => {
             if (place.name === sentMessage) { file[tour.id].place_address = place.address; }
           });
-
-          fs.writeFileSync('./controller/meeting/meeting_data.json', JSON.stringify(file, null, 2));
           flag = true;
         }
       });
     });
+    fs.writeFileSync('./controller/meeting/meeting_data.json', JSON.stringify(file, null, 2));
     return docs;
   });
   return flag;

@@ -1,7 +1,6 @@
 'use strict';
 
 const Tourist = require('@root/models/tourist');
-const secret = require('@root/secret.js');
 const regular = require('@root/regular');
 
 const checkTourist = async (req, send) => {
@@ -34,12 +33,12 @@ const fullNameValidation = (name) => {
 
 const checkPassword = async (req, send) => {
   const sentMessage = req.body.message.text;
-  if (sentMessage === secret.adminPassword) {
+  if (sentMessage === process.env.ADMIN_PASSWORD) {
     send('Пожалуйста, введите команду', 'admin');
   } else {
     send('Пароль неправильный. \n❌Вы не админ❌', 'simple');
   }
-  return sentMessage === secret.adminPassword ? 'WAITING COMMAND' : 'WAITING CHOICE AGAIN';
+  return sentMessage === process.env.ADMIN_PASSWORD ? 'WAITING COMMAND' : 'WAITING CHOICE AGAIN';
 };
 
 module.exports = {

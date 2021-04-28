@@ -2,7 +2,6 @@
 
 const show = async (req, send) => {
   const request = require('request');
-  const secret = require('@root/secret');
 
   const loc = req.body.message.location;
   const sentMessage = req.body.message.text;
@@ -10,7 +9,7 @@ const show = async (req, send) => {
   if (sentMessage !== 'Cancel operation') {
     const lat = loc.latitude;
     const lng = loc.longitude;
-    const options = `key=${secret.weatherAPIKey}&q=${lat},${lng}&aqi=no`;
+    const options = `key=${process.env.WEATHER_API_KEY}&q=${lat},${lng}&aqi=no`;
     const link = `https://api.weatherapi.com/v1/forecast.json?${options}`;
 
     await request(link, (error, response, body) => {

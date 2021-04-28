@@ -2,14 +2,13 @@
 
 const show = async (req, send) => {
   const request = require('request');
-  const secret = require('@root/secret');
   const loc = req.body.message.location;
   const sentMessage = req.body.message.text;
 
   if (sentMessage !== 'Cancel operation') {
     const lat = loc.latitude;
     const lng = loc.longitude;
-    const options = `key=${secret.weatherAPIKey}&q=${lat},${lng}&days=2&aqi=no&alerts=no`;
+    const options = `key=${process.env.WEATHER_API_KEY}&q=${lat},${lng}&days=2&aqi=no&alerts=no`;
     const link = `https://api.weatherapi.com/v1/forecast.json?${options}`;
 
     await request(link, (error, response, body) => { // eslint-disable-line no-unused-vars

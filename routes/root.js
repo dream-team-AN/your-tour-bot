@@ -9,7 +9,6 @@ const MessageController = require('@message/index');
 const TourController = require('@meeting/tour');
 const HelpController = require('@start/help');
 const Place = require('@meeting/place');
-const secret = require('@root/secret.js');
 
 const url = 'https://api.telegram.org/bot';
 let tour = {};
@@ -470,7 +469,7 @@ const ask = async (Message, chatId, fastify, keyboard, options) => {
   } else {
     mess.reply_markup = { remove_keyboard: true };
   }
-  await fastify.httpclient.request(`${url}${secret.TOKEN}/sendMessage`, {
+  await fastify.httpclient.request(`${url}${process.env.TOKEN}/sendMessage`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -485,7 +484,7 @@ const forward = async (chatId, fromChatId, messageId, fastify) => {
     from_chat_id: fromChatId,
     message_id: messageId
   };
-  await fastify.httpclient.request(`${url}${secret.TOKEN}/forwardMessage`, {
+  await fastify.httpclient.request(`${url}${process.env.TOKEN}/forwardMessage`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -500,7 +499,7 @@ const sendLocation = async (chatId, lat, lng, fastify) => {
     latitude: lat,
     longitude: lng
   };
-  await fastify.httpclient.request(`${url}${secret.TOKEN}/sendLocation`, {
+  await fastify.httpclient.request(`${url}${process.env.TOKEN}/sendLocation`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
