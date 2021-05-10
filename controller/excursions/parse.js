@@ -4,8 +4,6 @@ const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
 
-// const cities = ['Лондон', 'Париж', 'Рим'];
-
 const parseDestinations = async (cities, beginningDate, send) => {
   const startDate = new Date(beginningDate);
   const currentDate = new Date();
@@ -49,7 +47,7 @@ const parseCities = async (linkCity, city, startDate, days, send) => {
 };
 
 const parceExcursions = async (linkExcursion, city, excursion, startDate, days, send) => {
-  const Format = require('@utils/format');
+  const Format = require('../utils/format');
   const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Ноябрь', 'Декабрь'];
   const excursionDate = [];
   days.forEach((jour) => {
@@ -71,7 +69,7 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
             && elem.textContent.split(' ')[1] !== undefined) {
               price = +elem.textContent.split(' ')[1];
               flag = true;
-              date.push(Format.formatDate(new Date(exDate.getFullUTCYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
+              date.push(Format.formatDate(new Date(exDate.getUTCFullYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
             }
           });
         }

@@ -5,7 +5,9 @@ const show = async (req, send, users) => {
   const Tourist = require('../../models/tourist');
   const Tour = require('../../models/tour');
   const City = require('../../models/city');
+  const Ydb = require('../../db/your-tour-bot');
 
+  Ydb.connect();
   const chatId = req.body.message.chat.id;
   const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
     if (err) return console.error(err);
@@ -40,6 +42,7 @@ const show = async (req, send, users) => {
     });
     return docs;
   });
+  Ydb.disconnect();
   parser.parseDestinations(cities, currentTour.beginning_date, send);
   send('Обработка данных. Подождите, пожалуйста.', 'none');
   return 'WAITING COMMAND';

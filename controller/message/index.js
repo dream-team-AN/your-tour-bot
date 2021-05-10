@@ -5,7 +5,9 @@ const sendMessage = async (req, tour, send, users, forward) => {
   const Tourist = require('../../models/tourist');
   const messId = req.body.message.message_id;
   const chatId = req.body.message.chat.id;
+  const Ydb = require('../../db/your-tour-bot');
 
+  Ydb.connect();
   const trip = await Tour.findOne({ tour_name: tour.name, beginning_date: tour.date }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
@@ -26,6 +28,7 @@ const sendMessage = async (req, tour, send, users, forward) => {
       return docs;
     });
   });
+  Ydb.disconnect();
   send(chatId, 'Ваше сообщение успешно доставлено.', 'admin');
   return 'WAITING COMMAND';
 };

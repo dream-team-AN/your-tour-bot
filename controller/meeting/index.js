@@ -1,19 +1,27 @@
 'use strict';
 
+/* eslint-disable no-console */
 const end = {};
 const show = async (req, send, users, sendLocation) => {
   const Tourist = require('../../models/tourist');
   const Tour = require('../../models/tour');
+  const Info = require('../../models/info');
   const request = require('request');
-  const fs = require('fs');
+  const Ydb = require('../../db/your-tour-bot');
+  const Mdb = require('../../db/meeting-bot');
 
+  console.log('current tour 1');
+  Ydb.connect();
+  console.log('current tour 2');
   const chatId = req.body.message.chat.id;
   const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
   });
+  Ydb.disconnect();
+  Ydb.connect();
   let currentTour;
-  await Tour.find({}, (err, docs) => {
+  const tours = await Tour.find({}, (err, docs) => {
     if (err) return console.error(err);
     docs.forEach((tour) => {
       if (tourist.tours.includes(tour._id)
@@ -21,14 +29,28 @@ const show = async (req, send, users, sendLocation) => {
       && (!currentTour
         || tour.beginning_date < currentTour.beginning_date)) {
         currentTour = tour;
+        console.log('AAAAAAAAAAAAA');
+        console.log(`current tour${currentTour}1111111`);
       }
+      console.log(`current tour${currentTour}222222`);
     });
+    console.log(`current tour${currentTour}33333333`);
     return docs;
   });
-  try {
-    const file = JSON.parse(fs.readFileSync('./controller/meeting/meeting_data.json', 'utf-8'));
-    const place = file[currentTour._id].place_address;
-    send(output(file[currentTour._id]), 'none');
+  console.log(`current tour${tours}4444444`);
+  console.log(`current tour${currentTour}3`);
+  Ydb.disconnect();
+  console.log(`current tour${currentTour}4`);
+  Ydb.disconnect();
+  if (currentTour) {
+    Mdb.connect();
+    const note = await Info.findOne({ _id: currentTour._id }, (err, docs) => {
+      if (err) return console.error(err);
+      return docs;
+    });
+
+    const place = note.place_address;
+    send(output(note), 'none');
     const options = `q=${encodeURIComponent(place)}&key=${process.env.GEO_API_KEY}`;
     const link = `https://api.opencagedata.com/geocode/v1/json?${options}`;
     await request(link, (error, response, body) => {
@@ -38,9 +60,10 @@ const show = async (req, send, users, sendLocation) => {
       sendLocation(end.lat, end.lng);
       send('Что бы узнать маршрут к месту встречи отправьте боту свою локацию.', 'geo');
     });
-  } catch (err) {
+  } else {
     send('Извините, администратор ещё не добавил информацию о встрече группы. Пожалуйста, обратитесь к нему лично.', 'none');
   }
+  Mdb.disconnect();
   return 'WAITING GEO';
 };
 

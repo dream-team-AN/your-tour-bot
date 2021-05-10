@@ -1,5 +1,6 @@
 'use strict';
 
+const Ydb = require('../../db/your-tour-bot');
 const regular = require('../../regular');
 const Tourist = require('../../models/tourist');
 
@@ -7,6 +8,7 @@ const checkTourist = async (req, send) => {
   const sentMessage = req.body.message.text;
   if (fullNameValidation(sentMessage)) {
     let len;
+    Ydb.connect();
     await Tourist.find({ full_name: sentMessage }, (err, docs) => {
       if (err) return console.error(err);
       len = docs.length;
@@ -18,6 +20,7 @@ const checkTourist = async (req, send) => {
     }
 
     send('Вы не были найдены в нашей базе данных. Пожалуйста, сначала купите тур в туристическом агентстве.', 'none');
+    Ydb.disconnect();
     return 'WAITING REGISTRATION';
   }
   send('Пожалуйста, введите свое имя в корректном формате: Фамилия Имя', 'none');
