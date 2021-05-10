@@ -11,12 +11,16 @@ const opts = {
 };
 
 async function connect() {
-  await mongoose
+  const conn = await mongoose
     .connect(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.DBY}`, opts)
     .catch((err) => {
       console.error('Error occurred during an attempt to establish connection with the database');
       console.error(err);
     });
+  conn.model('city', require('../models/city'), 'city');
+  conn.model('tour', require('../models/tour'), 'tour');
+  conn.model('tourist', require('../models/tourist'), 'tourist');
+  return conn;
 }
 
 async function disconnect() {

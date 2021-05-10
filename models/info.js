@@ -1,6 +1,6 @@
 'use strict';
 
-const { Schema, model } = require('mongoose');
+const { Schema } = require('mongoose');
 
 const { ObjectId } = Schema.Types;
 
@@ -12,4 +12,4 @@ const infoSchema = new Schema({
   place_name: String,
   place_address: String
 });
-module.exports = model('info', infoSchema, 'info');
+module.exports = infoSchema;

@@ -1,6 +1,6 @@
 'use strict';
 
-const { Schema, model } = require('mongoose');
+const { Schema } = require('mongoose');
 
 const { ObjectId } = Schema.Types;
 
@@ -18,4 +18,4 @@ const tourSchema = new Schema({
       day: [Number]
     }]
 });
-module.exports = model('tour', tourSchema, 'tour');
+module.exports = tourSchema;

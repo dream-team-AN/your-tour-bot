@@ -1,14 +1,12 @@
 'use strict';
 
-const Ydb = require('../../db/your-tour-bot');
-const regular = require('../../regular');
-const Tourist = require('../../models/tourist');
-
 const checkTourist = async (req, send) => {
   const sentMessage = req.body.message.text;
   if (fullNameValidation(sentMessage)) {
     let len;
-    Ydb.connect();
+    const Ydb = require('../../db/your-tour-bot');
+    const yconn = await Ydb.connect();
+    const Tourist = yconn.models.tourist;
     await Tourist.find({ full_name: sentMessage }, (err, docs) => {
       if (err) return console.error(err);
       len = docs.length;
@@ -28,6 +26,7 @@ const checkTourist = async (req, send) => {
 };
 
 const fullNameValidation = (name) => {
+  const regular = require('../../regular');
   if (name.match(regular.validFullName)) {
     return true;
   }

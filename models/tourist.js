@@ -1,6 +1,6 @@
 'use strict';
 
-const { Schema, model } = require('mongoose');
+const { Schema } = require('mongoose');
 
 const { ObjectId } = Schema.Types;
 
@@ -11,4 +11,4 @@ const touristSchema = new Schema({
   phone_number: String,
   tours: [ObjectId]
 });
-module.exports = model('tourist', touristSchema, 'tourist');
+module.exports = touristSchema;

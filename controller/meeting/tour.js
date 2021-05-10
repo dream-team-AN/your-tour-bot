@@ -1,10 +1,10 @@
 'use strict';
 
-const regular = require('../../regular');
-const Tour = require('../../models/tour');
-
 const checkTourName = async (command, sentMessage, tour) => {
   const trip = { ...tour };
+  const Ydb = require('../../db/your-tour-bot');
+  const yconn = await Ydb.connect();
+  const Tour = yconn.models.tour;
   const tours = await Tour.find({ tour_name: sentMessage }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
@@ -19,6 +19,9 @@ const checkTourDate = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   const tourDate = dateParser(sentMessage);
   if (tourDateValidation(sentMessage)) {
+    const Ydb = require('../../db/your-tour-bot');
+    const yconn = await Ydb.connect();
+    const Tour = yconn.models.tour;
     const jorney = await Tour.findOne({ tour_name: trip.name, beginning_date: tourDate }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
@@ -38,6 +41,7 @@ const dateParser = (date) => {
   return new Date(dateStr);
 };
 const tourDateValidation = (date) => {
+  const regular = require('../../regular');
   if (date.match(regular.validDate)) {
     return true;
   }
@@ -47,6 +51,9 @@ const tourDateValidation = (date) => {
 const checkDay = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   if (tourDayValidation(sentMessage)) {
+    const Ydb = require('../../db/your-tour-bot');
+    const yconn = await Ydb.connect();
+    const Tour = yconn.models.tour;
     let dayFlag = false;
     const tours = await Tour.findOne({ tour_name: trip.name, beginning_date: trip.date }, (err, docs) => {
       if (err) return console.error(err);
@@ -66,6 +73,7 @@ const checkDay = async (command, sentMessage, tour) => {
 };
 
 const tourDayValidation = (day) => {
+  const regular = require('../../regular');
   if (day.match(regular.validDay)) {
     return true;
   }

@@ -2,12 +2,11 @@
 
 const show = async (req, send, users) => {
   const parser = require('./parse');
-  const Tourist = require('../../models/tourist');
-  const Tour = require('../../models/tour');
-  const City = require('../../models/city');
   const Ydb = require('../../db/your-tour-bot');
-
-  Ydb.connect();
+  const yconn = await Ydb.connect();
+  const Tourist = yconn.models.tourist;
+  const Tour = yconn.models.tour;
+  const City = yconn.models.city;
   const chatId = req.body.message.chat.id;
   const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
     if (err) return console.error(err);

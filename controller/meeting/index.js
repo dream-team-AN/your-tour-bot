@@ -1,60 +1,23 @@
 'use strict';
 
-/* eslint-disable no-console */
 const end = {};
 const show = async (req, send, users, sendLocation) => {
-  const Tourist = require('../../models/tourist');
-  const Tour = require('../../models/tour');
-  const Info = require('../../models/info');
   const request = require('request');
-  const Ydb = require('../../db/your-tour-bot');
   const Mdb = require('../../db/meeting-bot');
-
-  console.log('current tour 1');
-  Ydb.connect();
-  console.log('current tour 2');
-  const chatId = req.body.message.chat.id;
-  const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
-  Ydb.disconnect();
-  Ydb.connect();
-  let currentTour;
-  const tours = await Tour.find({}, (err, docs) => {
-    if (err) return console.error(err);
-    docs.forEach((tour) => {
-      if (tourist.tours.includes(tour._id)
-      && tour.ending_date > Date.now()
-      && (!currentTour
-        || tour.beginning_date < currentTour.beginning_date)) {
-        currentTour = tour;
-        console.log('AAAAAAAAAAAAA');
-        console.log(`current tour${currentTour}1111111`);
-      }
-      console.log(`current tour${currentTour}222222`);
-    });
-    console.log(`current tour${currentTour}33333333`);
-    return docs;
-  });
-  console.log(`current tour${tours}4444444`);
-  console.log(`current tour${currentTour}3`);
-  Ydb.disconnect();
-  console.log(`current tour${currentTour}4`);
-  Ydb.disconnect();
+  const currentTour = await getTour(req, users);
   if (currentTour) {
-    Mdb.connect();
-    const note = await Info.findOne({ _id: currentTour._id }, (err, docs) => {
+    const mconn = await Mdb.connect();
+    const Info = mconn.models.info;
+    const note = await Info.findOne({ tour_id: currentTour._id }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
     });
-
     const place = note.place_address;
     send(output(note), 'none');
     const options = `q=${encodeURIComponent(place)}&key=${process.env.GEO_API_KEY}`;
     const link = `https://api.opencagedata.com/geocode/v1/json?${options}`;
-    await request(link, (error, response, body) => {
-      console.error('error:', error);
+    await request(link, (err, response, body) => {
+      if (err) console.error('error:', err);
       end.lat = JSON.parse(body).results[0].geometry.lat;
       end.lng = JSON.parse(body).results[0].geometry.lng;
       sendLocation(end.lat, end.lng);
@@ -65,6 +28,33 @@ const show = async (req, send, users, sendLocation) => {
   }
   Mdb.disconnect();
   return 'WAITING GEO';
+};
+
+const getTour = async (req, users) => {
+  const Ydb = require('../../db/your-tour-bot');
+  const yconn = await Ydb.connect();
+  const Tourist = yconn.models.tourist;
+  const Tour = yconn.models.tour;
+  const chatId = req.body.message.chat.id;
+  const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
+    if (err) return console.error(err);
+    return docs;
+  });
+  let currentTour;
+  const trips = await Tour.find({}, (err, docs) => {
+    if (err) return console.error(err);
+    return docs;
+  });
+  Ydb.disconnect();
+  trips.forEach((tour) => {
+    if (tourist.tours.includes(tour._id)
+      && tour.ending_date > Date.now()
+      && (!currentTour
+        || tour.beginning_date < currentTour.beginning_date)) {
+      currentTour = tour;
+    }
+  });
+  return currentTour;
 };
 
 const output = (obj) => `❗️ Информация про встречу:\n
