@@ -1,8 +1,8 @@
 'use strict';
 
 const choose = async (tour, ask) => {
-  const Tour = require('@root/models/tour');
-  const City = require('@root/models/city');
+  const Tour = require('../../models/tour');
+  const City = require('../../models/city');
 
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
     if (err) return console.error(err);

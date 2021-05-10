@@ -1,7 +1,7 @@
 'use strict';
 
-const Tourist = require('@root/models/tourist');
-const regular = require('@root/regular');
+const regular = require('../../regular');
+const Tourist = require('../../models/tourist');
 
 const checkTourist = async (req, send) => {
   const sentMessage = req.body.message.text;

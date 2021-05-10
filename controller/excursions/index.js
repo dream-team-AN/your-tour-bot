@@ -1,10 +1,10 @@
 'use strict';
 
 const show = async (req, send, users) => {
-  const parser = require('@excursions/parse');
-  const Tourist = require('@root/models/tourist');
-  const Tour = require('@root/models/tour');
-  const City = require('@root/models/city');
+  const parser = require('./parse');
+  const Tourist = require('../../models/tourist');
+  const Tour = require('../../models/tour');
+  const City = require('../../models/city');
 
   const chatId = req.body.message.chat.id;
   const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {

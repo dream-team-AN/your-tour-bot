@@ -32,7 +32,7 @@ const output = (d) => `${d.day.condition.text}\n
 💨 Ветер: ${d.day.maxwind_kph} км/час\r
 ☔️ Осадки: ${d.day.totalprecip_mm} мм\r
 💦 Влажность: ${d.day.avghumidity}  %\r
-🌧 Вероятность доджя: ${d.day.daily_will_it_rain} %\r
+🌧 Вероятность дождя: ${d.day.daily_chance_of_rain} %\r
 🌨 Вероятность снега: ${d.day.daily_chance_of_snow} %\r
 🌅 Рассвет: ${d.astro.sunrise}\r
 🌄 Закат: ${d.astro.sunset}\n`;

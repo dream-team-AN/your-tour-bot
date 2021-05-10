@@ -2,8 +2,8 @@
 
 const end = {};
 const show = async (req, send, users, sendLocation) => {
-  const Tourist = require('@root/models/tourist');
-  const Tour = require('@root/models/tour');
+  const Tourist = require('../../models/tourist');
+  const Tour = require('../../models/tour');
   const request = require('request');
   const fs = require('fs');
 
