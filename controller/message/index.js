@@ -18,7 +18,7 @@ const sendMessage = async (req, tour, send, users, forward) => {
       if (err) return console.error(err);
       return docs;
     });
-    Ydb.disconnect();
+    await Ydb.disconnect();
     Object.entries(users).forEach(([chat, properties]) => {
       if (tourists.full_name === properties.name) {
         forward(chat, chatId, messId);

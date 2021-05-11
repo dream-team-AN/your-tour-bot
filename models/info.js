@@ -11,5 +11,5 @@ const infoSchema = new Schema({
   time: String,
   place_name: String,
   place_address: String
-});
+}, { versionKey: false });
 module.exports = infoSchema;

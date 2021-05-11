@@ -26,7 +26,7 @@ const show = async (req, send, users, sendLocation) => {
   } else {
     send('Извините, администратор ещё не добавил информацию о встрече группы. Пожалуйста, обратитесь к нему лично.', 'none');
   }
-  Mdb.disconnect();
+  await Mdb.disconnect();
   return 'WAITING GEO';
 };
 
@@ -45,7 +45,7 @@ const getTour = async (req, users) => {
     if (err) return console.error(err);
     return docs;
   });
-  Ydb.disconnect();
+  await Ydb.disconnect();
   trips.forEach((tour) => {
     if (tourist.tours.includes(tour._id)
       && tour.ending_date > Date.now()
@@ -57,11 +57,14 @@ const getTour = async (req, users) => {
   return currentTour;
 };
 
-const output = (obj) => `❗️ Информация про встречу:\n
-📅 Дата: ${obj.date} \r
+const output = (obj) => {
+  const Format = require('../utils/format');
+  return `❗️ Информация про встречу:\n
+📅 Дата: ${Format.formatDate(obj.date)} \r
 🕑 Время: ${obj.time} \r
 🏛 Место: ${obj.place_name} \r
 🗺 Точный адрес: ${obj.place_address}`;
+};
 
 const showDirection = (req, send) => {
   const start = req.body.message.location;
@@ -78,24 +81,51 @@ const showDirection = (req, send) => {
 };
 
 const setTime = async (req, tour, send) => {
-  const Format = require('@utils/format');
-  const fs = require('fs');
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
 
   if (timeValidation(sentMessage)) {
-    const file = JSON.parse(fs.readFileSync('./controller/meeting/meeting_data.json', 'utf-8'));
-    if (!file[tour.id]) file[tour.id] = {};
-
     const meetDate = new Date(tour.date.valueOf());
     const meetingDate = new Date(meetDate.setUTCDate(meetDate.getUTCDate() + (tour.day - 1)));
-    file[tour.id].date = Format.formatDate(meetingDate);
-    file[tour.id].time = sentMessage.replace(/\.|-/g, ':');
-    fs.writeFileSync('./controller/meeting/meeting_data.json', JSON.stringify(file, null, 2));
 
-    createJob(60, meetingDate, file[tour.id].time, send);
-    createJob(30, meetingDate, file[tour.id].time, send);
-    createJob(15, meetingDate, file[tour.id].time, send);
+    const Mdb = require('../../db/meeting-bot');
+    const mconn = await Mdb.connect();
+    const Info = mconn.models.info;
+    const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
+      if (err) return console.error(err);
+      return docs;
+    });
+    if (!note) {
+      const mongoose = require('mongoose');
+      Info.create(
+        {
+          _id: new mongoose.Types.ObjectId(),
+          tour_id: tour.id,
+          date: meetingDate,
+          time: sentMessage.replace(/\.|-/g, ':')
+        },
+        (err, doc) => {
+          if (err) return console.error(err);
+          // eslint-disable-next-line no-console
+          console.log(doc);
+          return doc;
+        }
+      );
+    } else {
+      Info.findByIdAndUpdate(note._id,
+        {
+          date: meetingDate,
+          time: sentMessage.replace(/\.|-/g, ':')
+        },
+        (err, doc) => {
+          if (err) return console.error(err);
+          return doc;
+        });
+    }
+
+    // createJob(60, meetingDate, file[tour.id].time, send);
+    // createJob(30, meetingDate, file[tour.id].time, send);
+    // createJob(15, meetingDate, file[tour.id].time, send);
 
     send(chatId, 'Время успешно задано.', 'admin');
     return 'WAITING COMMAND';
@@ -104,18 +134,18 @@ const setTime = async (req, tour, send) => {
   return 'WAITING TIME AGAIN';
 };
 
-const createJob = (min, meetingDate, time, send) => {
-  const schedule = require('node-schedule');
-  const date = new Date(meetingDate.valueOf());
-  date.setUTCHours(Number(time.split(':')[0]) - min);
-  date.setUTCMinutes(Number(time.split(':')[1]));
-  schedule.scheduleJob(date, () => {
-    send(`До встречи осталось ${min} минут.`, 'none');
-  });
-};
+// const createJob = (min, meetingDate, time, send) => {
+//   const schedule = require('node-schedule');
+//   const date = new Date(meetingDate.valueOf());
+//   date.setUTCHours(Number(time.split(':')[0]) - min);
+//   date.setUTCMinutes(Number(time.split(':')[1]));
+//   schedule.scheduleJob(date, () => {
+//     send(`До встречи осталось ${min} минут.`, 'none');
+//   });
+// };
 
 const timeValidation = (day) => {
-  const regular = require('@root/regular');
+  const regular = require('../../regular');
   if (day.match(regular.validTime)) {
     return true;
   }
@@ -126,7 +156,9 @@ const setPlace = async (req, tour, send) => {
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
 
-  const Tour = require('@root/models/tour');
+  const Ydb = require('../../db/your-tour-bot');
+  const yconn = await Ydb.connect();
+  const Tour = yconn.models.tour;
 
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
@@ -137,35 +169,71 @@ const setPlace = async (req, tour, send) => {
     send(chatId, 'Место успешно задано.', 'admin');
     return 'WAITING COMMAND';
   }
-
-  send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'none');
+  send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'place');
   return 'WAITING TIME AGAIN';
 };
 
 const cityHandller = async (trip, tour, sentMessage) => {
-  const City = require('@root/models/city');
-  const fs = require('fs');
+  const Ydb = require('../../db/your-tour-bot');
+  const yconn = await Ydb.connect();
+  const City = yconn.models.city;
 
-  let flag = false;
-  await City.find({}, (err, docs) => {
+  const cities = await City.find({}, (err, docs) => {
     if (err) return console.error(err);
-    const file = JSON.parse(fs.readFileSync('./controller/meeting/meeting_data.json', 'utf-8'));
-    docs.forEach((city) => {
-      trip.cities.forEach((town) => {
-        if (String(city._id) === String(town.city_id) && town.day.includes(tour.day)) {
-          if (!file[tour.id]) file[tour.id] = {};
-          file[tour.id].place_name = sentMessage;
-          city.meeting_places.forEach((place) => {
-            if (place.name === sentMessage) { file[tour.id].place_address = place.address; }
-          });
-          flag = true;
-        }
-      });
-    });
-    fs.writeFileSync('./controller/meeting/meeting_data.json', JSON.stringify(file, null, 2));
     return docs;
   });
-  return flag;
+  await Ydb.disconnect();
+  let address;
+  let cityExist = false;
+  cities.forEach(async (city) => {
+    trip.cities.forEach(async (town) => {
+      if (String(city._id) === String(town.city_id) && town.day.includes(tour.day)) {
+        cityExist = true;
+        city.meeting_places.forEach((place) => {
+          if (place.name === sentMessage) { address = place.address; }
+        });
+      }
+    });
+  });
+  if (cityExist) {
+    await writeNote(tour, sentMessage, address);
+  }
+  return cityExist;
+};
+
+const writeNote = async (tour, sentMessage, address) => {
+  const Mdb = require('../../db/meeting-bot');
+  const mconn = await Mdb.connect();
+  const Info = mconn.models.info;
+  const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
+    if (err) return console.error(err);
+    return docs;
+  });
+  if (!note) {
+    const mongoose = require('mongoose');
+    Info.create(
+      {
+        _id: new mongoose.Types.ObjectId(),
+        tour_id: tour.id,
+        place_name: sentMessage,
+        place_address: address
+      },
+      (err, doc) => {
+        if (err) return console.error(err);
+        return doc;
+      }
+    );
+  } else {
+    Info.findByIdAndUpdate(note._id,
+      {
+        place_name: sentMessage,
+        place_address: address
+      },
+      (err, doc) => {
+        if (err) return console.error(err);
+        return doc;
+      });
+  }
 };
 
 module.exports = {

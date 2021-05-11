@@ -1,8 +1,10 @@
 'use strict';
 
 const choose = async (tour, ask) => {
-  const Tour = require('../../models/tour');
-  const City = require('../../models/city');
+  const Ydb = require('../../db/your-tour-bot');
+  const yconn = await Ydb.connect();
+  const City = yconn.models.city;
+  const Tour = yconn.models.tour;
 
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
@@ -23,6 +25,7 @@ const choose = async (tour, ask) => {
     });
     return docs;
   });
+  await Ydb.disconnect();
   return places;
 };
 module.exports = { choose };

@@ -18,7 +18,7 @@ const checkTourist = async (req, send) => {
     }
 
     send('Вы не были найдены в нашей базе данных. Пожалуйста, сначала купите тур в туристическом агентстве.', 'none');
-    Ydb.disconnect();
+    await Ydb.disconnect();
     return 'WAITING REGISTRATION';
   }
   send('Пожалуйста, введите свое имя в корректном формате: Фамилия Имя', 'none');

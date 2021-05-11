@@ -12,6 +12,7 @@ const checkTourName = async (command, sentMessage, tour) => {
   if (tours.length) {
     trip.name = sentMessage;
   }
+  await Ydb.disconnect();
   return tours.length ? ['WAITING TOUR DATE', command, trip] : ['WAITING COMMAND', 'admin', trip];
 };
 
@@ -26,6 +27,7 @@ const checkTourDate = async (command, sentMessage, tour) => {
       if (err) return console.error(err);
       return docs;
     });
+    await Ydb.disconnect();
     if (jorney.ending_date > Date.now()) {
       trip.date = tourDate;
       trip.id = jorney._id;
@@ -59,6 +61,7 @@ const checkDay = async (command, sentMessage, tour) => {
       if (err) return console.error(err);
       return docs;
     });
+    await Ydb.disconnect();
     if ((+sentMessage) <= tours.duration) {
       trip.day = Number(sentMessage);
       dayFlag = true;
