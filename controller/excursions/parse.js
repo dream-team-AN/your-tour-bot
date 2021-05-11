@@ -61,9 +61,12 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
     let price = 0;
     const date = [];
     excursionDate.forEach((exDate) => {
-      Array.from(doc.getElementsByClassName('calendar-month')).forEach((el) => {
-        const calendarTitle = `${months[exDate.getUTCMonth()]} ${exDate.getUTCFullYear()}`;
-        if (calendarTitle === el.querySelector('.title').textContent) {
+      Array.from(doc.getElementsByClassName('calendar-month'))
+        .filter((el) => {
+          const calendarTitle = `${months[exDate.getUTCMonth()]} ${exDate.getUTCFullYear()}`;
+          return calendarTitle === el.querySelector('.title').textContent;
+        })
+        .map((el) => {
           Array.from(el.getElementsByTagName('td'))
             .filter((elem) => +elem.textContent.split(' ')[0].slice(0, -1) === exDate.getDate()
               && elem.textContent.split(' ')[1] !== undefined)
@@ -73,8 +76,8 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
               date.push(Format.formatDate(new Date(exDate.getUTCFullYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
               return date;
             });
-        }
-      });
+          return el;
+        });
     });
     if (flag) {
       const title = excursion;
