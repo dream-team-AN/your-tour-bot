@@ -13,10 +13,15 @@ const show = async (req, send) => {
     const link = `https://api.weatherapi.com/v1/forecast.json?${options}`;
 
     await request(link, (error, response, body) => {
-      console.error('error:', error);
-      const region = JSON.parse(body).location.name;
-      const time = JSON.parse(body).location.localtime.split(' ')[1];
-      send(`🕑 Текущее время в ${region} : ${time}`, 'none');
+      if (error) console.error('error:', error);
+      try {
+        const region = JSON.parse(body).location.name;
+        const time = JSON.parse(body).location.localtime.split(' ')[1];
+        send(`🕑 Текущее время в ${region} : ${time}`, 'none');
+      } catch (err) {
+        console.error(err);
+        send('Ошибка доступа к данным.', 'none');
+      }
     });
   } else {
     send('Операция отменена. Что бы узнать время, пожалуйста, разрешите отправку геолокации.', 'none');

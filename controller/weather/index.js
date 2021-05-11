@@ -12,13 +12,18 @@ const show = async (req, send) => {
     const link = `https://api.weatherapi.com/v1/forecast.json?${options}`;
 
     await request(link, (error, response, body) => { // eslint-disable-line no-unused-vars
-      console.error('error:', error);
-      const day1 = output(JSON.parse(body).forecast.forecastday[0]);
-      const day2 = output(JSON.parse(body).forecast.forecastday[1]);
-      const today = `📅 Сегодня: ${JSON.parse(body).forecast.forecastday[0].date}\n`;
-      const tomorrow = `📆 Завтра: ${JSON.parse(body).forecast.forecastday[1].date}\n`;
+      if (error) console.error('error:', error);
+      try {
+        const day1 = output(JSON.parse(body).forecast.forecastday[0]);
+        const day2 = output(JSON.parse(body).forecast.forecastday[1]);
+        const today = `📅 Сегодня: ${JSON.parse(body).forecast.forecastday[0].date}\n`;
+        const tomorrow = `📆 Завтра: ${JSON.parse(body).forecast.forecastday[1].date}\n`;
 
-      send(`${today}${day1}\n${tomorrow}${day2}`, 'none');
+        send(`${today}${day1}\n${tomorrow}${day2}`, 'none');
+      } catch (err) {
+        console.error(err);
+        send('Ошибка доступа к данным.', 'none');
+      }
     });
   } else {
     send('Операция отменена. Что бы узнать погоду, пожалуйста, разрешите отправку геолокации.', 'none');

@@ -16,12 +16,17 @@ const show = async (req, send, users, sendLocation) => {
     send(output(note), 'none');
     const options = `q=${encodeURIComponent(place)}&key=${process.env.GEO_API_KEY}`;
     const link = `https://api.opencagedata.com/geocode/v1/json?${options}`;
-    await request(link, (err, response, body) => {
-      if (err) console.error('error:', err);
-      end.lat = JSON.parse(body).results[0].geometry.lat;
-      end.lng = JSON.parse(body).results[0].geometry.lng;
-      sendLocation(end.lat, end.lng);
-      send('Что бы узнать маршрут к месту встречи отправьте боту свою локацию.', 'geo');
+    await request(link, (error, response, body) => {
+      if (error) console.error('error:', error);
+      try {
+        end.lat = JSON.parse(body).results[0].geometry.lat;
+        end.lng = JSON.parse(body).results[0].geometry.lng;
+        sendLocation(end.lat, end.lng);
+        send('Что бы узнать маршрут к месту встречи отправьте боту свою локацию.', 'geo');
+      } catch (err) {
+        console.error(err);
+        send('Ошибка доступа к данным.', 'none');
+      }
     });
   } else {
     send('Извините, администратор ещё не добавил информацию о встрече группы. Пожалуйста, обратитесь к нему лично.', 'none');
