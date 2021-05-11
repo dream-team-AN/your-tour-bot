@@ -9,7 +9,7 @@ const parseDestinations = async (cities, beginningDate, send) => {
   const currentDate = new Date();
   if (startDate.getUTCMonth() > (currentDate.getUTCMonth() + 1)) {
     const mes = 'Просмотр экскурсий для даного тура пока не доступен. '
-    + 'Пожалуйста, обратитесь к сервису не ранее, чем за месяц до поездки';
+      + 'Пожалуйста, обратитесь к сервису не ранее, чем за месяц до поездки';
     send(mes, 'none');
     return;
   }
@@ -64,14 +64,15 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
       Array.from(doc.getElementsByClassName('calendar-month')).forEach((el) => {
         const calendarTitle = `${months[exDate.getUTCMonth()]} ${exDate.getUTCFullYear()}`;
         if (calendarTitle === el.querySelector('.title').textContent) {
-          Array.from(el.getElementsByTagName('td')).forEach((elem) => {
-            if (+elem.textContent.split(' ')[0].slice(0, -1) === exDate.getDate()
-            && elem.textContent.split(' ')[1] !== undefined) {
+          Array.from(el.getElementsByTagName('td'))
+            .filter((elem) => +elem.textContent.split(' ')[0].slice(0, -1) === exDate.getDate()
+              && elem.textContent.split(' ')[1] !== undefined)
+            .map((elem) => {
               price = +elem.textContent.split(' ')[1];
               flag = true;
               date.push(Format.formatDate(new Date(exDate.getUTCFullYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
-            }
-          });
+              return date;
+            });
         }
       });
     });
