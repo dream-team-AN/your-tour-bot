@@ -106,8 +106,6 @@ const setTime = async (req, tour, send) => {
         },
         (err, doc) => {
           if (err) return console.error(err);
-          // eslint-disable-next-line no-console
-          console.log(doc);
           return doc;
         }
       );
@@ -123,9 +121,9 @@ const setTime = async (req, tour, send) => {
         });
     }
 
-    // createJob(60, meetingDate, file[tour.id].time, send);
-    // createJob(30, meetingDate, file[tour.id].time, send);
-    // createJob(15, meetingDate, file[tour.id].time, send);
+    createJob(60, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
+    createJob(30, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
+    createJob(15, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
 
     send(chatId, 'Время успешно задано.', 'admin');
     return 'WAITING COMMAND';
@@ -134,15 +132,15 @@ const setTime = async (req, tour, send) => {
   return 'WAITING TIME AGAIN';
 };
 
-// const createJob = (min, meetingDate, time, send) => {
-//   const schedule = require('node-schedule');
-//   const date = new Date(meetingDate.valueOf());
-//   date.setUTCHours(Number(time.split(':')[0]) - min);
-//   date.setUTCMinutes(Number(time.split(':')[1]));
-//   schedule.scheduleJob(date, () => {
-//     send(`До встречи осталось ${min} минут.`, 'none');
-//   });
-// };
+const createJob = (min, meetingDate, time, send) => {
+  const schedule = require('node-schedule');
+  const date = new Date(meetingDate.valueOf());
+  date.setUTCHours(Number(time.split(':')[0]) - min);
+  date.setUTCMinutes(Number(time.split(':')[1]));
+  schedule.scheduleJob(date, () => {
+    send(`До встречи осталось ${min} минут.`, 'none');
+  });
+};
 
 const timeValidation = (day) => {
   const regular = require('../../regular');
