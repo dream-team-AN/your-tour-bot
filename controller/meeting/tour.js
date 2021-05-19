@@ -41,10 +41,6 @@ const checkTourDate = async (command, sentMessage, tour) => {
   return ['WAITING TOUR DATE AGAIN', command, trip];
 };
 
-// const dateParser = (date) => {
-//   const dateStr = `${date}T00:00:00.000Z`;
-//   return new Date(dateStr);
-// };
 const tourDateValidation = (date) => {
   const regular = require('../../regular');
   if (date.match(regular.validDate)) {
