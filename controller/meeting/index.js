@@ -24,7 +24,6 @@ const show = async (req, send, users, sendLocation) => {
     send('Ваш тур ещё не начался.', 'none');
     return 'WAITING COMMAND';
   }
-  await Mdb.disconnect();
   return 'WAITING GEO';
 };
 
@@ -56,11 +55,9 @@ const getTour = async (req, users) => {
     if (err) return console.error(err);
     return docs;
   });
-  const currentTour = await findTour(tourist, yconn);
-
-  await Ydb.disconnect();
-
-  return currentTour;
+  // eslint-disable-next-line sonarjs/prefer-immediate-return
+  const tour = await findTour(tourist, yconn);
+  return tour;
 };
 
 const output = (obj) => {
@@ -126,11 +123,10 @@ const setTime = async (req, tour, send) => {
           return doc;
         });
     }
-
-    const createJob = require('../utils/create_job');
-    createJob(60, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
-    createJob(30, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
-    createJob(15, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
+    const cron = require('../utils/create_job');
+    await cron.createJob(60, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), chatId);
+    await cron.createJob(30, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), chatId);
+    await cron.createJob(15, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), chatId);
 
     send(chatId, 'Время успешно задано.', 'admin');
     return 'WAITING COMMAND';
@@ -159,6 +155,7 @@ const setPlace = async (req, tour, send) => {
     if (err) return console.error(err);
     return docs;
   });
+
   const flag = await cityHandller(trip, tour, sentMessage);
   if (flag) {
     send(chatId, 'Место успешно задано.', 'admin');
@@ -177,7 +174,6 @@ const cityHandller = async (trip, tour, sentMessage) => {
     if (err) return console.error(err);
     return docs;
   });
-  await Ydb.disconnect();
   let address;
   let cityExist = false;
   cities.forEach(async (city) => {

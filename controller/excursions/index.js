@@ -29,7 +29,6 @@ const show = async (req, send, users) => {
     });
     return docs;
   });
-  await Ydb.disconnect();
   parser.parseDestinations(cities, currentTour.beginning_date, send);
   send('Обработка данных. Подождите, пожалуйста.', 'none');
 

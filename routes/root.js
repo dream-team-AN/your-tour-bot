@@ -9,8 +9,12 @@ const MeetingController = require('../controller/meeting/index');
 const MessageController = require('../controller/message/index');
 const TourController = require('../controller/meeting/tour');
 const HelpController = require('../controller/start/help');
+const {
+  ask,
+  sendLocation,
+  forward
+} = require('../controller/utils/telegram_func');
 
-const url = 'https://api.telegram.org/bot';
 let tour = {};
 const user = {};
 // users: {
@@ -35,13 +39,23 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     const chatId = req.body.message.chat.id;
     const sentMessage = req.body.message.text;
     if (!user[chatId]) {
-      user[chatId] = {};
-      user[chatId].command = 'none';
-      user[chatId].state = 'WAITING COMMAND';
-      user[chatId].name = 'unknown';
+      await userInit(chatId);
     }
     try {
       [user[chatId].state, user[chatId].command] = getUserStatus(sentMessage, chatId);
+      const Mdb = require('../db/meeting-bot');
+      const mconn = await Mdb.connect();
+      const Traveler = mconn.models.traveler;
+      Traveler.updateOne({ chat_id: chatId },
+        {
+          command: user[chatId].command,
+          state: user[chatId].state
+        },
+        (err, doc) => {
+          if (err) return console.error(err);
+          return doc;
+        });
+
       if (user[chatId].state === 'WAITING COMMAND'
         && user[chatId].command !== 'none'
         && user[chatId].command !== 'error') {
@@ -62,6 +76,35 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       res.status(500).send(err);
     }
   });
+};
+
+const userInit = async (chatId) => {
+  const Mdb = require('../db/meeting-bot');
+  user[chatId] = {};
+  const mconn = await Mdb.connect();
+  const Traveler = mconn.models.traveler;
+  const voyager = await Traveler.findOne({ chat_id: chatId }, (err, docs) => {
+    if (err) return console.error(err);
+    return docs;
+  });
+  if (!voyager) {
+    const mongoose = require('mongoose');
+    Traveler.create(
+      {
+        _id: new mongoose.Types.ObjectId(),
+        command: 'none',
+        state: 'WAITING COMMAND',
+        name: 'unknown'
+      },
+      (err, doc) => {
+        if (err) return console.error(err);
+        return doc;
+      }
+    );
+  }
+  user[chatId].command = voyager.command;
+  user[chatId].state = voyager.state;
+  user[chatId].name = voyager.name;
 };
 
 const callingCommands = async (req, res, fastify) => {
@@ -100,7 +143,18 @@ const callingCommands = async (req, res, fastify) => {
         });
       });
     if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
+      const Mdb = require('../db/meeting-bot');
       user[chatId].name = sentMessage;
+      const mconn = await Mdb.connect();
+      const Traveler = mconn.models.traveler;
+      Traveler.updateOne({ chat_id: chatId },
+        {
+          name: user[chatId].name
+        },
+        (err, doc) => {
+          if (err) return console.error(err);
+          return doc;
+        });
     } else if (user[chatId].state === 'WAITING CHOICE AGAIN') {
       user[chatId].command = '/start';
     }
@@ -428,82 +482,4 @@ const adminAsking = async (status, chatId, fastify) => {
   } else if (status.state === 'WAITING MESSAGE') {
     await ask('Пожалуйста, введите сообщение.', chatId, fastify, 'none');
   }
-};
-
-const ask = async (Message, chatId, fastify, keyboard, options) => {
-  const mess = {
-    chat_id: chatId,
-    text: Message
-  };
-
-  if (keyboard === 'admin') {
-    mess.reply_markup = {
-      keyboard: [['Set meeting place'], ['Set meeting time'], ['Send message']]
-    };
-  } else if (keyboard === 'simple') {
-    mess.reply_markup = {
-      keyboard: [['tourist'], ['admin']]
-    };
-  } else if (keyboard === 'geo') {
-    mess.reply_markup = {
-      keyboard: [
-        [{
-          text: 'Send location',
-          request_location: true
-        }],
-        [{
-          text: 'Cancel operation'
-        }
-        ]
-      ]
-    };
-  } else if (keyboard === 'place') {
-    const buttons = [];
-    options.forEach((opt) => {
-      const button = [{ text: opt }];
-      buttons.push(button);
-    });
-    mess.reply_markup = {
-      keyboard: buttons
-    };
-  } else {
-    mess.reply_markup = { remove_keyboard: true };
-  }
-  await fastify.httpclient.request(`${url}${process.env.TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    content: JSON.stringify(mess)
-  });
-};
-
-const forward = async (chatId, fromChatId, messageId, fastify) => {
-  const mess = {
-    chat_id: chatId,
-    from_chat_id: fromChatId,
-    message_id: messageId
-  };
-  await fastify.httpclient.request(`${url}${process.env.TOKEN}/forwardMessage`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    content: JSON.stringify(mess)
-  });
-};
-
-const sendLocation = async (chatId, lat, lng, fastify) => {
-  const mess = {
-    chat_id: chatId,
-    latitude: lat,
-    longitude: lng
-  };
-  await fastify.httpclient.request(`${url}${process.env.TOKEN}/sendLocation`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    content: JSON.stringify(mess)
-  });
 };

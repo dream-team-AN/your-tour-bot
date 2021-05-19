@@ -25,7 +25,6 @@ const choose = async (tour, ask) => {
     });
     return docs;
   });
-  await Ydb.disconnect();
   return places;
 };
 module.exports = { choose };
