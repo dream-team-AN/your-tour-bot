@@ -2,7 +2,6 @@
 
 const end = {};
 const show = async (req, send, users, sendLocation) => {
-  const request = require('request');
   const Mdb = require('../../db/meeting-bot');
   const currentTour = await getTour(req, users);
   if (currentTour) {
@@ -12,70 +11,72 @@ const show = async (req, send, users, sendLocation) => {
       if (err) return console.error(err);
       return docs;
     });
-    const place = note.place_address;
-    send(output(note), 'none');
-    const options = `q=${encodeURIComponent(place)}&key=${process.env.GEO_API_KEY}`;
-    const link = `https://api.opencagedata.com/geocode/v1/json?${options}`;
-    await request(link, (error, response, body) => {
-      if (error) console.error('error:', error);
-      try {
-        end.lat = JSON.parse(body).results[0].geometry.lat;
-        end.lng = JSON.parse(body).results[0].geometry.lng;
-        sendLocation(end.lat, end.lng);
-        send('Что бы узнать маршрут к месту встречи отправьте боту свою локацию.', 'geo');
-      } catch (err) {
-        console.error(err);
-        send('Ошибка доступа к данным.', 'none');
-      }
-    });
+
+    if (note && note.date < Date.now) {
+      const place = note.place_address;
+      send(output(note), 'none');
+      await sendMeetingPlace(place, send, sendLocation);
+    } else {
+      send('Извините, администратор ещё не добавил информацию о встрече группы. Пожалуйста, обратитесь к нему лично.', 'none');
+      return 'WAITING COMMAND';
+    }
   } else {
-    send('Извините, администратор ещё не добавил информацию о встрече группы. Пожалуйста, обратитесь к нему лично.', 'none');
+    send('Ваш тур ещё не начался.', 'none');
+    return 'WAITING COMMAND';
   }
   await Mdb.disconnect();
   return 'WAITING GEO';
 };
 
+const sendMeetingPlace = async (place, send, sendLocation) => {
+  const request = require('request');
+  const options = `q=${encodeURIComponent(place)}&key=${process.env.GEO_API_KEY}`;
+  const link = `https://api.opencagedata.com/geocode/v1/json?${options}`;
+  await request(link, (error, response, body) => {
+    if (error) console.error('error:', error);
+    try {
+      end.lat = JSON.parse(body).results[0].geometry.lat;
+      end.lng = JSON.parse(body).results[0].geometry.lng;
+      sendLocation(end.lat, end.lng);
+      send('Что бы узнать маршрут к месту встречи отправьте боту свою локацию.', 'geo');
+    } catch (err) {
+      console.error(err);
+      send('Ошибка доступа к данным.', 'none');
+    }
+  });
+};
+
 const getTour = async (req, users) => {
+  const findTour = require('../utils/find_tour');
   const Ydb = require('../../db/your-tour-bot');
   const yconn = await Ydb.connect();
   const Tourist = yconn.models.tourist;
-  const Tour = yconn.models.tour;
   const chatId = req.body.message.chat.id;
   const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
   });
-  let currentTour;
-  const trips = await Tour.find({}, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
+  const currentTour = await findTour(tourist, yconn);
+
   await Ydb.disconnect();
-  trips.forEach((tour) => {
-    if (tourist.tours.includes(tour._id)
-      && tour.ending_date > Date.now()
-      && (!currentTour
-        || tour.beginning_date < currentTour.beginning_date)) {
-      currentTour = tour;
-    }
-  });
+
   return currentTour;
 };
 
 const output = (obj) => {
-  const Format = require('../utils/format');
+  const formatDate = require('../utils/format');
   return `❗️ Информация про встречу:\n
-📅 Дата: ${Format.formatDate(obj.date)} \r
+📅 Дата: ${formatDate(obj.date)} \r
 🕑 Время: ${obj.time} \r
 🏛 Место: ${obj.place_name} \r
 🗺 Точный адрес: ${obj.place_address}`;
 };
 
 const showDirection = (req, send) => {
-  const start = req.body.message.location;
   const sentMessage = req.body.message.text;
 
   if (sentMessage !== 'Cancel operation') {
+    const start = req.body.message.location;
     const options = `${start.latitude},${start.longitude}/${end.lat},${end.lng}`;
     const link = `https://www.google.com.ua/maps/dir/${options}?hl=ru`;
     send(`📍 Маршрут к месту встречи: \n${link}`, 'none');

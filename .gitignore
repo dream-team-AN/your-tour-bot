@@ -60,3 +60,4 @@ profile*
 #files
 secret.js
 .vercel
+.env

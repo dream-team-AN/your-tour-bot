@@ -13,41 +13,45 @@ const parseDestinations = async (cities, beginningDate, send) => {
     send(mes, 'none');
     return;
   }
-  JSDOM.fromURL('https://experience.tripster.ru/destinations/').then(async (dom) => {
+  try {
+    const dom = await JSDOM.fromURL('https://experience.tripster.ru/destinations/');
     const doc = dom.window.document;
-    Array.from(doc.getElementsByClassName('allcities__link')).forEach(async (elem) => {
-      cities.forEach(async (item) => {
+    const destinations = Array.from(doc.getElementsByClassName('allcities__link'));
+    for await (const elem of destinations) {
+      for await (const item of cities) {
         const city = elem.textContent.slice(29);
         const linkCity = elem.href;
         if (city === item.name) {
-          await parseCities(linkCity, city, startDate, item.day, send);
+          parseCities(linkCity, city, startDate, item.day, send);
         }
-      });
-    });
-  }).catch((error) => {
+      }
+    }
+  } catch (error) {
     console.error(error);
-  });
+  }
 };
 
 const parseCities = async (linkCity, city, startDate, days, send) => {
-  JSDOM.fromURL(linkCity).then(async (dom) => {
+  try {
+    const dom = await JSDOM.fromURL(linkCity);
     const doc = dom.window.document;
     let counter = 0;
-    Array.from(doc.querySelector('.list-wrap').getElementsByClassName('title')).forEach(async (elem) => {
+    const cities = Array.from(doc.querySelector('.list-wrap').getElementsByClassName('title'));
+    for await (const elem of cities) {
       if (counter < 2) {
         const excursion = elem.textContent;
         const linkExcursion = elem.href;
         counter++;
-        await parceExcursions(linkExcursion, city, excursion, startDate, days, send);
+        parceExcursions(linkExcursion, city, excursion, startDate, days, send);
       }
-    });
-  }).catch((error) => {
+    }
+  } catch (error) {
     console.error(error);
-  });
+  }
 };
 
 const parceExcursions = async (linkExcursion, city, excursion, startDate, days, send) => {
-  const Format = require('../utils/format');
+  const formatDate = require('../utils/format');
   const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Ноябрь', 'Декабрь'];
   const excursionDate = [];
   days.forEach((jour) => {
@@ -55,7 +59,8 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
     excursionDate.push(new Date(exDate.setUTCDate(exDate.getUTCDate() + (jour - 1))));
   });
 
-  JSDOM.fromURL(linkExcursion).then((dom) => {
+  try {
+    const dom = await JSDOM.fromURL(linkExcursion);
     const doc = dom.window.document;
     let flag = false;
     let price = 0;
@@ -73,7 +78,7 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
             .map((elem) => {
               price = +elem.textContent.split(' ')[1];
               flag = true;
-              date.push(Format.formatDate(new Date(exDate.getUTCFullYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
+              date.push(formatDate(new Date(exDate.getUTCFullYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
               return date;
             });
           return el;
@@ -83,7 +88,7 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
       const title = excursion;
       const description = doc.querySelector('.expage-content>div').textContent;
       const temp = doc.querySelector('.expage-content').textContent;
-      const start = temp.lastIndexOf('Место встречи');
+      const start = temp.lastIndexOf('Место встречи') + 14;
       const stop = temp.indexOf('Остались вопросы?');
       const place = doc.querySelector('.expage-content').textContent.slice(start, stop);
       const excurs = {
@@ -95,21 +100,22 @@ const parceExcursions = async (linkExcursion, city, excursion, startDate, days, 
         description,
         link: linkExcursion
       };
-      send(output(excurs), 'none');
+      const { escape } = require('html-escaper');
+      send(output(excurs, escape), 'none');
     }
-  }).catch((error) => {
+  } catch (error) {
     console.error(error);
-  });
+  }
 };
 
-const output = (ex) => `
+const output = (ex, escape) => `
 ✨ ${ex.title} ✨\n
 
 🏙 Город:  ${ex.city} \r
-💶 Цена:  ${ex.price} \r
+💶 Цена:  ${ex.price} €\r
 📅 Дата:  ${ex.date} \r
-📍 Место:  ${ex.place.replace(/\\n/g, '/n').replace(/\\t/, '/t')} \r
+📍 Место:  ${escape(ex.place)} \r
 🔗 Ссылка:  ${ex.link} \n\n
-🖌 Описание:  ${ex.description.replace(/\\n/g, '/n').replace(/\\t/, '/t')}`;
+🖌 Описание:  ${escape(ex.description)}`;
 
 module.exports = { parseDestinations };

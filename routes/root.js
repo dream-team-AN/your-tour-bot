@@ -1,6 +1,5 @@
 'use strict';
 
-/* eslint-disable no-unused-vars */
 const Place = require('../controller/meeting/place');
 const StartController = require('../controller/start/index');
 const TimeController = require('../controller/time/index');
@@ -46,13 +45,13 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
       if (user[chatId].state === 'WAITING COMMAND'
         && user[chatId].command !== 'none'
         && user[chatId].command !== 'error') {
-        await callingCommands(req, res, fastify);
+        callingCommands(req, res, fastify);
       } else {
         if (isAdminCommand(user[chatId].command)
           && user[chatId].state !== 'WAITING TOUR NAME') {
           [user[chatId].state, user[chatId].command, tour] = await tourChecker(req);
         }
-        await asking(user[chatId], chatId, fastify).then((response) => {
+        asking(user[chatId], chatId, fastify).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
@@ -70,15 +69,15 @@ const callingCommands = async (req, res, fastify) => {
   const sentMessage = req.body.message.text;
   if (isAdminCommand(user[chatId].command)) {
     user[chatId].state = await adminCommandHandler(req, tour,
-      async (chat, Message, keyboard) => {
-        await ask(Message, chat, fastify, keyboard).then((response) => {
+      (chat, Message, keyboard) => {
+        ask(Message, chat, fastify, keyboard).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
       }, user,
-      async (chat, fromChatId, messageId) => {
-        await forward(chat, fromChatId, messageId, fastify).then((response) => {
+      (chat, fromChatId, messageId) => {
+        forward(chat, fromChatId, messageId, fastify).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
@@ -86,15 +85,15 @@ const callingCommands = async (req, res, fastify) => {
       });
   } else {
     user[chatId].state = await commandHandler(req,
-      async (Message, keyboard) => {
-        await ask(Message, chatId, fastify, keyboard).then((response) => {
+      (Message, keyboard) => {
+        ask(Message, chatId, fastify, keyboard).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
         });
       }, user,
-      async (lat, lng) => {
-        await sendLocation(chatId, lat, lng, fastify).then((response) => {
+      (lat, lng) => {
+        sendLocation(chatId, lat, lng, fastify).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);
@@ -321,7 +320,7 @@ const tourChecker = async (req) => {
   return [status.state, status.command, tour];
 };
 
-const commandHandler = async (req, callback1, callback2, users) => {
+const commandHandler = (req, callback1, callback2, users) => {
   const chatId = req.body.message.chat.id;
   const commandFunctions = {
     tourist: StartController.checkTourist,
@@ -337,7 +336,7 @@ const commandHandler = async (req, callback1, callback2, users) => {
   return stateHandler(req, callback1, callback2, users);
 };
 
-const adminCommandHandler = async (req, currentTour, users, callback1, callback2) => {
+const adminCommandHandler = (req, currentTour, users, callback1, callback2) => {
   const chatId = req.body.message.chat.id;
   const commandFunctions = {
     'Send message': MessageController.sendMessage,

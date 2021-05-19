@@ -1,6 +1,5 @@
 'use strict';
 
-/* eslint-disable no-unused-vars */
 const sendMessage = async (req, tour, send, users, forward) => {
   const messId = req.body.message.message_id;
   const chatId = req.body.message.chat.id;

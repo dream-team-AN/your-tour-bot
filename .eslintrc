@@ -32,7 +32,7 @@
     "max-len": [
       "error",
       {
-        "code": 125
+        "code": 130 
       }
     ],
     "node/no-missing-require": "off",

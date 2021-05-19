@@ -12,4 +12,4 @@ const formatDate = (date) => {
   return `${dd}.${mm}.${yy}`;
 };
 
-module.exports = { formatDate };
+module.exports = formatDate;
