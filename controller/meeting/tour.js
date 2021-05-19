@@ -19,6 +19,9 @@ const checkTourName = async (command, sentMessage, tour) => {
 const checkTourDate = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   const tourDate = new Date(sentMessage);
+  const formatDate = require('../utils/format');
+  // eslint-disable-next-line no-console
+  console.log(formatDate(tourDate));
   if (tourDateValidation(sentMessage)) {
     const Ydb = require('../../db/your-tour-bot');
     const yconn = await Ydb.connect();
