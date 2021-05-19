@@ -127,6 +127,7 @@ const setTime = async (req, tour, send) => {
         });
     }
 
+    const createJob = require('../utils/create_job');
     createJob(60, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
     createJob(30, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
     createJob(15, meetingDate, sentMessage.replace(/\.|-/g, ':'), send);
@@ -136,16 +137,6 @@ const setTime = async (req, tour, send) => {
   }
   send(chatId, 'Время введено в некорректном формате. Пожалуйста, введите снова.', 'none');
   return 'WAITING TIME AGAIN';
-};
-
-const createJob = (min, meetingDate, time, send) => {
-  const schedule = require('node-schedule');
-  const date = new Date(meetingDate.valueOf());
-  date.setUTCHours(Number(time.split(':')[0]) - min);
-  date.setUTCMinutes(Number(time.split(':')[1]));
-  schedule.scheduleJob(date, () => {
-    send(`До встречи осталось ${min} минут.`, 'none');
-  });
 };
 
 const timeValidation = (day) => {

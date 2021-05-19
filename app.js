@@ -15,6 +15,4 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
   });
 
   fastify.register(require('fastify-http-client'));
-
-  // code
 };
