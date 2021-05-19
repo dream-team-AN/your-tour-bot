@@ -18,7 +18,7 @@ const checkTourName = async (command, sentMessage, tour) => {
 
 const checkTourDate = async (command, sentMessage, tour) => {
   const trip = { ...tour };
-  const tourDate = dateParser(sentMessage);
+  const tourDate = new Date(sentMessage);
   if (tourDateValidation(sentMessage)) {
     const Ydb = require('../../db/your-tour-bot');
     const yconn = await Ydb.connect();
@@ -38,10 +38,10 @@ const checkTourDate = async (command, sentMessage, tour) => {
   return ['WAITING TOUR DATE AGAIN', command, trip];
 };
 
-const dateParser = (date) => {
-  const dateStr = `${date}T00:00:00.000Z`;
-  return new Date(dateStr);
-};
+// const dateParser = (date) => {
+//   const dateStr = `${date}T00:00:00.000Z`;
+//   return new Date(dateStr);
+// };
 const tourDateValidation = (date) => {
   const regular = require('../../regular');
   if (date.match(regular.validDate)) {
