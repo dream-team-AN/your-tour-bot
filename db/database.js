@@ -1,7 +1,6 @@
 'use strict';
 
-const { ConnectionPool } = require('./mongoose-connection-pool/index');
-
-module.exports = ConnectionPool({
-  poolSize: 2
-});
+module.exports = async function connectionPool(host, db) {
+  const mongoose = require('mongoose');
+  return mongoose.createConnection(`${host}/${db}?poolSize=${2}`);
+};

@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-await-in-loop */
+
 const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
@@ -17,12 +19,12 @@ const parseDestinations = async (cities, beginningDate, send) => {
     const dom = await JSDOM.fromURL('https://experience.tripster.ru/destinations/');
     const doc = dom.window.document;
     const destinations = Array.from(doc.getElementsByClassName('allcities__link'));
-    for await (const elem of destinations) {
-      for await (const item of cities) {
+    for (const elem of destinations) {
+      for (const item of cities) {
         const city = elem.textContent.slice(29);
         const linkCity = elem.href;
         if (city === item.name) {
-          parseCities(linkCity, city, startDate, item.day, send);
+          await parseCities(linkCity, city, startDate, item.day, send);
         }
       }
     }
@@ -37,12 +39,12 @@ const parseCities = async (linkCity, city, startDate, days, send) => {
     const doc = dom.window.document;
     let counter = 0;
     const cities = Array.from(doc.querySelector('.list-wrap').getElementsByClassName('title'));
-    for await (const elem of cities) {
+    for (const elem of cities) {
       if (counter < 2) {
         const excursion = elem.textContent;
         const linkExcursion = elem.href;
         counter++;
-        parceExcursions(linkExcursion, city, excursion, startDate, days, send);
+        await parseExcursions(linkExcursion, city, excursion, startDate, days, send);
       }
     }
   } catch (error) {
@@ -50,7 +52,7 @@ const parseCities = async (linkCity, city, startDate, days, send) => {
   }
 };
 
-const parceExcursions = async (linkExcursion, city, excursion, startDate, days, send) => {
+const parseExcursions = async (linkExcursion, city, excursion, startDate, days, send) => {
   const formatDate = require('../utils/format');
   const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Ноябрь', 'Декабрь'];
   const excursionDate = [];
