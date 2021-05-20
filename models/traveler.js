@@ -10,5 +10,5 @@ const travelerSchema = new Schema({
   name: String,
   state: String,
   command: String
-});
+}, { versionKey: false });
 module.exports = travelerSchema;

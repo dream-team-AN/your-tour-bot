@@ -7,8 +7,8 @@ const { ObjectId } = Schema.Types;
 const cronSchema = new Schema({
   _id: ObjectId,
   date: Date,
-  chat_id: String,
+  chat_id: [String],
   mins: Number
 
-});
+}, { versionKey: false });
 module.exports = cronSchema;

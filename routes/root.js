@@ -92,6 +92,7 @@ const userInit = async (chatId) => {
     Traveler.create(
       {
         _id: new mongoose.Types.ObjectId(),
+        chat_id: chatId,
         command: 'none',
         state: 'WAITING COMMAND',
         name: 'unknown'
@@ -101,10 +102,14 @@ const userInit = async (chatId) => {
         return doc;
       }
     );
+    user[chatId].command = 'none';
+    user[chatId].state = 'WAITING COMMAND';
+    user[chatId].name = 'unknown';
+  } else {
+    user[chatId].command = voyager.command;
+    user[chatId].state = voyager.state;
+    user[chatId].name = voyager.name;
   }
-  user[chatId].command = voyager.command;
-  user[chatId].state = voyager.state;
-  user[chatId].name = voyager.name;
 };
 
 const callingCommands = async (req, res, fastify) => {

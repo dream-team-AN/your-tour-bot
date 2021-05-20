@@ -1,14 +1,22 @@
 'use strict';
 
-const createJob = async (mins, send, meetingDate, time, chatId) => {
-  // eslint-disable-next-line no-console
-  console.log(time);
+const createJob = async (mins, send, meetingDate, time, tour, users) => {
   const schedule = require('node-schedule');
   const date = new Date(meetingDate.valueOf());
-  date.setUTCHours(Number(time.split(':')[0]) - mins);
-  date.setUTCMinutes(Number(time.split(':')[1]));
+  date.setUTCHours(Number(time.split(':')[0]));
+  date.setUTCMinutes(Number(time.split(':')[1]) - mins);
+  const chatIDs = [];
+  const forwarding = (tourists) => {
+    Object.entries(users).forEach(([chat, properties]) => {
+      if (tourists.full_name === properties.name) {
+        chatIDs.push(chat);
+        send(chat, `До встречи осталось ${mins} минут.`, 'none');
+      }
+    });
+  };
   schedule.scheduleJob(date, () => {
-    send(`До встречи осталось ${mins} минут.`, 'none');
+    const sendMessageForMany = require('./mailing');
+    sendMessageForMany(tour, users, forwarding);
   });
   const mongoose = require('mongoose');
   const Mdb = require('../../db/meeting-bot');
@@ -17,7 +25,7 @@ const createJob = async (mins, send, meetingDate, time, chatId) => {
   Cron.create(
     {
       _id: new mongoose.Types.ObjectId(),
-      chat_id: chatId,
+      chat_id: chatIDs,
       date,
       mins
     },
@@ -28,10 +36,12 @@ const createJob = async (mins, send, meetingDate, time, chatId) => {
   );
 };
 
-const initialCreateJob = (mins, send, date, chatId) => {
+const initialCreateJob = (mins, send, date, chatIDs) => {
   const schedule = require('node-schedule');
   schedule.scheduleJob(date, () => {
-    send(chatId, `До встречи осталось ${mins} минут.`, 'none');
+    for (const chat of chatIDs) {
+      send(chat, `До встречи осталось ${mins} минут.`, 'none');
+    }
   });
 };
 

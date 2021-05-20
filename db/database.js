@@ -5,7 +5,8 @@ module.exports = async function connectionPool(host, db) {
   const opts = {
     useNewUrlParser: true,
     useFindAndModify: false,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    poolSize: 4
   };
-  return mongoose.createConnection(`${host}/${db}?poolSize=${2}`, opts);
+  return mongoose.createConnection(`${host}/${db}`, opts);
 };

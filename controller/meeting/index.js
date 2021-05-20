@@ -11,8 +11,8 @@ const show = async (req, send, users, sendLocation) => {
       if (err) return console.error(err);
       return docs;
     });
-
-    if (note && note.date < Date.now) {
+    const withoutTime = require('../utils/date_func');
+    if (note && note.date >= withoutTime(new Date())) {
       const place = note.place_address;
       send(output(note), 'none');
       await sendMeetingPlace(place, send, sendLocation);
@@ -83,7 +83,7 @@ const showDirection = (req, send) => {
   return 'WAITING COMMAND';
 };
 
-const setTime = async (req, tour, send) => {
+const setTime = async (req, tour, send, users) => {
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
 
@@ -124,9 +124,9 @@ const setTime = async (req, tour, send) => {
         });
     }
     const cron = require('../utils/create_job');
-    await cron.createJob(60, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), chatId);
-    await cron.createJob(30, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), chatId);
-    await cron.createJob(15, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), chatId);
+    await cron.createJob(60, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
+    await cron.createJob(30, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
+    await cron.createJob(15, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
 
     send(chatId, 'Время успешно задано.', 'admin');
     return 'WAITING COMMAND';

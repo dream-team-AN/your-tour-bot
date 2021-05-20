@@ -8,9 +8,10 @@ const findTour = async (tourist, yconn) => {
     if (err) return console.error(err);
     return docs;
   });
+  const withoutTime = require('./date_func');
   tours.forEach((tour) => {
     if (tourist.tours.includes(tour._id)
-      && tour.ending_date > Date.now()
+      && tour.ending_date > withoutTime(new Date())
       && (!currentTour
         || tour.beginning_date < currentTour.beginning_date)) {
       currentTour = tour;

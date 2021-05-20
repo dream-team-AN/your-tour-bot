@@ -6,9 +6,9 @@ async function connect() {
   const connectionPool = require('./database');
   try {
     const conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'meeting-bot');
-    conn.model('city', require('../models/city'), 'city');
-    conn.model('tour', require('../models/tour'), 'tour');
-    conn.model('tourist', require('../models/tourist'), 'tourist');
+    conn.model('info', require('../models/info'), 'info');
+    conn.model('cron', require('../models/cron'), 'cron');
+    conn.model('traveler', require('../models/traveler'), 'traveler');
     return conn;
   } catch (err) {
     console.error('Error occurred during an attempt to establish connection with the database');
