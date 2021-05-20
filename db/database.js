@@ -2,5 +2,10 @@
 
 module.exports = async function connectionPool(host, db) {
   const mongoose = require('mongoose');
-  return mongoose.createConnection(`${host}/${db}?poolSize=${2}`);
+  const opts = {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
+  };
+  return mongoose.createConnection(`${host}/${db}?poolSize=${2}`, opts);
 };
