@@ -32,7 +32,7 @@
     "max-len": [
       "error",
       {
-        "code": 130 
+        "code": 130
       }
     ],
     "node/no-missing-require": "off",
@@ -44,6 +44,7 @@
     "no-fallthrough": "warn",
     "no-use-before-define": "off",
     "no-alert": "warn",
+    "no-await-in-loop": "off",
     "comma-dangle": [
       "error",
       "never"

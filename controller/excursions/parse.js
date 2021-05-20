@@ -1,7 +1,5 @@
 'use strict';
 
-/* eslint-disable no-await-in-loop */
-
 const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
