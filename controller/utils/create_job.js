@@ -3,14 +3,17 @@
 const createJob = async (mins, send, meetingDate, time, tour, users) => {
   const schedule = require('node-schedule');
   const date = new Date(meetingDate.valueOf());
-  date.setHours(Number(time.split(':')[0]));
-  date.setMinutes(Number(time.split(':')[1]) - mins);
+  const currentDate = new Date();
+  date.setUTCHours(Number(time.split(':')[0]));
+  date.setUTCMinutes(Number(time.split(':')[1]) - mins + currentDate.getTimezoneOffset());
 
   const getIDs = require('./mailing');
   const chatIDs = await getIDs(tour, users);
   schedule.scheduleJob(date, () => { sendMessageForMany(chatIDs, mins, send); });
+
   send('435051384', date, 'none');
   send('435051384', new Date(), 'none');
+  send('435051384', mins, 'none');
   schedule.scheduleJob(new Date('2021-05-20T21:28:00'), () => {
     sendMessageForMany(chatIDs, mins, send);
   });
