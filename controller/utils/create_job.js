@@ -3,8 +3,8 @@
 const createJob = async (mins, send, meetingDate, time, tour, users) => {
   const schedule = require('node-schedule');
   const date = new Date(meetingDate.valueOf());
-  date.setUTCHours(Number(time.split(':')[0]));
-  date.setUTCMinutes(Number(time.split(':')[1]) - mins - 2 - 1);
+  date.setUTCHours(Number(time.split(':')[0]) - 2 - 1);
+  date.setUTCMinutes(Number(time.split(':')[1]) - mins);
   const getIDs = require('./mailing');
   const chatIDs = await getIDs(tour, users);
   schedule.scheduleJob(date, () => { sendMessageForMany(chatIDs, mins, send); });
@@ -12,10 +12,6 @@ const createJob = async (mins, send, meetingDate, time, tour, users) => {
   send('435051384', date.toDateString, 'none');
   send('435051384', new Date(), 'none');
   send('435051384', mins, 'none');
-  schedule.scheduleJob(new Date('2021-05-20T21:28:00'), () => {
-    sendMessageForMany(chatIDs, mins, send);
-  });
-
   const mongoose = require('mongoose');
   const Mdb = require('../../db/meeting-bot');
   const mconn = await Mdb.connect();

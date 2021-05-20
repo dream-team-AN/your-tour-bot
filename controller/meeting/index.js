@@ -124,9 +124,9 @@ const setTime = async (req, tour, send, users) => {
         });
     }
     const cron = require('../utils/create_job');
-    await cron.createJob(60, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
-    await cron.createJob(30, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
     await cron.createJob(15, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
+    await cron.createJob(30, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
+    await cron.createJob(60, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
 
     send(chatId, 'Время успешно задано.', 'admin');
     return 'WAITING COMMAND';
