@@ -9,8 +9,8 @@ const createJob = async (mins, send, meetingDate, time, tour, users) => {
   const chatIDs = await getIDs(tour, users);
   schedule.scheduleJob(date, () => { sendMessageForMany(chatIDs, mins, send); });
 
-  send('435051384', date.toDateString, 'none');
-  send('435051384', new Date(), 'none');
+  send('435051384', date.toDateString(), 'none');
+  // send('435051384', new Date(), 'none');
   send('435051384', mins, 'none');
   const mongoose = require('mongoose');
   const Mdb = require('../../db/meeting-bot');

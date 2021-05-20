@@ -417,7 +417,7 @@ const asking = async (status, chatId, fastify) => {
         await ask('Пожалуйста, выберите кнопку на клавиатуре, которая находится внизу вашего экрана, '
           + 'что бы подтвердить свой статус.', chatId, fastify, 'simple');
       } else if (status.state === 'WAITING CHOICE AGAIN') {
-        await ask('Пожалуйста, выберите один из вариантов на клавиатуре.', chatId, fastify, 'none');
+        await ask('Пожалуйста, выберите один из вариантов на клавиатуре.', chatId, fastify, 'simple');
       }
       break;
     }
