@@ -8,7 +8,7 @@ const createJob = async (mins, send, meetingDate, time, tour, users) => {
 
   const getIDs = require('./mailing');
   const chatIDs = await getIDs(tour, users);
-  // schedule.scheduleJob(date, () => { sendMessageForMany(chatIDs, mins, send); });
+  schedule.scheduleJob(date, () => { sendMessageForMany(chatIDs, mins, send); });
   send('435051384', date, 'none');
   send('435051384', new Date(), 'none');
   send('435051384', new Date('2021-05-20T21:28:00'), 'none');
