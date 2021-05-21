@@ -22,13 +22,13 @@ const checkTourDate = async (command, sentMessage, tour) => {
     const Ydb = require('../../db/your-tour-bot');
     const yconn = await Ydb.connect();
     const Tour = yconn.models.tour;
-    const jorney = await Tour.findOne({ tour_name: trip.name, beginning_date: tourDate }, (err, docs) => {
+    const journey = await Tour.findOne({ tour_name: trip.name, beginning_date: tourDate }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
     });
-    if (jorney.ending_date > Date.now()) {
+    if (journey.ending_date > Date.now()) {
       trip.date = tourDate;
-      trip.id = jorney._id;
+      trip.id = journey._id;
     }
     const state = command === 'Send message' ? 'WAITING MESSAGE' : 'WAITING DAY';
     return trip.date ? [state, command, trip] : ['WAITING COMMAND', 'admin', trip];
@@ -38,10 +38,7 @@ const checkTourDate = async (command, sentMessage, tour) => {
 
 const tourDateValidation = (date) => {
   const regular = require('../../regular');
-  if (date.match(regular.validDate)) {
-    return true;
-  }
-  return false;
+  return !!date.match(regular.validDate);
 };
 
 const checkDay = async (command, sentMessage, tour) => {
