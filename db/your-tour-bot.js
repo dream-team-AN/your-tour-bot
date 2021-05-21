@@ -1,23 +1,18 @@
 'use strict';
 
-let conn;
-
-async function connect() {
-  const connectionPool = require('./database');
-  try {
-    conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'your-tour-bot');
-    conn.model('city', require('../models/city'), 'city');
-    conn.model('tour', require('../models/tour'), 'tour');
-    conn.model('tourist', require('../models/tourist'), 'tourist');
-    return conn;
-  } catch (err) {
-    console.error('Error occurred during an attempt to establish connection with the database');
-    console.error(err);
+class MeetingConnect {
+  async connect() {
+    const connectionPool = require('./database');
+    try {
+      this.conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'yout-tour-bot');
+      this.conn.model('info', require('../models/info'), 'info');
+      this.conn.model('cron', require('../models/cron'), 'cron');
+      this.conn.model('traveler', require('../models/traveler'), 'traveler');
+    } catch (err) {
+      console.error('Error occurred during an attempt to establish connection with the database');
+      console.error(err);
+    }
   }
-  return null;
 }
 
-module.exports = {
-  connect,
-  conn
-};
+module.exports = new MeetingConnect();

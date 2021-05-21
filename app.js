@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict';
 
 const path = require('path');
@@ -38,7 +40,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
 
   const dotenv = require('dotenv');
   dotenv.config();
-  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://api-your-tour-bot.vercel.app/`;
+  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://51b24080838b.ngrok.io/`;
   const request = require('request');
   await request(link);
 };
