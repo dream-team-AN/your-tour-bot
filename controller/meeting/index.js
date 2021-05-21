@@ -145,9 +145,9 @@ const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
   });
   let currentCityId;
   trip.cities.forEach((city) => {
-    if (city.day.includes(tour.day)) currentCityId = city._id;
+    if (city.day.includes(tour.day)) currentCityId = city.city_id;
   });
-  const currentCity = await City.find({ _id: currentCityId }, (err, docs) => {
+  const currentCity = await City.findOne({ _id: currentCityId }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
   });
