@@ -470,24 +470,43 @@ const asking = async (status, chatId, fastify) => {
 };
 
 const adminAsking = async (status, chatId, fastify) => {
-  // todo: case?
-  if (status.state === 'WAITING TOUR NAME') {
-    await ask('Пожалуйста, введите название тура.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING TOUR DATE') {
-    await ask('Пожалуйста, введите дату начала тура в формате год-месяц-день.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING DAY') {
-    await ask('Пожалуйста, введите день тура.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING TIME') {
-    await ask('Пожалуйста, введите время встречи.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING TOUR DATE AGAIN') {
-    await ask('Дата начала тура введена в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING DAY AGAIN') {
-    await ask('День тура введён в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
-  } else if (status.state === 'WAITING PLACE') {
-    Place.choose(tour, async (places) => {
-      await ask('Пожалуйста, выберите место встречи из списка доступных мест.', chatId, fastify, 'place', places);
-    });
-  } else if (status.state === 'WAITING MESSAGE') {
-    await ask('Пожалуйста, введите сообщение.', chatId, fastify, 'none');
+  switch (status.state) {
+    case 'WAITING TOUR NAME': {
+      await ask('Пожалуйста, введите название тура.', chatId, fastify, 'none');
+      break;
+    }
+    case 'WAITING TOUR DATE': {
+      await ask('Пожалуйста, введите дату начала тура в формате год-месяц-день.', chatId, fastify, 'none');
+      break;
+    }
+    case 'WAITING DAY': {
+      await ask('Пожалуйста, введите день тура.', chatId, fastify, 'none');
+      break;
+    }
+    case 'WAITING TIME': {
+      await ask('Пожалуйста, введите время встречи.', chatId, fastify, 'none');
+      break;
+    }
+    case 'WAITING TOUR DATE AGAIN': {
+      await ask('Дата начала тура введена в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
+      break;
+    }
+    case 'WAITING DAY AGAIN': {
+      await ask('День тура введён в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
+      break;
+    }
+    case 'WAITING PLACE': {
+      Place.choose(tour, async (places) => {
+        await ask('Пожалуйста, выберите место встречи из списка доступных мест.', chatId, fastify, 'place', places);
+      });
+      break;
+    }
+    case 'WAITING MESSAGE': {
+      await ask('Пожалуйста, введите сообщение.', chatId, fastify, 'none');
+      break;
+    }
+    default: {
+      await ask('Пожалуйста, следуйте инструкциям.', chatId, fastify, 'none');
+    }
   }
 };
