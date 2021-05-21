@@ -32,4 +32,10 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
   for (const job of jobs) {
     cron.initialCreateJob(job.mins, send, job.date, job.chatId);
   }
+
+  const dotenv = require('dotenv');
+  dotenv.config();
+  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://api-your-tour-bot.vercel.app/`;
+  const request = require('request');
+  await request(link);
 };

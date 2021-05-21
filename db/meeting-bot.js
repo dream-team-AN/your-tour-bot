@@ -1,8 +1,6 @@
 'use strict';
 
 async function connect() {
-  const dotenv = require('dotenv');
-  dotenv.config();
   const connectionPool = require('./database');
   try {
     const conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'meeting-bot');
