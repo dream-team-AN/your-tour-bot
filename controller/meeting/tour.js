@@ -70,10 +70,7 @@ const checkDay = async (command, sentMessage, tour) => {
 
 const tourDayValidation = (day) => {
   const regular = require('../../regular');
-  if (day.match(regular.validDay)) {
-    return true;
-  }
-  return false;
+  return !!day.match(regular.validDay);
 };
 
 module.exports = {
