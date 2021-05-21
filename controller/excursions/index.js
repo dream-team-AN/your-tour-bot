@@ -30,7 +30,6 @@ const show = async (req, send, users) => {
     return docs;
   });
   send('Обработка данных. Подождите, пожалуйста.', 'none');
-  // todo: should we waite till Parse end?
   await parser.parseDestinations(cities, currentTour.beginning_date, send);
 
   return 'WAITING COMMAND';

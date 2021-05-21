@@ -193,25 +193,19 @@ const cityHandller = async (trip, tour, sentMessage) => {
     if (err) return console.error(err);
     return docs;
   });
-  let address;
+  let currentPlace;
   let cityExist = false;
 
   cities.forEach((city) => {
     for (const town of trip.cities) {
-      if (String(city._id) === String(town.city_id) && town.day.includes(tour.day)) {
+      if (JSON.stringify(city._id) === JSON.stringify(town.city_id) && town.day.includes(tour.day)) {
         cityExist = true;
-        // eslint-disable-next-line no-loop-func
-        city.meeting_places.forEach((place) => {
-          if (place.name === sentMessage) {
-            // todo: probably we need to stop looping if we found adress? Use find? refactor
-            address = place.address;
-          }
-        });
+        currentPlace = city.meeting_places.find((place) => place.name === sentMessage);
       }
     }
   });
   if (cityExist) {
-    await writeNote(tour, sentMessage, address);
+    await writeNote(tour, sentMessage, currentPlace.address);
   }
   return cityExist;
 };

@@ -447,7 +447,7 @@ const asking = async (status, chatId, fastify) => {
       } else if (status.state === 'WAITING COMMAND') {
         await ask('Пожалуйста, выберите команду из списка.', chatId, fastify, 'admin');
       } else if (status.state === 'WAITING COMMAND AGAIN') {
-        await ask('Пожалуйста, выберите команду из списка или введите /start..', chatId, fastify, 'admin');
+        await ask('Пожалуйста, выберите команду из списка или введите /start.', chatId, fastify, 'admin');
       }
       break;
     }
