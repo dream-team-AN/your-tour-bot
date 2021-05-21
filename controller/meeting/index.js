@@ -56,8 +56,7 @@ const getTour = async (req, users) => {
     return docs;
   });
   // eslint-disable-next-line sonarjs/prefer-immediate-return
-  const tour = await findTour(tourist, yconn);
-  return tour;
+  return await findTour(tourist, yconn);
 };
 
 const output = (obj) => {
@@ -160,10 +159,7 @@ const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
 
 const timeValidation = (day) => {
   const regular = require('../../regular');
-  if (day.match(regular.validTime)) {
-    return true;
-  }
-  return false;
+  return !!day.match(regular.validTime);
 };
 
 const setPlace = async (req, tour, send) => {
@@ -199,15 +195,19 @@ const cityHandller = async (trip, tour, sentMessage) => {
   });
   let address;
   let cityExist = false;
-  cities.forEach(async (city) => {
-    trip.cities.forEach(async (town) => {
+
+  cities.forEach((city) => {
+    for (const town of trip.cities) {
       if (String(city._id) === String(town.city_id) && town.day.includes(tour.day)) {
         cityExist = true;
         city.meeting_places.forEach((place) => {
-          if (place.name === sentMessage) { address = place.address; }
+          if (place.name === sentMessage) {
+            //todo: probably we need to stop looping if we found adress? Use find? refactor
+            address = place.address;
+          }
         });
       }
-    });
+    }
   });
   if (cityExist) {
     await writeNote(tour, sentMessage, address);

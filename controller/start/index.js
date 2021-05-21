@@ -26,10 +26,7 @@ const checkTourist = async (req, send) => {
 
 const fullNameValidation = (name) => {
   const regular = require('../../regular');
-  if (name.match(regular.validFullName)) {
-    return true;
-  }
-  return false;
+  return !!name.match(regular.validFullName);
 };
 
 const checkPassword = async (req, send) => {
