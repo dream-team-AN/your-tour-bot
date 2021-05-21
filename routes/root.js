@@ -468,6 +468,7 @@ const asking = async (status, chatId, fastify) => {
 };
 
 const adminAsking = async (status, chatId, fastify) => {
+  //todo: case?
   if (status.state === 'WAITING TOUR NAME') {
     await ask('Пожалуйста, введите название тура.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE') {
