@@ -1,9 +1,9 @@
 'use strict';
 
-const createJob = async (mins, send, meetingDate, time, tour, users) => {
+const createJob = async (mins, send, meetingDate, time, gmt, tour, users) => {
   const schedule = require('node-schedule');
   const date = new Date(meetingDate.valueOf());
-  date.setUTCHours(Number(time.split(':')[0]) - 2 - 1);
+  date.setUTCHours(Number(time.split(':')[0]) - gmt - 1);
   date.setUTCMinutes(Number(time.split(':')[1]) - mins);
   const getIDs = require('./mailing');
   const chatIDs = await getIDs(tour, users);

@@ -123,16 +123,39 @@ const setTime = async (req, tour, send, users) => {
           return doc;
         });
     }
-    const cron = require('../utils/create_job');
-    await cron.createJob(15, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
-    await cron.createJob(30, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
-    await cron.createJob(60, send, meetingDate, sentMessage.replace(/\.|-/g, ':'), tour, users);
+
+    const meetingTime = sentMessage.replace(/\.|-/g, ':');
+    await settingCron(tour, send, meetingDate, meetingTime, users);
 
     send(chatId, 'Время успешно задано.', 'admin');
     return 'WAITING COMMAND';
   }
   send(chatId, 'Время введено в некорректном формате. Пожалуйста, введите снова.', 'none');
   return 'WAITING TIME AGAIN';
+};
+
+const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
+  const Ydb = require('../../db/your-tour-bot');
+  const yconn = await Ydb.connect();
+  const Tour = yconn.models.tour;
+  const City = yconn.models.city;
+  const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
+    if (err) return console.error(err);
+    return docs;
+  });
+  let currentCityId;
+  trip.cities.forEach((city) => {
+    if (city.day.includes(tour.day)) currentCityId = city._id;
+  });
+  const currentCity = await City.find({ _id: currentCityId }, (err, docs) => {
+    if (err) return console.error(err);
+    return docs;
+  });
+  const gmt = +currentCity.timezone.slice(3);
+  const cron = require('../utils/create_job');
+  await cron.createJob(15, send, meetingDate, meetingTime, gmt, tour, users);
+  await cron.createJob(30, send, meetingDate, meetingTime, gmt, tour, users);
+  await cron.createJob(60, send, meetingDate, meetingTime, gmt, tour, users);
 };
 
 const timeValidation = (day) => {
