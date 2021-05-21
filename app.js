@@ -16,9 +16,12 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
 
   fastify.register(require('fastify-http-client'));
 
+  const Ydb = require('./db/your-tour-bot');
+  await Ydb.connect();
   const Mdb = require('./db/meeting-bot');
-  const mconn = await Mdb.connect();
-  const Cron = mconn.models.cron;
+  await Mdb.connect();
+
+  const Cron = Mdb.conn.models.cron;
   let jobs = await Cron.find({}, (err, docs) => {
     if (err) return console.error(err);
     return docs;

@@ -1,9 +1,11 @@
 'use strict';
 
+let conn;
+
 async function connect() {
   const connectionPool = require('./database');
   try {
-    const conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'meeting-bot');
+    conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'meeting-bot');
     conn.model('info', require('../models/info'), 'info');
     conn.model('cron', require('../models/cron'), 'cron');
     conn.model('traveler', require('../models/traveler'), 'traveler');
@@ -16,5 +18,6 @@ async function connect() {
 }
 
 module.exports = {
-  connect
+  connect,
+  conn
 };

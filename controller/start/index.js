@@ -5,8 +5,7 @@ const checkTourist = async (req, send) => {
   if (fullNameValidation(sentMessage)) {
     let len;
     const Ydb = require('../../db/your-tour-bot');
-    const yconn = await Ydb.connect();
-    const Tourist = yconn.models.tourist;
+    const Tourist = Ydb.conn.models.tourist;
     await Tourist.find({ full_name: sentMessage }, (err, docs) => {
       if (err) return console.error(err);
       len = docs.length;

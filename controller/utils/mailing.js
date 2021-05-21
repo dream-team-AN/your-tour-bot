@@ -2,9 +2,8 @@
 
 const getIDs = async (tour, users) => {
   const Ydb = require('../../db/your-tour-bot');
-  const yconn = await Ydb.connect();
-  const Tourist = yconn.models.tourist;
-  const Tour = yconn.models.tour;
+  const Tourist = Ydb.conn.models.tourist;
+  const Tour = Ydb.conn.models.tour;
   const chatIDs = [];
   const trip = await Tour.findOne({ tour_name: tour.name, beginning_date: tour.date }, (err, docs) => {
     if (err) return console.error(err);

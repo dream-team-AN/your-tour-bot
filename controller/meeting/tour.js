@@ -3,8 +3,7 @@
 const checkTourName = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   const Ydb = require('../../db/your-tour-bot');
-  const yconn = await Ydb.connect();
-  const Tour = yconn.models.tour;
+  const Tour = Ydb.conn.models.tour;
   const tours = await Tour.find({ tour_name: sentMessage }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
@@ -20,8 +19,7 @@ const checkTourDate = async (command, sentMessage, tour) => {
   const tourDate = new Date(sentMessage);
   if (tourDateValidation(sentMessage)) {
     const Ydb = require('../../db/your-tour-bot');
-    const yconn = await Ydb.connect();
-    const Tour = yconn.models.tour;
+    const Tour = Ydb.conn.models.tour;
     const journey = await Tour.findOne({ tour_name: trip.name, beginning_date: tourDate }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
@@ -45,8 +43,7 @@ const checkDay = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   if (tourDayValidation(sentMessage)) {
     const Ydb = require('../../db/your-tour-bot');
-    const yconn = await Ydb.connect();
-    const Tour = yconn.models.tour;
+    const Tour = Ydb.conn.models.tour;
     let dayFlag = false;
     const tours = await Tour.findOne({ tour_name: trip.name, beginning_date: trip.date }, (err, docs) => {
       if (err) return console.error(err);

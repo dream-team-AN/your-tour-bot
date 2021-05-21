@@ -46,8 +46,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     try {
       [user[chatId].state, user[chatId].command] = getUserStatus(sentMessage, chatId);
       const Mdb = require('../db/meeting-bot');
-      const mconn = await Mdb.connect();
-      const Traveler = mconn.models.traveler;
+      const Traveler = Mdb.conn.models.traveler;
       Traveler.updateOne({ chat_id: chatId },
         {
           command: user[chatId].command,
@@ -83,8 +82,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
 const userInit = async (chatId) => {
   const Mdb = require('../db/meeting-bot');
   user[chatId] = {};
-  const mconn = await Mdb.connect();
-  const Traveler = mconn.models.traveler;
+  const Traveler = Mdb.conn.models.traveler;
   const voyager = await Traveler.findOne({ chat_id: chatId }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
@@ -152,8 +150,7 @@ const callingCommands = async (req, res, fastify) => {
     if (user[chatId].command === 'tourist' && user[chatId].state === 'WAITING COMMAND') {
       const Mdb = require('../db/meeting-bot');
       user[chatId].name = sentMessage;
-      const mconn = await Mdb.connect();
-      const Traveler = mconn.models.traveler;
+      const Traveler = Mdb.conn.models.traveler;
       Traveler.updateOne({ chat_id: chatId },
         {
           name: user[chatId].name

@@ -5,8 +5,7 @@ const show = async (req, send, users, sendLocation) => {
   const Mdb = require('../../db/meeting-bot');
   const currentTour = await getTour(req, users);
   if (currentTour) {
-    const mconn = await Mdb.connect();
-    const Info = mconn.models.info;
+    const Info = Mdb.conn.models.info;
     const note = await Info.findOne({ tour_id: currentTour._id }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
@@ -48,15 +47,14 @@ const sendMeetingPlace = async (place, send, sendLocation) => {
 const getTour = async (req, users) => {
   const findTour = require('../utils/find_tour');
   const Ydb = require('../../db/your-tour-bot');
-  const yconn = await Ydb.connect();
-  const Tourist = yconn.models.tourist;
+  const Tourist = Ydb.conn.models.tourist;
   const chatId = req.body.message.chat.id;
   const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
   });
   // eslint-disable-next-line no-return-await
-  return await findTour(tourist, yconn);
+  return await findTour(tourist, Ydb.conn);
 };
 
 const output = (obj) => {
@@ -91,8 +89,7 @@ const setTime = async (req, tour, send, users) => {
     const meetingDate = new Date(meetDate.setUTCDate(meetDate.getUTCDate() + (tour.day - 1)));
 
     const Mdb = require('../../db/meeting-bot');
-    const mconn = await Mdb.connect();
-    const Info = mconn.models.info;
+    const Info = Mdb.conn.models.info;
     const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
@@ -135,9 +132,8 @@ const setTime = async (req, tour, send, users) => {
 
 const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
   const Ydb = require('../../db/your-tour-bot');
-  const yconn = await Ydb.connect();
-  const Tour = yconn.models.tour;
-  const City = yconn.models.city;
+  const Tour = Ydb.conn.models.tour;
+  const City = Ydb.conn.models.city;
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
@@ -167,8 +163,7 @@ const setPlace = async (req, tour, send) => {
   const sentMessage = req.body.message.text;
 
   const Ydb = require('../../db/your-tour-bot');
-  const yconn = await Ydb.connect();
-  const Tour = yconn.models.tour;
+  const Tour = Ydb.conn.models.tour;
 
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
@@ -186,8 +181,7 @@ const setPlace = async (req, tour, send) => {
 
 const cityHandller = async (trip, tour, sentMessage) => {
   const Ydb = require('../../db/your-tour-bot');
-  const yconn = await Ydb.connect();
-  const City = yconn.models.city;
+  const City = Ydb.conn.models.city;
 
   const cities = await City.find({}, (err, docs) => {
     if (err) return console.error(err);
@@ -212,8 +206,7 @@ const cityHandller = async (trip, tour, sentMessage) => {
 
 const writeNote = async (tour, sentMessage, address) => {
   const Mdb = require('../../db/meeting-bot');
-  const mconn = await Mdb.connect();
-  const Info = mconn.models.info;
+  const Info = Mdb.conn.models.info;
   const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
     return docs;

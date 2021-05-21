@@ -1,10 +1,11 @@
 'use strict';
 
+let conn;
+
 async function connect() {
   const connectionPool = require('./database');
   try {
-    // todo: move connection pool creation out from function that reinvoked on each require
-    const conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'your-tour-bot');
+    conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'your-tour-bot');
     conn.model('city', require('../models/city'), 'city');
     conn.model('tour', require('../models/tour'), 'tour');
     conn.model('tourist', require('../models/tourist'), 'tourist');
@@ -17,5 +18,6 @@ async function connect() {
 }
 
 module.exports = {
-  connect
+  connect,
+  conn
 };

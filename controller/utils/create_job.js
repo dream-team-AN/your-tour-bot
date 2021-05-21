@@ -12,8 +12,7 @@ const createJob = async (mins, send, meetingDate, time, gmt, tour, users) => {
 
   const mongoose = require('mongoose');
   const Mdb = require('../../db/meeting-bot');
-  const mconn = await Mdb.connect();
-  const Cron = mconn.models.cron;
+  const Cron = Mdb.conn.models.cron;
   Cron.create(
     {
       _id: new mongoose.Types.ObjectId(),
