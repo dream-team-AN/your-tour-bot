@@ -1,7 +1,11 @@
 'use strict';
 
+/* eslint-disable no-console */
 const url = 'https://api.telegram.org/bot';
 const ask = async (Message, chatId, fastify, keyboard, options) => {
+  console.log(Message);
+  console.log(keyboard);
+  console.log(options);
   const mess = {
     chat_id: chatId,
     text: Message
@@ -28,7 +32,7 @@ const ask = async (Message, chatId, fastify, keyboard, options) => {
         ]
       ]
     };
-  } else if (keyboard === 'place') {
+  } else if (keyboard === 'tour_info') {
     const buttons = [];
     options.forEach((opt) => {
       const button = [{ text: opt }];

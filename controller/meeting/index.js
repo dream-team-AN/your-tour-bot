@@ -53,7 +53,6 @@ const getTour = async (req, users) => {
     if (err) return console.error(err);
     return docs;
   });
-  // eslint-disable-next-line no-return-await
   return await findTour(tourist, Ydb.conn);
 };
 
@@ -164,7 +163,6 @@ const setPlace = async (req, tour, send) => {
 
   const Ydb = require('../../db/your-tour-bot');
   const Tour = Ydb.conn.models.tour;
-
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
@@ -177,7 +175,7 @@ const setPlace = async (req, tour, send) => {
   }
   const Place = require('../controller/meeting/place');
   Place.choose(tour, async (places) => {
-    send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'place', places);
+    send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'tour_info', places);
   });
   return 'WAITING TIME AGAIN';
 };

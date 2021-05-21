@@ -1,6 +1,9 @@
 'use strict';
 
 const Place = require('../controller/meeting/place');
+const Name = require('../controller/meeting/name');
+const TourDate = require('../controller/meeting/date');
+const Day = require('../controller/meeting/day');
 const StartController = require('../controller/start/index');
 const TimeController = require('../controller/time/index');
 const WeatherController = require('../controller/weather/index');
@@ -469,15 +472,21 @@ const asking = async (status, chatId, fastify) => {
 const adminAsking = async (status, chatId, fastify) => {
   switch (status.state) {
     case 'WAITING TOUR NAME': {
-      await ask('Пожалуйста, введите название тура.', chatId, fastify, 'none');
+      Name.choose(async (names) => {
+        await ask('Пожалуйста, введите или выберите название тура.', chatId, fastify, 'tour_info', names);
+      });
       break;
     }
     case 'WAITING TOUR DATE': {
-      await ask('Пожалуйста, введите дату начала тура в формате год-месяц-день.', chatId, fastify, 'none');
+      TourDate.choose(tour, async (dates) => {
+        await ask('Пожалуйста, введите или выберите дату начала тура в формате год-месяц-день.', chatId, fastify, 'tour_info', dates);
+      });
       break;
     }
     case 'WAITING DAY': {
-      await ask('Пожалуйста, введите день тура.', chatId, fastify, 'none');
+      Day.choose(tour, async (days) => {
+        await ask('Пожалуйста, введите или выберите день тура.', chatId, fastify, 'tour_info', days);
+      });
       break;
     }
     case 'WAITING TIME': {
@@ -485,16 +494,20 @@ const adminAsking = async (status, chatId, fastify) => {
       break;
     }
     case 'WAITING TOUR DATE AGAIN': {
-      await ask('Дата начала тура введена в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
+      TourDate.choose(tour, async (dates) => {
+        await ask('Дата начала тура введена в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'tour_info', dates);
+      });
       break;
     }
     case 'WAITING DAY AGAIN': {
-      await ask('День тура введён в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'none');
+      Day.choose(tour, async (days) => {
+        await ask('День тура введён в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'tour_info', days);
+      });
       break;
     }
     case 'WAITING PLACE': {
       Place.choose(tour, async (places) => {
-        await ask('Пожалуйста, выберите место встречи из списка доступных мест.', chatId, fastify, 'place', places);
+        await ask('Пожалуйста, выберите место встречи из списка доступных мест.', chatId, fastify, 'tour_info', places);
       });
       break;
     }

@@ -3,16 +3,16 @@
 const choose = async (tour, ask) => {
   const Ydb = require('../../db/your-tour-bot');
   const Tour = Ydb.conn.models.tour;
-  const dates = [];
-  await Tour.find({ tour_name: tour.name }, (err, docs) => {
+  const days = [];
+  await Tour.findOne({ _id: tour.id }, (err, doc) => {
     if (err) return console.error(err);
-    docs.forEach((trip) => {
-      dates.push(trip.beginning_date);
-    });
-    ask(dates);
-    return docs;
+    for (let i = 0; i < doc.duration; i++) {
+      days.push(i + 1);
+    }
+    ask(days);
+    return doc;
   });
-  return dates;
+  return days;
 };
 
 module.exports = { choose };
