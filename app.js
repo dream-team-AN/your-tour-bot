@@ -23,13 +23,13 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     if (err) return console.error(err);
     return docs;
   });
-  const cron = require('./controller/utils/create_job');
+  const { initialCreateJob } = require('./controller/utils/create_job');
   jobs = jobs.filter((job) => job.date >= Date.now);
   const { ask } = require('./controller/utils/telegram_func');
   const send = (chat, Message, keyboard) => {
     ask(Message, chat, fastify, keyboard);
   };
   for (const job of jobs) {
-    cron.initialCreateJob(job.mins, send, job.date, job.chatId);
+    initialCreateJob(job.mins, send, job.date, job.chatId);
   }
 };
