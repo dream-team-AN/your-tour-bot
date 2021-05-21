@@ -29,8 +29,9 @@ const show = async (req, send, users) => {
     });
     return docs;
   });
-  parser.parseDestinations(cities, currentTour.beginning_date, send);
   send('Обработка данных. Подождите, пожалуйста.', 'none');
+  // todo: should we waite till Parse end?
+  await parser.parseDestinations(cities, currentTour.beginning_date, send);
 
   return 'WAITING COMMAND';
 };

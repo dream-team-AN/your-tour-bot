@@ -15,6 +15,8 @@ const {
   forward
 } = require('../controller/utils/telegram_func');
 
+// todo: split this files, it's to large
+
 let tour = {};
 const user = {};
 // users: {
@@ -32,7 +34,7 @@ const user = {};
 
 module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-vars
   fastify.register(require('fastify-http-client'));
-  fastify.get('/', async () => ({ root: true }));
+  fastify.get('/', () => ({ root: true }));
 
   fastify.post('/', async (req, res) => {
     if (!req.body.message || !req.body.message.chat || !req.body.message.chat.id) return;
@@ -468,6 +470,7 @@ const asking = async (status, chatId, fastify) => {
 };
 
 const adminAsking = async (status, chatId, fastify) => {
+  //todo: case?
   if (status.state === 'WAITING TOUR NAME') {
     await ask('Пожалуйста, введите название тура.', chatId, fastify, 'none');
   } else if (status.state === 'WAITING TOUR DATE') {

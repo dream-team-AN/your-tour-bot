@@ -3,7 +3,7 @@
 const createJob = async (mins, send, meetingDate, time, gmt, tour, users) => {
   const schedule = require('node-schedule');
   const date = new Date(meetingDate.valueOf());
-  date.setUTCHours(Number(time.split(':')[0]) - gmt - 1);
+  date.setUTCHours(Number(time.split(':')[0]) - gmt - 1); // todo: use date-fns/dat.js to mange dates, do not with dates as with strings
   date.setUTCMinutes(Number(time.split(':')[1]) - mins);
   const getIDs = require('./mailing');
   const chatIDs = await getIDs(tour, users);
