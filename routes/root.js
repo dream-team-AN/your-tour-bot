@@ -117,8 +117,8 @@ const callingCommands = async (req, res, fastify) => {
   const sentMessage = req.body.message.text;
   if (isAdminCommand(user[chatId].command)) {
     user[chatId].state = await adminCommandHandler(req, tour,
-      (chat, Message, keyboard) => {
-        ask(Message, chat, fastify, keyboard).then((response) => {
+      (chat, Message, keyboard, options) => {
+        ask(Message, chat, fastify, keyboard, options).then((response) => {
           res.status(200).send(response);
         }).catch((error) => {
           res.send(error);

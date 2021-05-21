@@ -175,7 +175,10 @@ const setPlace = async (req, tour, send) => {
     send(chatId, 'Место успешно задано.', 'admin');
     return 'WAITING COMMAND';
   }
-  send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'place');
+  const Place = require('../controller/meeting/place');
+  Place.choose(tour, async (places) => {
+    send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'place', places);
+  });
   return 'WAITING TIME AGAIN';
 };
 
