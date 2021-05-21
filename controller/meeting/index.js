@@ -55,7 +55,7 @@ const getTour = async (req, users) => {
     if (err) return console.error(err);
     return docs;
   });
-  // eslint-disable-next-line sonarjs/prefer-immediate-return
+  // eslint-disable-next-line no-return-await
   return await findTour(tourist, yconn);
 };
 
@@ -200,9 +200,10 @@ const cityHandller = async (trip, tour, sentMessage) => {
     for (const town of trip.cities) {
       if (String(city._id) === String(town.city_id) && town.day.includes(tour.day)) {
         cityExist = true;
+        // eslint-disable-next-line no-loop-func
         city.meeting_places.forEach((place) => {
           if (place.name === sentMessage) {
-            //todo: probably we need to stop looping if we found adress? Use find? refactor
+            // todo: probably we need to stop looping if we found adress? Use find? refactor
             address = place.address;
           }
         });
