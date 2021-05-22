@@ -3,8 +3,8 @@
 const getStatus = (sentMessage, chatId, user) => {
   let status = {};
 
-  if (user[chatId].state === 'WAITING COMMAND'
-      || user[chatId].state === 'WAITING COMMAND AGAIN') {
+  if (user.state === 'WAITING COMMAND'
+      || user.state === 'WAITING COMMAND AGAIN') {
     status = commandSwitcher(sentMessage, chatId);
   } else {
     status = textSwitcher(sentMessage, chatId);
@@ -14,7 +14,7 @@ const getStatus = (sentMessage, chatId, user) => {
 
 const textSwitcher = (sentMessage, chatId, user) => {
   let status = {};
-  switch (user[chatId].command) {
+  switch (user.command) {
     case '/start': {
       switch (sentMessage) {
         case 'tourist': {
@@ -35,11 +35,11 @@ const textSwitcher = (sentMessage, chatId, user) => {
       break;
     }
     case 'tourist': {
-      if (user[chatId].state === 'WAITING NAME'
-          || user[chatId].state === 'WAITING NAME AGAIN') {
+      if (user.state === 'WAITING NAME'
+          || user.state === 'WAITING NAME AGAIN') {
         status.command = 'tourist';
         status.state = 'WAITING COMMAND';
-      } else if (user[chatId].state === 'WAITING REGISTRATION'
+      } else if (user.state === 'WAITING REGISTRATION'
           && sentMessage === '/start') {
         status.command = sentMessage;
         status.state = 'WAITING CHOICE';
@@ -60,7 +60,7 @@ const textSwitcher = (sentMessage, chatId, user) => {
       break;
     }
     case '/meeting': {
-      if (user[chatId].state === 'WAITING GEO') {
+      if (user.state === 'WAITING GEO') {
         status.command = '/meeting direction';
         status.state = 'WAITING COMMAND';
       } else {
@@ -71,7 +71,7 @@ const textSwitcher = (sentMessage, chatId, user) => {
       break;
     }
     case 'admin': {
-      if (user[chatId].state !== 'WAITING COMMAND AGAIN') {
+      if (user.state !== 'WAITING COMMAND AGAIN') {
         status.command = 'admin';
         status.state = 'WAITING COMMAND';
       }
@@ -97,17 +97,17 @@ const textSwitcher = (sentMessage, chatId, user) => {
   return status;
 };
 
-const commandSwitcher = (sentMessage, chatId, user) => {
+const commandSwitcher = (sentMessage, user) => {
   const commands = ['/start', '/help', '/excursions', '/time', '/weather', '/meeting'];
   const administration = ['Set meeting place', 'Set meeting time', 'Send message'];
   let status = {};
-  if (user[chatId].command === 'none') {
+  if (user.command === 'none') {
     status.state = sentMessage === '/start' ? 'WAITING CHOICE' : 'WAITING COMMAND';
     status.command = sentMessage === '/start' ? '/start' : 'none';
   } else if (commands.includes(sentMessage)) {
     status = touristCommandSwitcher(sentMessage, commands);
-  } else if (user[chatId].command === 'admin'
-      || administration.includes(user[chatId].command)) {
+  } else if (user.command === 'admin'
+      || administration.includes(user.command)) {
     status = adminCommandSwitcher(sentMessage, administration);
   } else {
     status.command = 'error';
@@ -149,9 +149,9 @@ const adminCommandSwitcher = (sentMessage, administration) => {
   return status;
 };
 
-const adminSwitcher = (chatId, condition, action, user) => {
+const adminSwitcher = (condition, action, user) => {
   const status = { command: action };
-  switch (user[chatId].state) {
+  switch (user.state) {
     case 'WAITING TOUR NAME': {
       status.state = 'WAITING TOUR DATE';
       break;
