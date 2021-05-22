@@ -1,8 +1,8 @@
 'use strict';
 
-const jsdom = require('jsdom');
-
-const { JSDOM } = jsdom;
+const { JSDOM } = require('jsdom');
+const { escape } = require('html-escaper');
+const formatDate = require('../utils/format');
 
 const parseDestinations = async (cities, beginningDate, send) => {
   const startDate = new Date(beginningDate);
@@ -51,7 +51,6 @@ const parseCities = async (linkCity, city, startDate, days, send) => {
 };
 
 const parseExcursions = async (linkExcursion, city, excursion, startDate, days, send) => {
-  const formatDate = require('../utils/format');
   const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Ноябрь', 'Декабрь'];
   const excursionDate = [];
   days.forEach((jour) => {
@@ -100,15 +99,15 @@ const parseExcursions = async (linkExcursion, city, excursion, startDate, days, 
         description,
         link: linkExcursion
       };
-      const { escape } = require('html-escaper');
-      send(output(excurs, escape), 'none');
+
+      send(output(excurs), 'none');
     }
   } catch (error) {
     console.error(error);
   }
 };
 
-const output = (ex, escape) => `
+const output = (ex) => `
 ✨ ${ex.title} ✨\n
 
 🏙 Город:  ${ex.city} \r

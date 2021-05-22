@@ -1,7 +1,8 @@
 'use strict';
 
+const Ydb = require('../../db/your-tour-bot');
+
 const choose = async (ask) => {
-  const Ydb = require('../../db/your-tour-bot');
   const Tour = Ydb.conn.models.tour;
   const names = [];
   await Tour.find({ }, (err, docs) => {

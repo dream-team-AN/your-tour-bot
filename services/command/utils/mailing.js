@@ -1,7 +1,8 @@
 'use strict';
 
+const Ydb = require('../../db/your-tour-bot');
+
 const getIDs = async (tour, users) => {
-  const Ydb = require('../../db/your-tour-bot');
   const Tourist = Ydb.conn.models.tourist;
   const Tour = Ydb.conn.models.tour;
   const chatIDs = [];
@@ -17,8 +18,6 @@ const getIDs = async (tour, users) => {
     Object.entries(users).forEach(([chat, properties]) => {
       if (tourists.full_name === properties.name) {
         chatIDs.push(chat);
-        // eslint-disable-next-line no-console
-        console.log(chatIDs);
       }
     });
   }

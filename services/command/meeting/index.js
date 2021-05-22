@@ -1,8 +1,18 @@
 'use strict';
 
+const request = require('request');
+const mongoose = require('mongoose');
+const Mdb = require('../../db/meeting-bot');
+const withoutTime = require('../utils/date_func');
+const findTour = require('../utils/find_tour');
+const Ydb = require('../../db/your-tour-bot');
+const formatDate = require('../utils/format');
+const cron = require('../utils/create_job');
+const regular = require('../../regular');
+const Place = require('../controller/meeting/place');
+
 const end = {};
 const show = async (req, send, users, sendLocation) => {
-  const Mdb = require('../../db/meeting-bot');
   const currentTour = await getTour(req, users);
   if (currentTour) {
     const Info = Mdb.conn.models.info;
@@ -10,7 +20,6 @@ const show = async (req, send, users, sendLocation) => {
       if (err) return console.error(err);
       return docs;
     });
-    const withoutTime = require('../utils/date_func');
     if (note && note.date >= withoutTime(new Date())) {
       const place = note.place_address;
       send(output(note), 'none');
@@ -27,7 +36,6 @@ const show = async (req, send, users, sendLocation) => {
 };
 
 const sendMeetingPlace = async (place, send, sendLocation) => {
-  const request = require('request');
   const options = `q=${encodeURIComponent(place)}&key=${process.env.GEO_API_KEY}`;
   const link = `https://api.opencagedata.com/geocode/v1/json?${options}`;
   await request(link, (error, response, body) => {
@@ -45,8 +53,6 @@ const sendMeetingPlace = async (place, send, sendLocation) => {
 };
 
 const getTour = async (req, users) => {
-  const findTour = require('../utils/find_tour');
-  const Ydb = require('../../db/your-tour-bot');
   const Tourist = Ydb.conn.models.tourist;
   const chatId = req.body.message.chat.id;
   const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
@@ -56,14 +62,11 @@ const getTour = async (req, users) => {
   return await findTour(tourist, Ydb.conn);
 };
 
-const output = (obj) => {
-  const formatDate = require('../utils/format');
-  return `❗️ Информация про встречу:\n
+const output = (obj) => `❗️ Информация про встречу:\n
 📅 Дата: ${formatDate(obj.date)} \r
 🕑 Время: ${obj.time} \r
 🏛 Место: ${obj.place_name} \r
 🗺 Точный адрес: ${obj.place_address}`;
-};
 
 const showDirection = (req, send) => {
   const sentMessage = req.body.message.text;
@@ -87,14 +90,12 @@ const setTime = async (req, tour, send, users) => {
     const meetDate = new Date(tour.date.valueOf());
     const meetingDate = new Date(meetDate.setUTCDate(meetDate.getUTCDate() + (tour.day - 1)));
 
-    const Mdb = require('../../db/meeting-bot');
     const Info = Mdb.conn.models.info;
     const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
       if (err) return console.error(err);
       return docs;
     });
     if (!note) {
-      const mongoose = require('mongoose');
       Info.create(
         {
           _id: new mongoose.Types.ObjectId(),
@@ -130,7 +131,6 @@ const setTime = async (req, tour, send, users) => {
 };
 
 const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
-  const Ydb = require('../../db/your-tour-bot');
   const Tour = Ydb.conn.models.tour;
   const City = Ydb.conn.models.city;
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
@@ -146,22 +146,18 @@ const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
     return docs;
   });
   const gmt = +currentCity.timezone.slice(3);
-  const cron = require('../utils/create_job');
+
   await cron.createJob(15, send, meetingDate, meetingTime, gmt, tour, users);
   await cron.createJob(30, send, meetingDate, meetingTime, gmt, tour, users);
   await cron.createJob(60, send, meetingDate, meetingTime, gmt, tour, users);
 };
 
-const timeValidation = (day) => {
-  const regular = require('../../regular');
-  return !!day.match(regular.validTime);
-};
+const timeValidation = (day) => !!day.match(regular.validTime);
 
 const setPlace = async (req, tour, send) => {
   const chatId = req.body.message.chat.id;
   const sentMessage = req.body.message.text;
 
-  const Ydb = require('../../db/your-tour-bot');
   const Tour = Ydb.conn.models.tour;
   const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
@@ -173,7 +169,7 @@ const setPlace = async (req, tour, send) => {
     send(chatId, 'Место успешно задано.', 'admin');
     return 'WAITING COMMAND';
   }
-  const Place = require('../controller/meeting/place');
+
   Place.choose(tour, async (places) => {
     send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'tour_info', places);
   });
@@ -181,7 +177,6 @@ const setPlace = async (req, tour, send) => {
 };
 
 const cityHandller = async (trip, tour, sentMessage) => {
-  const Ydb = require('../../db/your-tour-bot');
   const City = Ydb.conn.models.city;
 
   const cities = await City.find({}, (err, docs) => {
@@ -206,14 +201,12 @@ const cityHandller = async (trip, tour, sentMessage) => {
 };
 
 const writeNote = async (tour, sentMessage, address) => {
-  const Mdb = require('../../db/meeting-bot');
   const Info = Mdb.conn.models.info;
   const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
     if (err) return console.error(err);
     return docs;
   });
   if (!note) {
-    const mongoose = require('mongoose');
     Info.create(
       {
         _id: new mongoose.Types.ObjectId(),

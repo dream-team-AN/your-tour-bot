@@ -1,7 +1,12 @@
 'use strict';
 
+const { ask } = require('../other/telegram_service');
+const Place = require('../controller/meeting/place');
+const Name = require('../controller/meeting/name');
+const TourDate = require('../controller/meeting/date');
+const Day = require('../controller/meeting/day');
+
 const asking = async (status, chatId, fastify, tour) => {
-  const { ask } = require('../command/utils/telegram_func');
   switch (status.command) {
     case 'error': {
       await ask('Пожалуйста, введите правильную комманду или /start.', chatId, fastify, 'none');
@@ -63,11 +68,6 @@ const asking = async (status, chatId, fastify, tour) => {
 };
 
 const adminAsking = async (status, chatId, fastify, tour) => {
-  const { ask } = require('../command/utils/telegram_func');
-  const Place = require('../controller/meeting/place');
-  const Name = require('../controller/meeting/name');
-  const TourDate = require('../controller/meeting/date');
-  const Day = require('../controller/meeting/day');
   switch (status.state) {
     case 'WAITING TOUR NAME': {
       Name.choose(async (names) => {

@@ -1,7 +1,8 @@
 'use strict';
 
+const mongoose = require('mongoose');
+
 module.exports = async function connectionPool(host, db) {
-  const mongoose = require('mongoose');
   const opts = {
     useNewUrlParser: true,
     useFindAndModify: false,

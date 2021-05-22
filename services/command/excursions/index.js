@@ -1,9 +1,10 @@
 'use strict';
 
+const findTour = require('../utils/find_tour');
+const parser = require('./parse');
+const Ydb = require('../../db/your-tour-bot');
+
 const show = async (req, send, users) => {
-  const findTour = require('../utils/find_tour');
-  const parser = require('./parse');
-  const Ydb = require('../../db/your-tour-bot');
   const Tourist = Ydb.conn.models.tourist;
   const City = Ydb.conn.models.city;
   const chatId = req.body.message.chat.id;

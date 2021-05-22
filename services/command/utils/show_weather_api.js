@@ -1,7 +1,8 @@
 'use strict';
 
+const request = require('request');
+
 const showInfo = async (req, send, sendInfo) => {
-  const request = require('request');
   const loc = req.body.message.location;
   const sentMessage = req.body.message.text;
 

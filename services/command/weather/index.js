@@ -1,7 +1,8 @@
 'use strict';
 
+const showInfo = require('../utils/show_weather_api');
+
 const show = async (req, send) => {
-  const showInfo = require('../utils/show_weather_api');
   await showInfo(req, send, sendWeather);
   return 'WAITING COMMAND';
 };

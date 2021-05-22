@@ -1,8 +1,22 @@
 'use strict';
 
+const Ydb = require('../../db/your-tour-bot');
+const regular = require('../../regular');
+
+const tourChecker = async (sentMessage, user, tour) => {
+  const commandAdminFunctions = {
+    'WAITING TOUR DATE': checkTourName,
+    'WAITING DAY': checkTourDate,
+    'WAITING MESSAGE': checkTourDate,
+    'WAITING PLACE': checkDay,
+    'WAITING TIME': checkDay
+  };
+  const stateHandler = commandAdminFunctions[user.state];
+  return await stateHandler(user.command, sentMessage, tour);
+};
+
 const checkTourName = async (command, sentMessage, tour) => {
   const trip = { ...tour };
-  const Ydb = require('../../db/your-tour-bot');
   const Tour = Ydb.conn.models.tour;
   const tours = await Tour.find({ tour_name: sentMessage }, (err, docs) => {
     if (err) return console.error(err);
@@ -18,7 +32,6 @@ const checkTourDate = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   const tourDate = new Date(sentMessage);
   if (tourDateValidation(sentMessage)) {
-    const Ydb = require('../../db/your-tour-bot');
     const Tour = Ydb.conn.models.tour;
     const journey = await Tour.findOne({ tour_name: trip.name, beginning_date: tourDate }, (err, docs) => {
       if (err) return console.error(err);
@@ -34,15 +47,11 @@ const checkTourDate = async (command, sentMessage, tour) => {
   return ['WAITING TOUR DATE AGAIN', command, trip];
 };
 
-const tourDateValidation = (date) => {
-  const regular = require('../../regular');
-  return !!date.match(regular.validDate);
-};
+const tourDateValidation = (date) => !!date.match(regular.validDate);
 
 const checkDay = async (command, sentMessage, tour) => {
   const trip = { ...tour };
   if (tourDayValidation(sentMessage)) {
-    const Ydb = require('../../db/your-tour-bot');
     const Tour = Ydb.conn.models.tour;
     let dayFlag = false;
     const tours = await Tour.findOne({ tour_name: trip.name, beginning_date: trip.date }, (err, docs) => {
@@ -62,13 +71,6 @@ const checkDay = async (command, sentMessage, tour) => {
   return ['WAITING DAY AGAIN', command, trip];
 };
 
-const tourDayValidation = (day) => {
-  const regular = require('../../regular');
-  return !!day.match(regular.validDay);
-};
+const tourDayValidation = (day) => !!day.match(regular.validDay);
 
-module.exports = {
-  checkTourName,
-  checkTourDate,
-  checkDay
-};
+module.exports = tourChecker;

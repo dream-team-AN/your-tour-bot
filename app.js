@@ -2,6 +2,13 @@
 
 const path = require('path');
 const AutoLoad = require('fastify-autoload');
+const httpClient = require('fastify-http-client');
+const dotenv = require('dotenv');
+const request = require('request');
+const Ydb = require('./db/your-tour-bot');
+const Mdb = require('./db/meeting-bot');
+const { initialCreateJob } = require('./controller/utils/create_job');
+const { ask } = require('./controller/utils/telegram_func');
 
 module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-vars
   // This loads all plugins defined in plugins
@@ -14,11 +21,10 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     dir: path.join(__dirname, 'routes')
   });
 
-  fastify.register(require('fastify-http-client'));
+  fastify.register(httpClient);
 
-  const Ydb = require('./db/your-tour-bot');
   await Ydb.connect();
-  const Mdb = require('./db/meeting-bot');
+
   await Mdb.connect();
 
   const Cron = Mdb.conn.models.cron;
@@ -26,9 +32,9 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     if (err) return console.error(err);
     return docs;
   });
-  const { initialCreateJob } = require('./controller/utils/create_job');
+
   jobs = jobs.filter((job) => job.date >= Date.now);
-  const { ask } = require('./controller/utils/telegram_func');
+
   const send = (chat, Message, keyboard) => {
     ask(Message, chat, fastify, keyboard);
   };
@@ -36,9 +42,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     initialCreateJob(job.mins, send, job.date, job.chatId);
   }
 
-  const dotenv = require('dotenv');
   dotenv.config();
   const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://2d771485e983.ngrok.io/`;
-  const request = require('request');
   await request(link);
 };
