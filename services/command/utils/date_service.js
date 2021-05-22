@@ -1,5 +1,11 @@
 'use strict';
 
+const withoutTime = (dateTime) => {
+  const date = new Date(dateTime.getTime());
+  date.setUTCHours(0, 0, 0, 0);
+  return date;
+};
+
 const formatDate = (date) => {
   let dd = date.getDate();
   if (dd < 10) dd = `0${dd}`;
@@ -12,4 +18,7 @@ const formatDate = (date) => {
   return `${dd}.${mm}.${yy}`;
 };
 
-module.exports = formatDate;
+module.exports = {
+  withoutTime,
+  formatDate
+};

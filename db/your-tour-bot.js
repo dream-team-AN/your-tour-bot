@@ -1,9 +1,9 @@
 'use strict';
 
 const connectionPool = require('./database');
-const tourSchema = require('../schemas/tour');
-const citySchema = require('../schemas/city');
-const touristSchema = require('../schemas/tourist');
+const tourSchema = require('../schemas/your-tour-bot/tour');
+const citySchema = require('../schemas/your-tour-bot/city');
+const touristSchema = require('../schemas/your-tour-bot/tourist');
 
 class MeetingConnect {
   async connect() {

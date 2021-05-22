@@ -1,6 +1,6 @@
 'use strict';
 
-const show = async (req, send) => {
+const show = async (message, send) => {
   const helping = `Вы можете управлять мной, отправляя такие команды: \n
 /start - Начало работы \r
 /help - Отобразить список команд с их описанием \r

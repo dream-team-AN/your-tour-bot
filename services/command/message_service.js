@@ -1,10 +1,10 @@
 'use strict';
 
-const getIDs = require('../utils/mailing');
+const getIDs = require('./utils/mailing_service');
 
-const sendMessage = async (req, tour, send, users, forward) => {
-  const messId = req.body.message.message_id;
-  const chatId = req.body.message.chat.id;
+const sendMessage = async (message, tour, send, users, forward) => {
+  const messId = message.message_id;
+  const chatId = message.chat.id;
 
   const chatIDs = await getIDs(tour, users);
 

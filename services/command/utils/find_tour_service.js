@@ -1,15 +1,11 @@
 'use strict';
 
-const withoutTime = require('./date_func');
+const withoutTime = require('./date_service');
+const Tour = require('../../../repositories/your-tour-bot/tour');
 
-const findTour = async (tourist, yconn) => {
-  const Tour = yconn.models.tour;
-
+const findTour = async (tourist) => {
   let currentTour;
-  const tours = await Tour.find({}, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
+  const tours = await Tour.getAll();
 
   tours.forEach((tour) => {
     if (tourist.tours.includes(tour._id)

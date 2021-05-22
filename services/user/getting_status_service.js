@@ -3,6 +3,9 @@
 const getStatus = (sentMessage, chatId, user) => {
   let status = {};
 
+  if (user.state === 'WAITING CHOICE AGAIN') {
+    status.command = '/start';
+  }
   if (user.state === 'WAITING COMMAND'
       || user.state === 'WAITING COMMAND AGAIN') {
     status = commandSwitcher(sentMessage, chatId);

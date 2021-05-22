@@ -1,10 +1,9 @@
 'use strict';
 
 const connectionPool = require('./database');
-
-const infoSchema = require('../shemas/info');
-const cronSchema = require('../shemas/cron');
-const travelerSchema = require('../shemas/traveler');
+const infoSchema = require('../schemas/meeting-bot/info');
+const cronSchema = require('../schemas/meeting-bot/cron');
+const travelerSchema = require('../schemas/meeting-bot/traveler');
 
 class YourTourConnect {
   async connect() {

@@ -15,7 +15,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     try {
       User.setStatus(sentMessage, chatId);
       User.setName(chatId, sentMessage);
-      User.callCommand(sentMessage, chatId, fastify, (answer, code) => { res.status(code).send(answer); });
+      User.callCommand(req.body.message, fastify, (answer, code) => { res.status(code).send(answer); });
       res.status(200);
     } catch (err) {
       console.error(err);

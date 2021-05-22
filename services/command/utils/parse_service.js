@@ -2,11 +2,11 @@
 
 const { JSDOM } = require('jsdom');
 const { escape } = require('html-escaper');
-const formatDate = require('../utils/format');
+const { formatDate, withoutTime } = require('./date_service');
 
 const parseDestinations = async (cities, beginningDate, send) => {
   const startDate = new Date(beginningDate);
-  const currentDate = new Date();
+  const currentDate = withoutTime(new Date());
   if (startDate.getUTCMonth() > (currentDate.getUTCMonth() + 1)) {
     const mes = 'Просмотр экскурсий для даного тура пока не доступен. '
       + 'Пожалуйста, обратитесь к сервису не ранее, чем за месяц до поездки';

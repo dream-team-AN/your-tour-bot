@@ -2,9 +2,9 @@
 
 const request = require('request');
 
-const showInfo = async (req, send, sendInfo) => {
-  const loc = req.body.message.location;
-  const sentMessage = req.body.message.text;
+const showInfo = async (message, send, sendInfo) => {
+  const loc = message.location;
+  const sentMessage = message.text;
 
   if (sentMessage !== 'Cancel operation') {
     const lat = loc.latitude;

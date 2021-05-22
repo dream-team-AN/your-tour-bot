@@ -2,8 +2,8 @@
 
 const showInfo = require('../utils/show_weather_api');
 
-const show = async (req, send) => {
-  await showInfo(req, send, sendWeather);
+const show = async (message, send) => {
+  await showInfo(message, send, sendWeather);
   return 'WAITING COMMAND';
 };
 

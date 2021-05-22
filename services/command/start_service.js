@@ -1,20 +1,13 @@
 'use strict';
 
-const Ydb = require('../../db/your-tour-bot');
+const Tourist = require('../../repositories/your-tour-bot/tourist');
 const regular = require('../../regular');
 
-const checkTourist = async (req, send) => {
-  const sentMessage = req.body.message.text;
+const checkTourist = async (message, send) => {
+  const sentMessage = message.text;
   if (fullNameValidation(sentMessage)) {
-    let len;
-
-    const Tourist = Ydb.conn.models.tourist;
-    await Tourist.find({ full_name: sentMessage }, (err, docs) => {
-      if (err) return console.error(err);
-      len = docs.length;
-      return docs;
-    });
-    if (len === 1) {
+    const tourists = await Tourist.getAll();
+    if (tourists.length === 1) {
       send('Вы есть в нашей базе данных. Добро пожаловать в YourTourBot.', 'none');
       return 'WAITING COMMAND';
     }
@@ -28,8 +21,8 @@ const checkTourist = async (req, send) => {
 
 const fullNameValidation = (name) => !!name.match(regular.validFullName);
 
-const checkPassword = async (req, send) => {
-  const sentMessage = req.body.message.text;
+const checkPassword = async (message, send) => {
+  const sentMessage = message.text;
   if (sentMessage === process.env.ADMIN_PASSWORD) {
     send('Пожалуйста, введите команду', 'admin');
   } else {

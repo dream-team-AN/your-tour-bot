@@ -2,8 +2,8 @@
 
 const schedule = require('node-schedule');
 const mongoose = require('mongoose');
-const getIDs = require('./mailing');
-const Mdb = require('../../db/meeting-bot');
+const getIDs = require('./mailing_service');
+const Cron = require('../../../repositories/meeting-bot/cron');
 
 const createJob = async (mins, send, meetingDate, time, gmt, tour, users) => {
   const date = new Date(meetingDate.valueOf());
@@ -13,17 +13,12 @@ const createJob = async (mins, send, meetingDate, time, gmt, tour, users) => {
   const chatIDs = await getIDs(tour, users);
   schedule.scheduleJob(date, () => { sendMessageForMany(chatIDs, mins, send); });
 
-  const Cron = Mdb.conn.models.cron;
   Cron.create(
     {
       _id: new mongoose.Types.ObjectId(),
       chat_id: chatIDs,
       date,
       mins
-    },
-    (err, doc) => {
-      if (err) return console.error(err);
-      return doc;
     }
   );
 };

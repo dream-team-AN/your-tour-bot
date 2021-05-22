@@ -1,25 +1,20 @@
 'use strict';
 
 const request = require('request');
-const mongoose = require('mongoose');
-const Mdb = require('../../db/meeting-bot');
-const withoutTime = require('../utils/date_func');
-const findTour = require('../utils/find_tour');
-const Ydb = require('../../db/your-tour-bot');
-const formatDate = require('../utils/format');
-const cron = require('../utils/create_job');
+const { formatDate, withoutTime } = require('./utils/date_service');
+const findTour = require('./utils/find_tour_service');
+const cron = require('./utils/create_job_service');
 const regular = require('../../regular');
-const Place = require('../controller/meeting/place');
+const Info = require('../../repositories/meeting-bot/info');
+const Tourist = require('../../repositories/your-tour-bot/tourist');
+const Tour = require('../../repositories/your-tour-bot/tour');
+const City = require('../../repositories/your-tour-bot/city');
 
 const end = {};
-const show = async (req, send, users, sendLocation) => {
-  const currentTour = await getTour(req, users);
+const show = async (message, send, users, sendLocation) => {
+  const currentTour = await getTour(message, users);
   if (currentTour) {
-    const Info = Mdb.conn.models.info;
-    const note = await Info.findOne({ tour_id: currentTour._id }, (err, docs) => {
-      if (err) return console.error(err);
-      return docs;
-    });
+    const note = await Info.getOne({ tour_id: currentTour._id });
     if (note && note.date >= withoutTime(new Date())) {
       const place = note.place_address;
       send(output(note), 'none');
@@ -52,14 +47,10 @@ const sendMeetingPlace = async (place, send, sendLocation) => {
   });
 };
 
-const getTour = async (req, users) => {
-  const Tourist = Ydb.conn.models.tourist;
-  const chatId = req.body.message.chat.id;
-  const tourist = await Tourist.findOne({ full_name: users[chatId].name }, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
-  return await findTour(tourist, Ydb.conn);
+const getTour = async (message, users) => {
+  const chatId = message.chat.id;
+  const tourist = await Tourist.getOne({ full_name: users[chatId].name });
+  return await findTour(tourist);
 };
 
 const output = (obj) => `❗️ Информация про встречу:\n
@@ -68,11 +59,11 @@ const output = (obj) => `❗️ Информация про встречу:\n
 🏛 Место: ${obj.place_name} \r
 🗺 Точный адрес: ${obj.place_address}`;
 
-const showDirection = (req, send) => {
-  const sentMessage = req.body.message.text;
+const showDirection = (message, send) => {
+  const sentMessage = message.text;
 
   if (sentMessage !== 'Cancel operation') {
-    const start = req.body.message.location;
+    const start = message.location;
     const options = `${start.latitude},${start.longitude}/${end.lat},${end.lng}`;
     const link = `https://www.google.com.ua/maps/dir/${options}?hl=ru`;
     send(`📍 Маршрут к месту встречи: \n${link}`, 'none');
@@ -82,41 +73,28 @@ const showDirection = (req, send) => {
   return 'WAITING COMMAND';
 };
 
-const setTime = async (req, tour, send, users) => {
-  const chatId = req.body.message.chat.id;
-  const sentMessage = req.body.message.text;
+const setTime = async (message, tour, send, users) => {
+  const chatId = message.chat.id;
+  const sentMessage = message.text;
 
   if (timeValidation(sentMessage)) {
     const meetDate = new Date(tour.date.valueOf());
     const meetingDate = new Date(meetDate.setUTCDate(meetDate.getUTCDate() + (tour.day - 1)));
 
-    const Info = Mdb.conn.models.info;
-    const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
-      if (err) return console.error(err);
-      return docs;
-    });
+    const note = await Info.getOne({ tour_id: tour.id });
     if (!note) {
       Info.create(
         {
-          _id: new mongoose.Types.ObjectId(),
           tour_id: tour.id,
           date: meetingDate,
           time: sentMessage.replace(/\.|-/g, ':')
-        },
-        (err, doc) => {
-          if (err) return console.error(err);
-          return doc;
         }
       );
     } else {
-      Info.findByIdAndUpdate(note._id,
+      Info.updateOne({ _id: note._id },
         {
           date: meetingDate,
           time: sentMessage.replace(/\.|-/g, ':')
-        },
-        (err, doc) => {
-          if (err) return console.error(err);
-          return doc;
         });
     }
 
@@ -131,20 +109,12 @@ const setTime = async (req, tour, send, users) => {
 };
 
 const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
-  const Tour = Ydb.conn.models.tour;
-  const City = Ydb.conn.models.city;
-  const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
+  const trip = await Tour.getOne({ _id: tour.id });
   let currentCityId;
   trip.cities.forEach((city) => {
     if (city.day.includes(tour.day)) currentCityId = city.city_id;
   });
-  const currentCity = await City.findOne({ _id: currentCityId }, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
+  const currentCity = await City.getOne({ _id: currentCityId });
   const gmt = +currentCity.timezone.slice(3);
 
   await cron.createJob(15, send, meetingDate, meetingTime, gmt, tour, users);
@@ -154,15 +124,11 @@ const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
 
 const timeValidation = (day) => !!day.match(regular.validTime);
 
-const setPlace = async (req, tour, send) => {
-  const chatId = req.body.message.chat.id;
-  const sentMessage = req.body.message.text;
+const setPlace = async (message, tour, send) => {
+  const chatId = message.chat.id;
+  const sentMessage = message.text;
 
-  const Tour = Ydb.conn.models.tour;
-  const trip = await Tour.findOne({ _id: tour.id }, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
+  const trip = await Tour.getOne({ _id: tour.id });
 
   const flag = await cityHandller(trip, tour, sentMessage);
   if (flag) {
@@ -170,19 +136,12 @@ const setPlace = async (req, tour, send) => {
     return 'WAITING COMMAND';
   }
 
-  Place.choose(tour, async (places) => {
-    send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'tour_info', places);
-  });
+  send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'place', tour);
   return 'WAITING TIME AGAIN';
 };
 
 const cityHandller = async (trip, tour, sentMessage) => {
-  const City = Ydb.conn.models.city;
-
-  const cities = await City.find({}, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
+  const cities = await City.getAll();
   let currentPlace;
   let cityExist = false;
 
@@ -201,33 +160,20 @@ const cityHandller = async (trip, tour, sentMessage) => {
 };
 
 const writeNote = async (tour, sentMessage, address) => {
-  const Info = Mdb.conn.models.info;
-  const note = await Info.findOne({ tour_id: tour.id }, (err, docs) => {
-    if (err) return console.error(err);
-    return docs;
-  });
+  const note = await Info.getOne({ tour_id: tour.id });
   if (!note) {
     Info.create(
       {
-        _id: new mongoose.Types.ObjectId(),
         tour_id: tour.id,
         place_name: sentMessage,
         place_address: address
-      },
-      (err, doc) => {
-        if (err) return console.error(err);
-        return doc;
       }
     );
   } else {
-    Info.findByIdAndUpdate(note._id,
+    Info.updateOne({ _id: note._id },
       {
         place_name: sentMessage,
         place_address: address
-      },
-      (err, doc) => {
-        if (err) return console.error(err);
-        return doc;
       });
   }
 };
