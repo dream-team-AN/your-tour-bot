@@ -8,9 +8,9 @@ const getStatus = (sentMessage, chatId, user) => {
   }
   if (user.state === 'WAITING COMMAND'
       || user.state === 'WAITING COMMAND AGAIN') {
-    status = commandSwitcher(sentMessage, chatId);
+    status = commandSwitcher(sentMessage, user);
   } else {
-    status = textSwitcher(sentMessage, chatId);
+    status = textSwitcher(sentMessage, chatId, user);
   }
   return [status.state, status.command];
 };

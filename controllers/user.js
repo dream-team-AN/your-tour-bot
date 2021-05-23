@@ -1,7 +1,7 @@
 'use strict';
 
 const getStatus = require('../services/user/getting_status_service');
-const { callingCommand } = require('../services/user/calling_command_service');
+const callingCommand = require('../services/user/calling_command_service');
 const asking = require('../services/user/asking_service');
 const Check = require('../services/user/checking_status_service');
 const Trip = require('./trip');

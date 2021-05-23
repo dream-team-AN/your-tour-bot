@@ -22,6 +22,8 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     dir: path.join(__dirname, 'routes')
   });
 
+  dotenv.config();
+
   fastify.register(httpClient);
 
   await Ydb.connect();
@@ -29,6 +31,8 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
   await Mdb.connect();
 
   let jobs = await Cron.getAll();
+  // eslint-disable-next-line no-console
+  console.log(jobs);
   jobs = jobs.filter((job) => job.date >= Date.now);
 
   const send = (chat, Message, keyboard) => {
@@ -38,7 +42,6 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     initialCreateJob(job.mins, send, job.date, job.chatId);
   }
 
-  dotenv.config();
-  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://2d771485e983.ngrok.io/`;
+  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://01a02f6ab726.ngrok.io/`;
   await request(link);
 };

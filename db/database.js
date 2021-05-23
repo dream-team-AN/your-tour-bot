@@ -9,5 +9,5 @@ module.exports = async function connectionPool(host, db) {
     useUnifiedTopology: true,
     poolSize: 2
   };
-  return mongoose.createConnection(`${host}/${db}`, opts);
+  return await mongoose.createConnection(`${host}/${db}`, opts);
 };

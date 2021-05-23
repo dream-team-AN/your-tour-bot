@@ -42,7 +42,7 @@ const callingCommand = async (message, fastify, reply, users, currentTour) => {
   return await commandHandler(message, chatId, sendOne, users, sendLoc);
 };
 
-const commandHandler = (message, chatId, callback1, callback2, users) => {
+const commandHandler = (message, chatId, callback1, users, callback2) => {
   const commandFunctions = {
     tourist: StartHandler.checkTourist,
     '/time': TimeHandler.show,
@@ -54,17 +54,17 @@ const commandHandler = (message, chatId, callback1, callback2, users) => {
     admin: StartHandler.checkPassword
   };
   const stateHandler = commandFunctions[users[chatId].command];
-  return stateHandler(message, callback1, callback2, users);
+  return stateHandler(message, callback1, users, callback2);
 };
 
-const adminCommandHandler = (message, chatId, currentTour, callback1, callback2, users) => {
+const adminCommandHandler = (message, chatId, currentTour, callback1, users, callback2) => {
   const commandFunctions = {
     'Send message': MessageHandler.sendMessage,
     'Set meeting time': MeetingHandler.setTime,
     'Set meeting place': MeetingHandler.setPlace
   };
   const stateHandler = commandFunctions[users[chatId].command];
-  return stateHandler(message, currentTour, users, callback1, callback2);
+  return stateHandler(message, currentTour, callback1, users, callback2);
 };
 
 module.exports = callingCommand;

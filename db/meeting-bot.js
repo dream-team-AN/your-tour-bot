@@ -9,7 +9,7 @@ const Cron = require('../repositories/meeting-bot/cron');
 const Info = require('../repositories/meeting-bot/info');
 const Traveler = require('../repositories/meeting-bot/traveler');
 
-class YourTourConnect {
+class MeetingConnect {
   async connect() {
     try {
       this.conn = await connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'meeting-bot');
@@ -26,4 +26,4 @@ class YourTourConnect {
   }
 }
 
-module.exports = new YourTourConnect();
+module.exports = new MeetingConnect();
