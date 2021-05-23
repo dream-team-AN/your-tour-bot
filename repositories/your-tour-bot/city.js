@@ -1,9 +1,9 @@
 'use strict';
 
-const Ydb = require('../../db/your-tour-bot');
-
 class City {
-  constructor() { this.model = Ydb.conn.models.city; }
+  setModel(model) {
+    this.model = model;
+  }
 
   async getOne(parametrs) {
     try {
