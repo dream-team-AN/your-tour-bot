@@ -1,8 +1,10 @@
 'use strict';
 
+const conn = require('../../db/your-tour-bot');
+
 class City {
-  setModel(model) {
-    this.model = model;
+  constructor() {
+    this.model = conn.models.city;
   }
 
   async getOne(parametrs) {

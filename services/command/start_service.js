@@ -7,6 +7,8 @@ const checkTourist = async (message, send) => {
   const sentMessage = message.text;
   if (fullNameValidation(sentMessage)) {
     const tourists = await Tourist.getAll();
+    // eslint-disable-next-line no-console
+    console.log(tourists);
     if (tourists.length === 1) {
       send('Вы есть в нашей базе данных. Добро пожаловать в YourTourBot.', 'none');
       return 'WAITING COMMAND';

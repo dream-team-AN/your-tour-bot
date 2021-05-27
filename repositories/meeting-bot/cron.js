@@ -1,10 +1,11 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const conn = require('../../db/meeting-bot');
 
 class Cron {
-  setModel(model) {
-    this.model = model;
+  constructor() {
+    this.model = conn.models.cron;
   }
 
   async getOne(parametrs) {
