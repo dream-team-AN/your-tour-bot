@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict';
 
 const conn = require('../../db/your-tour-bot');
@@ -31,8 +33,12 @@ class Tourist {
 
   async getAll() {
     try {
+      console.log('AAAAAA');
+      console.log(this.model);
       return await this.model.find({}, (err, docs) => {
         if (err) return console.error(err);
+
+        console.log(docs);
         return docs;
       });
     } catch (error) {
