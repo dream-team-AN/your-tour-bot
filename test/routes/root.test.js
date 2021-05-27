@@ -2,8 +2,8 @@
 // eslint-disable-next-line lines-around-directive
 'use strict';
 
-const { test } = require('tap');
-const { build } = require('../helper');
+// const { test } = require('tap');
+// const { build } = require('../helper');
 
 // test('default root route', async (t) => {
 //   const app = build(t);
