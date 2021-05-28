@@ -13,7 +13,7 @@ const { Admin } = mongoose.mongo;
 let conn = null;
 
 try {
-  conn = connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'yout-tour-bot');
+  conn = connectionPool(`mongodb+srv://bot:${process.env.BD_PASSWORD}@${process.env.CLUSTER}`, 'your-tour-bot');
   conn.model('tour', tourSchema, 'tour');
   conn.model('city', citySchema, 'city');
   conn.model('tourist', touristSchema, 'tourist');
