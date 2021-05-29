@@ -9,8 +9,6 @@ const ask = async (Message, chatId, fastify, keyboard, tour) => {
     text: Message,
     reply_markup: await getKeyboard(keyboard, tour)
   };
-  // eslint-disable-next-line no-console
-  console.log(mess);
   await fastify.httpclient.request(`${url}${process.env.TOKEN}/sendMessage`, {
     method: 'POST',
     headers: {

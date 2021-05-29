@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 'use strict';
 
 const User = require('../controllers/user');
@@ -16,8 +14,6 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     }
     try {
       User.setStatus(sentMessage, chatId);
-      console.log(User);
-      console.log(sentMessage);
       User.setName(chatId, sentMessage);
       User.callCommand(req.body.message, fastify, (answer, code) => { res.status(code).send(answer); });
       res.status(200);

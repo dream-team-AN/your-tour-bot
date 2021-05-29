@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 'use strict';
 
 const tripChecker = require('../services/other/checking_trip_service');
@@ -16,8 +14,6 @@ class Trip {
     this.name = trip.name;
     this.date = trip.date;
     this.day = trip.day;
-    console.log('THISSSSSSSSSS');
-    console.log(this);
     return [state, command];
   }
 }

@@ -96,7 +96,7 @@ const settingCron = async (trip, send, meetingDate, meetingTime, users) => {
   const tour = await Tour.getOne({ tour_name: trip.name, beginning_date: trip.date });
   let currentCityId;
   tour.cities.forEach((city) => {
-    if (city.day.includes(tour.day)) currentCityId = city.city_id;
+    if (city.day.includes(trip.day)) currentCityId = city.city_id;
   });
   const currentCity = await City.getOne({ _id: currentCityId });
   const gmt = +currentCity.timezone.slice(3);
@@ -112,7 +112,7 @@ const setPlace = async (message, trip, send) => {
   const chatId = message.chat.id;
   const sentMessage = message.text;
 
-  const tour = await Tour.getOne({ _id: trip.id });
+  const tour = await Tour.getOne({ tour_name: trip.name, beginning_date: trip.date });
 
   const flag = await cityHandller(tour, trip, sentMessage);
   if (flag) {

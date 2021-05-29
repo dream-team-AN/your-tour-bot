@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 'use strict';
 
 const getStatus = (sentMessage, chatId, user) => {
@@ -95,10 +93,8 @@ const textSwitcher = (sentMessage, chatId, user) => {
       break;
     }
     default: {
-      console.log('YOU ARE IN ERROR');
       status.command = 'error';
       status.state = 'WAITING COMMAND';
-      console.log(user);
     }
   }
   return status;
@@ -117,10 +113,8 @@ const commandSwitcher = (sentMessage, user) => {
       || administration.includes(user.command)) {
     status = adminCommandSwitcher(sentMessage, administration);
   } else {
-    console.log('YOU ARE IN ERRORrrrrrrrr');
     status.command = 'error';
     status.state = 'WAITING COMMAND';
-    console.log(user);
   }
   return status;
 };
@@ -190,12 +184,8 @@ const adminSwitcher = (user, condition, action) => {
       break;
     }
     default: {
-      console.log('YOU ARE IN ERRO0000000000R');
       status.command = 'error';
       status.state = 'WAITING COMMAND';
-      console.log('--------');
-      console.log(user);
-      console.log('--------');
     }
   }
   return status;

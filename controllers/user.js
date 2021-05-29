@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 'use strict';
 
 const getStatus = require('../services/user/getting_status_service');
@@ -50,12 +48,8 @@ class User {
     if (Check.isWaitingProcessing(this[chatId])) {
       this[chatId].state = await callingCommand(message, fastify, reply, this, Trip);
     } else {
-      console.log(`${this[chatId].command}_________________________`);
-      console.log(`${this[chatId].state}_________________________`);
       if (Check.isAdminCommand(this[chatId].command) && !Check.isWaitingTourName(this[chatId].state)) {
         [this[chatId].state, this[chatId].command] = await Trip.getUserStatus(sentMessage, this[chatId]);
-        console.log(`${this[chatId].command}////////////////`);
-        console.log(`${this[chatId].state}//////////////////`);
       }
       asking(this[chatId], chatId, fastify, Trip).then((response) => {
         reply(response, 200);

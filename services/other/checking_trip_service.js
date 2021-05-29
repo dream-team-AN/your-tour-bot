@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 'use strict';
 
 const Tour = require('../../repositories/your-tour-bot/tour');
@@ -13,10 +11,7 @@ const tripChecker = async (sentMessage, user, trip) => {
     'WAITING PLACE': checkDay,
     'WAITING TIME': checkDay
   };
-  console.log('+++++');
-  console.log(user);
   const stateHandler = commandAdminFunctions[user.state];
-  console.log(stateHandler);
   return await stateHandler(user.command, sentMessage, trip);
 };
 
@@ -26,7 +21,6 @@ const checkTourName = async (command, sentMessage, trip) => {
   if (tours.length) {
     journey.name = sentMessage;
   }
-  console.log(tours);
   return tours.length ? ['WAITING TOUR DATE', command, journey] : ['WAITING COMMAND', 'admin', journey];
 };
 
