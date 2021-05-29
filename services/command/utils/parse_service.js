@@ -2,7 +2,7 @@
 
 const { JSDOM } = require('jsdom');
 const { escape } = require('html-escaper');
-const { formatDate, withoutTime } = require('./date_service');
+const { formatDate, withoutTime } = require('../../other/date_service');
 
 const parseDestinations = async (cities, beginningDate, send) => {
   const startDate = new Date(beginningDate);
@@ -77,7 +77,7 @@ const parseExcursions = async (linkExcursion, city, excursion, startDate, days, 
             .map((elem) => {
               price = +elem.textContent.split(' ')[1];
               flag = true;
-              date.push(formatDate(new Date(exDate.getUTCFullYear(), exDate.getUTCMonth(), exDate.getUTCDate())));
+              date.push(formatDate(new Date(exDate.getUTCFullYear(), exDate.getUTCMonth(), exDate.getUTCDate()), false));
               return date;
             });
           return el;

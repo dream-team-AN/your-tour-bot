@@ -5,12 +5,12 @@ const mongoose = require('mongoose');
 const getIDs = require('./mailing_service');
 const Cron = require('../../../repositories/meeting-bot/cron');
 
-const createJob = async (mins, send, meetingDate, time, gmt, tour, users) => {
+const createJob = async (mins, send, meetingDate, time, gmt, trip, users) => {
   const date = new Date(meetingDate.valueOf());
   date.setUTCHours(Number(time.split(':')[0]) - gmt - 1);
   date.setUTCMinutes(Number(time.split(':')[1]) - mins);
 
-  const chatIDs = await getIDs(tour, users);
+  const chatIDs = await getIDs(trip, users);
   schedule.scheduleJob(date, () => { sendMessageForMany(chatIDs, mins, send); });
 
   Cron.create(

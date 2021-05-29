@@ -6,7 +6,7 @@ const withoutTime = (dateTime) => {
   return date;
 };
 
-const formatDate = (date) => {
+const formatDate = (date, reverse) => {
   let dd = date.getDate();
   if (dd < 10) dd = `0${dd}`;
 
@@ -15,7 +15,7 @@ const formatDate = (date) => {
 
   const yy = date.getFullYear();
 
-  return `${dd}.${mm}.${yy}`;
+  return reverse ? `${yy}-${mm}-${dd}` : `${dd}.${mm}.${yy}`;
 };
 
 module.exports = {

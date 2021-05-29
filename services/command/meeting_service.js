@@ -1,7 +1,7 @@
 'use strict';
 
 const request = require('request');
-const { formatDate, withoutTime } = require('./utils/date_service');
+const { formatDate, withoutTime } = require('../other/date_service');
 const findTour = require('./utils/find_tour_service');
 const cron = require('./utils/create_job_service');
 const regular = require('../../regular');
@@ -54,16 +54,15 @@ const getTour = async (message, users) => {
 };
 
 const output = (obj) => `❗️ Информация про встречу:\n
-📅 Дата: ${formatDate(obj.date)} \r
+📅 Дата: ${formatDate(obj.date, false)} \r
 🕑 Время: ${obj.time} \r
 🏛 Место: ${obj.place_name} \r
 🗺 Точный адрес: ${obj.place_address}`;
 
 const showDirection = (message, send) => {
   const sentMessage = message.text;
-
-  if (sentMessage !== 'Cancel operation') {
-    const start = message.location;
+  const start = message.location;
+  if (sentMessage !== 'Cancel operation' && start) {
     const options = `${start.latitude},${start.longitude}/${end.lat},${end.lng}`;
     const link = `https://www.google.com.ua/maps/dir/${options}?hl=ru`;
     send(`📍 Маршрут к месту встречи: \n${link}`, 'none');
@@ -73,33 +72,18 @@ const showDirection = (message, send) => {
   return 'WAITING COMMAND';
 };
 
-const setTime = async (message, tour, send, users) => {
+const setTime = async (message, trip, send, users) => {
   const chatId = message.chat.id;
   const sentMessage = message.text;
 
   if (timeValidation(sentMessage)) {
-    const meetDate = new Date(tour.date.valueOf());
-    const meetingDate = new Date(meetDate.setUTCDate(meetDate.getUTCDate() + (tour.day - 1)));
+    const meetDate = new Date(trip.date.valueOf());
+    const meetingDate = new Date(meetDate.setUTCDate(meetDate.getUTCDate() + (trip.day - 1)));
 
-    const note = await Info.getOne({ tour_id: tour.id });
-    if (!note) {
-      Info.create(
-        {
-          tour_id: tour.id,
-          date: meetingDate,
-          time: sentMessage.replace(/\.|-/g, ':')
-        }
-      );
-    } else {
-      Info.updateOne({ _id: note._id },
-        {
-          date: meetingDate,
-          time: sentMessage.replace(/\.|-/g, ':')
-        });
-    }
+    await writeNote(trip, sentMessage, null, meetingDate);
 
     const meetingTime = sentMessage.replace(/\.|-/g, ':');
-    await settingCron(tour, send, meetingDate, meetingTime, users);
+    await settingCron(trip, send, meetingDate, meetingTime, users);
 
     send(chatId, 'Время успешно задано.', 'admin');
     return 'WAITING COMMAND';
@@ -108,73 +92,93 @@ const setTime = async (message, tour, send, users) => {
   return 'WAITING TIME AGAIN';
 };
 
-const settingCron = async (tour, send, meetingDate, meetingTime, users) => {
-  const trip = await Tour.getOne({ _id: tour.id });
+const settingCron = async (trip, send, meetingDate, meetingTime, users) => {
+  const tour = await Tour.getOne({ tour_name: trip.name, beginning_date: trip.date });
   let currentCityId;
-  trip.cities.forEach((city) => {
+  tour.cities.forEach((city) => {
     if (city.day.includes(tour.day)) currentCityId = city.city_id;
   });
   const currentCity = await City.getOne({ _id: currentCityId });
   const gmt = +currentCity.timezone.slice(3);
 
-  await cron.createJob(15, send, meetingDate, meetingTime, gmt, tour, users);
-  await cron.createJob(30, send, meetingDate, meetingTime, gmt, tour, users);
-  await cron.createJob(60, send, meetingDate, meetingTime, gmt, tour, users);
+  await cron.createJob(15, send, meetingDate, meetingTime, gmt, trip, users);
+  await cron.createJob(30, send, meetingDate, meetingTime, gmt, trip, users);
+  await cron.createJob(60, send, meetingDate, meetingTime, gmt, trip, users);
 };
 
 const timeValidation = (day) => !!day.match(regular.validTime);
 
-const setPlace = async (message, tour, send) => {
+const setPlace = async (message, trip, send) => {
   const chatId = message.chat.id;
   const sentMessage = message.text;
 
-  const trip = await Tour.getOne({ _id: tour.id });
+  const tour = await Tour.getOne({ _id: trip.id });
 
-  const flag = await cityHandller(trip, tour, sentMessage);
+  const flag = await cityHandller(tour, trip, sentMessage);
   if (flag) {
     send(chatId, 'Место успешно задано.', 'admin');
     return 'WAITING COMMAND';
   }
 
-  send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'place', tour);
+  send(chatId, 'Место встречи некорректное. Пожалуйста, попробуйте снова.', 'place', trip);
   return 'WAITING TIME AGAIN';
 };
 
-const cityHandller = async (trip, tour, sentMessage) => {
+const cityHandller = async (tour, trip, sentMessage) => {
   const cities = await City.getAll();
   let currentPlace;
   let cityExist = false;
 
   cities.forEach((city) => {
-    for (const town of trip.cities) {
-      if (JSON.stringify(city._id) === JSON.stringify(town.city_id) && town.day.includes(tour.day)) {
+    for (const town of tour.cities) {
+      if (JSON.stringify(city._id) === JSON.stringify(town.city_id) && town.day.includes(trip.day)) {
         cityExist = true;
         currentPlace = city.meeting_places.find((place) => place.name === sentMessage);
       }
     }
   });
   if (cityExist) {
-    await writeNote(tour, sentMessage, currentPlace.address);
+    await writeNote(trip, sentMessage, currentPlace.address);
   }
   return cityExist;
 };
 
-const writeNote = async (tour, sentMessage, address) => {
-  const note = await Info.getOne({ tour_id: tour.id });
+const writeNote = async (trip, sentMessage, address, meetingDate) => {
+  const tour = await Tour.getOne({ tour_name: trip.name, beginning_date: trip.date });
+  const note = await Info.getOne({ tour_id: tour._id });
   if (!note) {
-    Info.create(
-      {
-        tour_id: tour.id,
-        place_name: sentMessage,
-        place_address: address
-      }
-    );
+    if (address) {
+      Info.create(
+        {
+          tour_id: tour._id,
+          place_name: sentMessage,
+          place_address: address
+        }
+      );
+    } else {
+      Info.create(
+        {
+          tour_id: tour._id,
+          date: meetingDate,
+          time: sentMessage.replace(/\.|-/g, ':')
+        }
+      );
+    }
   } else {
-    Info.updateOne({ _id: note._id },
-      {
-        place_name: sentMessage,
-        place_address: address
-      });
+    // eslint-disable-next-line no-lonely-if
+    if (address) {
+      Info.updateOne({ _id: note._id },
+        {
+          place_name: sentMessage,
+          place_address: address
+        });
+    } else {
+      Info.updateOne({ _id: note._id },
+        {
+          date: meetingDate,
+          time: sentMessage.replace(/\.|-/g, ':')
+        });
+    }
   }
 };
 

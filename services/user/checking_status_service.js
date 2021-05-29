@@ -10,7 +10,7 @@ const isAdminCommand = (command) => command === 'Set meeting place'
                                 || command === 'Set meeting time'
                                 || command === 'Send message';
 
-const isWaitingTourName = (state) => state !== 'WAITING TOUR NAME';
+const isWaitingTourName = (state) => state === 'WAITING TOUR NAME';
 
 module.exports = {
   isUnregistratedTourist,

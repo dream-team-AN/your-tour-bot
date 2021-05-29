@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict';
 
 const getStatus = (sentMessage, chatId, user) => {
@@ -81,20 +83,22 @@ const textSwitcher = (sentMessage, chatId, user) => {
       break;
     }
     case 'Send message': {
-      status = adminSwitcher(chatId, 'WAITING MESSAGE', 'Send message');
+      status = adminSwitcher(user, 'WAITING MESSAGE', 'Send message');
       break;
     }
     case 'Set meeting time': {
-      status = adminSwitcher(chatId, 'WAITING TIME', 'Set meeting time');
+      status = adminSwitcher(user, 'WAITING TIME', 'Set meeting time');
       break;
     }
     case 'Set meeting place': {
-      status = adminSwitcher(chatId, 'WAITING PLACE', 'Set meeting place');
+      status = adminSwitcher(user, 'WAITING PLACE', 'Set meeting place');
       break;
     }
     default: {
+      console.log('YOU ARE IN ERROR');
       status.command = 'error';
       status.state = 'WAITING COMMAND';
+      console.log(user);
     }
   }
   return status;
@@ -113,8 +117,10 @@ const commandSwitcher = (sentMessage, user) => {
       || administration.includes(user.command)) {
     status = adminCommandSwitcher(sentMessage, administration);
   } else {
+    console.log('YOU ARE IN ERRORrrrrrrrr');
     status.command = 'error';
     status.state = 'WAITING COMMAND';
+    console.log(user);
   }
   return status;
 };
@@ -152,7 +158,7 @@ const adminCommandSwitcher = (sentMessage, administration) => {
   return status;
 };
 
-const adminSwitcher = (condition, action, user) => {
+const adminSwitcher = (user, condition, action) => {
   const status = { command: action };
   switch (user.state) {
     case 'WAITING TOUR NAME': {
@@ -184,8 +190,12 @@ const adminSwitcher = (condition, action, user) => {
       break;
     }
     default: {
+      console.log('YOU ARE IN ERRO0000000000R');
       status.command = 'error';
       status.state = 'WAITING COMMAND';
+      console.log('--------');
+      console.log(user);
+      console.log('--------');
     }
   }
   return status;

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict';
 
 const { ask } = require('../other/telegram_service');
@@ -64,6 +66,9 @@ const asking = async (status, chatId, fastify, tour) => {
 };
 
 const adminAsking = async (status, chatId, fastify, tour) => {
+  console.log(status);
+  console.log(chatId);
+  console.log(tour);
   switch (status.state) {
     case 'WAITING TOUR NAME': {
       await ask('Пожалуйста, введите или выберите название тура.', chatId, fastify, 'name', tour);

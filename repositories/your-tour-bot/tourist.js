@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 'use strict';
 
 const conn = require('../../db/your-tour-bot');
@@ -11,10 +9,7 @@ class Tourist {
 
   async getOne(parametrs) {
     try {
-      return await this.model.findOne(parametrs, (err, docs) => {
-        if (err) return console.error(err);
-        return docs;
-      });
+      return await this.model.findOne(parametrs);
     } catch (error) {
       throw Error(`Can not get given tourist: ${error.message}`);
     }
@@ -22,10 +17,7 @@ class Tourist {
 
   async getSome(parametrs) {
     try {
-      return await this.model.find(parametrs, (err, docs) => {
-        if (err) return console.error(err);
-        return docs;
-      });
+      return await this.model.find(parametrs);
     } catch (error) {
       throw Error(`Can not get given tourists: ${error.message}`);
     }
@@ -33,14 +25,7 @@ class Tourist {
 
   async getAll() {
     try {
-      console.log('AAAAAA');
-      console.log(this.model);
-      return await this.model.find({}, (err, docs) => {
-        if (err) return console.error(err);
-
-        console.log(docs);
-        return docs;
-      });
+      return await this.model.find({});
     } catch (error) {
       throw Error(`Can not get any tourist: ${error.message}`);
     }

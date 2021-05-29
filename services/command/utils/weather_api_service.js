@@ -6,7 +6,7 @@ const showInfo = async (message, send, sendInfo) => {
   const loc = message.location;
   const sentMessage = message.text;
 
-  if (sentMessage !== 'Cancel operation') {
+  if (sentMessage !== 'Cancel operation' && loc) {
     const lat = loc.latitude;
     const lng = loc.longitude;
     const options = `key=${process.env.WEATHER_API_KEY}&q=${lat},${lng}&days=2&aqi=no&alerts=no`;

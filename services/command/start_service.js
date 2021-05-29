@@ -6,7 +6,7 @@ const regular = require('../../regular');
 const checkTourist = async (message, send) => {
   const sentMessage = message.text;
   if (fullNameValidation(sentMessage)) {
-    const tourists = await Tourist.getAll();
+    const tourists = await Tourist.getSome({ full_name: sentMessage });
     // eslint-disable-next-line no-console
     console.log(tourists);
     if (tourists.length === 1) {

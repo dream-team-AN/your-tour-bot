@@ -1,6 +1,6 @@
 'use strict';
 
-const withoutTime = require('./date_service');
+const { withoutTime } = require('../../other/date_service');
 const Tour = require('../../../repositories/your-tour-bot/tour');
 
 const findTour = async (tourist) => {

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict';
 
 const {
@@ -15,7 +17,7 @@ const getKeyboard = async (keyboard, trip) => {
     }
     case 'simple': {
       markup = {
-        keyboard: [['tripist'], ['admin']]
+        keyboard: [['tourist'], ['admin']]
       };
       break;
     }

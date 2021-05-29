@@ -2,11 +2,11 @@
 
 const getIDs = require('./utils/mailing_service');
 
-const sendMessage = async (message, tour, send, users, forward) => {
+const sendMessage = async (message, trip, send, users, forward) => {
   const messId = message.message_id;
   const chatId = message.chat.id;
 
-  const chatIDs = await getIDs(tour, users);
+  const chatIDs = await getIDs(trip, users);
 
   for (const chat of chatIDs) {
     forward(chat, chatId, messId);
