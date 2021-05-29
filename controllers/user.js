@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict';
 
 const getStatus = require('../services/user/getting_status_service');
@@ -29,8 +31,11 @@ class User {
 
   async init(chatId) {
     this[chatId] = {};
-    const tourer = Voyager.get(chatId);
+    const tourer = await Voyager.get(chatId);
+    console.log('tourer');
+    console.log(tourer);
     if (!tourer) {
+      console.log('set at null');
       Voyager.setAllNull(chatId);
       this[chatId].command = 'none';
       this[chatId].state = 'WAITING COMMAND';
