@@ -1,5 +1,7 @@
 ## Your-tour telegram bot 🚍🌍
 
+[link to bot](https://t.me/@YooourTourBot)
+
 ### What is Your-tour bot ❓
 
 We will create a little helper for our clients - a telegram bot.
