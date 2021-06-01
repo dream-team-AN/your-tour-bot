@@ -3,10 +3,10 @@
 const User = require('../controllers/user');
 
 module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-vars
-  fastify.get('/', () => ({ root: true }));
+  fastify.get('/', () => ({ root: process.env.VERCEL_URL }));
 
   fastify.post('/', async (req, res) => {
-    if (!req.body.message || !req.body.message.chat || !req.body.message.chat.id) return;
+    if (!require?.message?.chat?.id) return;
     const chatId = req.body.message.chat.id;
     const sentMessage = req.body.message.text;
     if (!User[chatId]) {

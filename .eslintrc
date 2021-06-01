@@ -1,6 +1,6 @@
 {
   "env": {
-    "es2021": true,
+    "es6": true,
     "node": true
   },
   "extends": [
@@ -8,6 +8,9 @@
     "plugin:node/recommended",
     "plugin:sonarjs/recommended"
   ],
+  "parserOptions": {
+    "ecmaVersion": 12
+  },
   "plugins": [
     "sonarjs"
   ],
