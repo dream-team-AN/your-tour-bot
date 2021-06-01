@@ -15,9 +15,9 @@ class Tour {
     }
   }
 
-  async getSome(parametrs) {
+  async getSome(parameters) {
     try {
-      return await this.model.find(parametrs);
+      return await this.model.find(parameters);
     } catch (error) {
       throw Error(`Can not get given tours: ${error.message}`);
     }
