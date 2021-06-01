@@ -35,6 +35,6 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     initialCreateJob(job.mins, send, job.date, job.chatId);
   }
 
-  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=${process.env.VERCEL_URL}`;
+  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://${process.env.VERCEL_URL}/`;
   await request(link);
 };
