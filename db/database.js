@@ -7,7 +7,7 @@ module.exports = function connectionPool(host, db) {
     useNewUrlParser: true,
     useFindAndModify: false,
     useUnifiedTopology: true,
-    poolSize: 2
+    poolSize: 5
   };
   return mongoose.createConnection(`${host}/${db}`, opts);
 };
