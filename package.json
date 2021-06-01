@@ -6,9 +6,12 @@
   "directories": {
     "test": "test"
   },
+  "engines": {
+    "node": "14"
+  },
   "scripts": {
     "test": "tap test/**/*.test.js",
-    "start": "fastify start -p 80 -l info app.js",
+    "start": "fastify start -p 8000 -l info app.js",
     "lint": "eslint . --ignore-path .gitignore",
     "lint:fix": "eslint . --fix --ignore-path .gitignore"
   },
@@ -39,11 +42,11 @@
     "tap": "^14.11.0"
   },
   "devDependencies": {
-    "eslint": "^7.21.0",
+    "eslint": "^7.27.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-node": "^4.1.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-sonarjs": "^0.6.0",
+    "eslint-plugin-sonarjs": "^0.7.0",
     "husky": "^4.2.3",
     "lint-staged": "^10.5.4"
   },
