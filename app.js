@@ -35,6 +35,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
     initialCreateJob(job.mins, send, job.date, job.chatId);
   }
 
+  //todo: remove harcode of callback url
   const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://api-your-tour-bot.vercel.app/`;
   await request(link);
 };
