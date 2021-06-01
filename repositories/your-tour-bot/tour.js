@@ -7,9 +7,9 @@ class Tour {
     this.model = conn.models.tour;
   }
 
-  async getOne(parametrs) {
+  async getOne(parameters) {
     try {
-      return await this.model.findOne(parametrs);
+      return await this.model.findOne(parameters);
     } catch (error) {
       throw Error(`Can not get given tour: ${error.message}`);
     }
