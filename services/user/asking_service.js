@@ -5,7 +5,7 @@ const { ask } = require('../other/telegram_service');
 const asking = async (status, chatId, fastify, tour) => {
   switch (status.command) {
     case 'error': {
-      await ask('Пожалуйста, введите правильную комманду или /start.', chatId, fastify, 'none');
+      await ask('Пожалуйста, введите правильную команду или /start.', chatId, fastify, 'none');
       break;
     }
     case '/start': {
@@ -82,11 +82,11 @@ const adminAsking = async (status, chatId, fastify, tour) => {
       break;
     }
     case 'WAITING TOUR DATE AGAIN': {
-      await ask('Дата начала тура введена в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'date', tour);
+      await ask('Дата начала тура введена в некорректном формате. Пожалуйста, введите снова.', chatId, fastify, 'date', tour);
       break;
     }
     case 'WAITING DAY AGAIN': {
-      await ask('День тура введён в некорректном фомате. Пожалуйста, введите снова.', chatId, fastify, 'day', tour);
+      await ask('День тура введён в некорректном формате. Пожалуйста, введите снова.', chatId, fastify, 'day', tour);
       break;
     }
     case 'WAITING PLACE': {
