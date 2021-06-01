@@ -1,16 +1,18 @@
+/* eslint-disable no-unused-vars */
+// eslint-disable-next-line lines-around-directive
 'use strict';
 
-const { test } = require('tap');
-const { build } = require('../helper');
+// const { test } = require('tap');
+// const { build } = require('../helper');
 
-test('example is loaded', async (t) => {
-  const app = build(t);
+// test('example is loaded', async (t) => {
+//   const app = build(t);
 
-  const res = await app.inject({
-    url: '/example'
-  });
-  t.equal(res.payload, 'some code');
-});
+//   const res = await app.inject({
+//     url: '/example'
+//   });
+//   t.equal(res.payload, 'some code');
+// });
 
 // inject callback style:
 //

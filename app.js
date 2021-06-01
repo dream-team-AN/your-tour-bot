@@ -2,24 +2,39 @@
 
 const path = require('path');
 const AutoLoad = require('fastify-autoload');
+const httpClient = require('fastify-http-client');
+const dotenv = require('dotenv');
+const request = require('request');
 
-module.exports = async (fastify, opts) => {
-  // Place here your custom code!
+const { initialCreateJob } = require('./services/command/utils/create_job_service');
+const { ask } = require('./services/other/telegram_service');
+const Cron = require('./repositories/meeting-bot/cron');
 
-  // Do not touch the following lines
-
+module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-vars
   // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
   fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'plugins'),
-    options: { opts }
+    dir: path.join(__dirname, 'plugins')
   });
 
   // This loads all plugins defined in routes
-  // define your routes in one of these
   fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'routes'),
-    options: { opts }
+    dir: path.join(__dirname, 'routes')
   });
+
+  dotenv.config();
+
+  fastify.register(httpClient);
+
+  let jobs = await Cron.getAll();
+  jobs = jobs.filter((job) => job.date >= Date.now);
+
+  const send = (chat, Message, keyboard) => {
+    ask(Message, chat, fastify, keyboard);
+  };
+  for (const job of jobs) {
+    initialCreateJob(job.mins, send, job.date, job.chatId);
+  }
+
+  const link = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://${process.env.VERCEL_URL}/`;
+  await request(link);
 };

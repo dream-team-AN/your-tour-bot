@@ -1,5 +1,7 @@
 ## Your-tour telegram bot 🚍🌍
 
+[link to bot](https://t.me/@YooourTourBot)
+
 ### What is Your-tour bot ❓
 
 We will create a little helper for our clients - a telegram bot.
@@ -17,7 +19,15 @@ Our bot will always be with you, so less worry and more vivid impressions 😉
 ### Available commands ✔
 
 ▶ /start <br>
-Greetings, request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour, otherwise the bot will recommend contacting the travel agency office and stop its work. <br>
+Greetings, request to choose are you tourist or admin.<br>
+#### Then in 1nd case:
+Request to enter a name -> checking the presence of a name in the database -> if the person is in the database, then the definition of the purchased tour, otherwise the bot will recommend contacting the travel agency office and stop its work.<br>
+#### Or in 2nd case:
+Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:<br>
+🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.<br>
+🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
+🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
+press button "I am admin"<br>
 ▶ /help <br>
 Output of all commands with their description.<br>
 ▶ /meeting <br>
@@ -25,15 +35,9 @@ The bot will display the time, the meeting place, which will be marked on the go
 ▶ /excursions <br>
 The bot will display a list of excursions, when you click on the name, it will display the description of the excursion.<br>
 ▶ /time <br>
-The bot will ask you to enter the city for which you want to know the time and then display the information.<br>
+The bot will display the time for the city where you are.<br>
 ▶ /weather <br>
-The bot will ask you to enter the city for which you want to know the weather (for today and tomorrow) and then display the information.<br>
-
-▶ /admin <br>
-Login as administrator, the bot asks for a password, if entered correctly the bot displays a list of possible actions:<br>
-🔹 Send message: the bot asks what you want to send (for example, a vote), the name of the tour and the date to determine which users to send it to.<br>
-🔹 Set meeting time: the bot asks for the time, day of the tour, name and date of its start.<br>
-🔹 Set meeting place: the bot asks for the place, day of the tour, name and start date.<br>
+The bot will display the weather (for today and tomorrow) for the city where you are.<br>
 
 ### How it works ❓
 
@@ -41,22 +45,18 @@ When registering a user, the bot checks the presence of his full name in the tra
 
 The user can view the time and place of the meeting (will be displayed using static maps from Google), which will be stored in a separate info file. Also, the user can see the route to the destination (created using the Directions Google API service). The tourist will receive notifications about the approaching time of meeting with the guide, which are generated using the Node Schedule technology (a flexible task scheduler like Cron).
 
-A person can get detailed information about excursions(the program of excursions, what you will learn about during the excursion, organizational details: how the excursion goes, what is important to know before booking, meeting point, price), which is parsed from the site https://experience.tripster.ru/. First, the user is given the opportunity to select the city in which he wants to see the excursions (only the cities that are on the tour are displayed; and only those excursions that can be booked on the day the tourist is in the selected city are displayed).
+A person can get detailed information about excursions(what awaits you, date, meeting point, price), which is parsed from the site https://experience.tripster.ru/. First, the user is given the opportunity to select the city in which he wants to see the excursions (only the cities that are on the tour are displayed; and only those excursions that can be booked on the day the tourist is in the selected city are displayed).
 
-A tourist can see the current time in the city in which he is located (it will be calculated based on the data received from Google api timezone). As well as the weather for today and tomorrow (information is taken from the Gismeteo website using its api).
+A tourist can see the current time in the city in which he is located (it will be calculated based on the data received from weather api. As well as the weather for today and tomorrow.
 
-Our bot has an administrator mode for travel agency employees. To enter this mode, you must enter the same password for all. When trying to send a message, the bot first checks the compliance of the person's name with the tour and the date entered by the admin. When a match is found, the bot takes the chat ID from the file with the data of the bot users. And after that it sends a message. Also, the administrator can set the time and place of the meeting, which are saved in the info file. The admin will set the meeting place by choosing from several available options.
+Our bot has an administrator mode for travel agency employees. To enter this mode, you must enter the same password for all. When trying to send a message, the bot first checks the compliance of the person's name with the tour and the date entered by the admin. When a match is found, the bot takes the chat ID from the variable with the data of the bot users. And after that it sends a message. Also, the administrator can set the time and place of the meeting, which are saved in the info file. The admin will set the meeting place by choosing from several available options.
 
 Since the bot will be launched on a free plan, when used on long polling, problems may arise with constant requests to telegrams for updates, which is of course unacceptable for the comfortable work of the assistant bot. Therefore, it becomes necessary to receive updates in a smarter way - a webhook. Another plus is that all applications hosted on Heroku are hosted on a sub-domain and automatically receive the SLL certificate required to configure the webhook. Fastify will be used as a web server.
 
 ### Technologies 💻
 
-<br>
-⏹ Google API:<br>
-    🔹 Maps Static Google API. Google Maps API is to show a meeting place.<br>
-    🔹 Google Directions API. This API will be used to help the user get to the meeting point.<br>
-    🔹 Google Timezone API. The time zone API will tell the tourist what is the exact time in the city in which he is located.<br>
-⏹ GISMETEO API (for weather)<br>
+⏹ Google Maps. It will be used to help the user get to the meeting point.<br>
+⏹ Weather API. It will tell the tourist what is the exact time and weather in the city in which he is located. <br>
 ⏹ Node Schedule<br>
 ⏹ MongoDB<br>
 ⏹ Fastify<br>  

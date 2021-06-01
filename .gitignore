@@ -56,3 +56,8 @@ profile-*
 profile*
 *clinic*
 *flamegraph*
+
+#files
+secret.js
+.vercel
+.env

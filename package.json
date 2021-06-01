@@ -6,10 +6,12 @@
   "directories": {
     "test": "test"
   },
+  "engines": {
+    "node": "14"
+  },
   "scripts": {
     "test": "tap test/**/*.test.js",
-    "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js",
+    "start": "fastify start -p 80 -l info app.js",
     "lint": "eslint . --ignore-path .gitignore",
     "lint:fix": "eslint . --fix --ignore-path .gitignore"
   },
@@ -25,23 +27,29 @@
   },
   "homepage": "https://github.com/Your-tour-bot/code#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "fastify": "^3.0.0",
     "fastify-autoload": "^3.3.1",
     "fastify-cli": "^2.8.0",
+    "fastify-http-client": "^1.0.0",
     "fastify-plugin": "^3.0.0",
-    "fastify-sensible": "^3.1.0"
+    "fastify-sensible": "^3.1.0",
+    "html-escaper": "^3.0.3",
+    "jsdom": "^16.5.3",
+    "mongoose": "^5.12.3",
+    "node-schedule": "^2.0.0",
+    "request": "^2.88.2",
+    "tap": "^14.11.0"
   },
   "devDependencies": {
-    "eslint": "^7.21.0",
+    "eslint": "^7.27.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-node": "^4.1.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-sonarjs": "^0.6.0",
+    "eslint-plugin-sonarjs": "^0.7.0",
     "husky": "^4.2.3",
-    "lint-staged": "^10.5.4",
-    "tap": "^14.11.0"
+    "lint-staged": "^10.5.4"
   },
-  "files": [],
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
