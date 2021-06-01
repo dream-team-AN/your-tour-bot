@@ -6,7 +6,7 @@ module.exports = async (fastify, opts) => { // eslint-disable-line no-unused-var
   fastify.get('/', () => ({ root: true }));
 
   fastify.post('/', async (req, res) => {
-    if (!require?.message?.chat?.id) return;
+    if (!req.body.message || !req.body.message.chat || !req.body.message.chat.id) return;
     const chatId = req.body.message.chat.id;
     const sentMessage = req.body.message.text;
     if (!User[chatId]) {
