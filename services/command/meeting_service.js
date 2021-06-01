@@ -114,7 +114,7 @@ const setPlace = async (message, trip, send) => {
 
   const tour = await Tour.getOne({ tour_name: trip.name, beginning_date: trip.date });
 
-  const flag = await cityHandller(tour, trip, sentMessage);
+  const flag = await cityHandler(tour, trip, sentMessage);
   if (flag) {
     send(chatId, 'Место успешно задано.', 'admin');
     return 'WAITING COMMAND';
@@ -124,7 +124,7 @@ const setPlace = async (message, trip, send) => {
   return 'WAITING TIME AGAIN';
 };
 
-const cityHandller = async (tour, trip, sentMessage) => {
+const cityHandler = async (tour, trip, sentMessage) => {
   const cities = await City.getAll();
   let currentPlace;
   let cityExist = false;
