@@ -9,7 +9,7 @@
     "plugin:sonarjs/recommended"
   ],
   "parserOptions": {
-    "ecmaVersion": 12
+    "ecmaVersion": 11
   },
   "plugins": [
     "sonarjs"

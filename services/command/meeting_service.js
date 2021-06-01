@@ -15,7 +15,7 @@ const show = async (message, send, users, sendLocation) => {
   const currentTour = await getTour(message, users);
   if (currentTour) {
     const note = await Info.getOne({ tour_id: currentTour._id });
-    if (note?.date >= withoutTime(new Date())) {
+    if (note && note.date >= withoutTime(new Date())) {
       const place = note.place_address;
       send(output(note), 'none');
       await sendMeetingPlace(place, send, sendLocation);
