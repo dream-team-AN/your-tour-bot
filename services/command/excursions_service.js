@@ -4,7 +4,6 @@ const findTour = require('./utils/find_tour_service');
 const parser = require('./utils/parse_service');
 const Tourist = require('../../repositories/your-tour-bot/tourist');
 const City = require('../../repositories/your-tour-bot/city');
-// todo: add alias @repositories
 
 const show = async (message, send, users) => {
   const chatId = message.chat.id;
