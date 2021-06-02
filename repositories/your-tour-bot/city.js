@@ -15,7 +15,6 @@ class City {
     }
   }
 
-  // todo: it should be used :)
   async getSome(parametrs) {
     try {
       return await this.model.find(parametrs);
