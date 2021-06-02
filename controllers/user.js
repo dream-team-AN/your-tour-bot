@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 'use strict';
 
 const getStatus = require('../services/user/getting_status_service');
