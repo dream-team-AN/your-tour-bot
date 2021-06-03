@@ -15,7 +15,7 @@ const show = async (message, send, users, sendLocation) => {
   const currentTour = await getTour(message, users);
   if (currentTour) {
     const note = await Info.getOne({ tour_id: currentTour._id });
-    if (note?.date >= withoutTime(new Date())) {
+    if (note?.date >= withoutTime(new Date()) && note.place_address) {
       const place = note.place_address;
       send(output(note), 'none');
       await sendMeetingPlace(place, send, sendLocation);
@@ -134,13 +134,9 @@ const cityHandler = async (tour, trip, sentMessage) => {
       if (JSON.stringify(city._id) === JSON.stringify(town.city_id) && town.day.includes(trip.day)) {
         cityExist = true;
         currentPlace = city.meeting_places.find((place) => place.name === sentMessage);
-        // eslint-disable-next-line no-console
-        console.log(currentPlace);
       }
     }
   });
-  // eslint-disable-next-line no-console
-  console.log(currentPlace);
   if (cityExist) {
     await writeNote(trip, sentMessage, currentPlace.address);
   }
